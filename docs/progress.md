@@ -7,7 +7,7 @@
 ---
 
 ## Current step
-**Up next: Step 10 — Focused review route**
+**Up next: Step 11 — Archive/postpone/reactivate testing pass**
 
 ---
 
@@ -76,14 +76,23 @@
 ### Keyboard navigation (`useReviewKeyboard` hook + `getReviewKeyAction`)
 - Space / ArrowRight → next option, ArrowLeft → previous option
 - R → reject/restore current option, F → mark current option final
+- Escape → return to project route (review route only), ? → toggle shortcut help
 - Wraparound handled by store actions (last→first, first→last)
-- Window-level listener, enabled in the project center panel when a decision has options
+- Window-level listener, enabled when a decision has options
 - Typing guard: shortcuts never fire while focus is in an input, textarea, or contenteditable element (`isTypingTarget`)
 - `preventDefault` on matched keys (stops Space from scrolling the page)
-- R/F only act when their handlers are supplied — navigation-only callers ignore them
+- R/F/Escape/? only act when their handlers are supplied — callers that omit them are unaffected
 - Pure `getReviewKeyAction(event)` resolver lives in `utils/keyboard.ts` for independent unit testing
 - Hook lives in `src/hooks/` (added directory — see decisions.md)
-- Escape / ? shortcuts not yet handled (Step 10 review route)
+
+### Focused review route (`/projects/:id/review/:decisionId`)
+- Full-screen layout: `ReviewToolbar` / `OptionViewer` / reject+final controls / `OptionFilmstrip`
+- `ReviewToolbar`: back button (← Back → project route), decision title + status badge, option count (e.g., 2 / 5), view-mode toggle (Fit width / Full size), shortcut help toggle
+- `ReviewWorkspace`: wires all keyboard handlers including Escape (navigate back) and ? (toggle help)
+- `KeyboardShortcutHelp`: fixed overlay listing all shortcuts; closes on backdrop click, × button, or Escape
+- Route validates project + decision params and redirects to `/` or `/projects/:id` if either is missing
+- Sets `currentProjectId` and `currentDecisionId` on mount via the same pattern as `ProjectRoute`
+- Reject/restore and mark-final controls identical to the `ProjectRoute` center panel
 
 ### Reject and final selection
 - Center panel review controls (between viewer and filmstrip): Reject/Restore button + Mark final button, with R/F key hints
@@ -126,13 +135,7 @@
 
 | Component / Route | Status | Implemented in |
 |---|---|---|
-| `ReviewWorkspace` | Empty `<div />` | Step 10 |
-| `ReviewToolbar` | Empty `<div />` | Step 10 |
-| `KeyboardShortcutHelp` | Empty `<div />` | Step 10 |
-| `DecisionNotesPanel` | Empty `<div />` | Step 9 |
-| Route `/projects/:id/review/:decisionId` | Empty `<div />` | Step 10 |
 | Import/Export buttons | Visible, not wired | Step 12 |
-| `Escape` / `?` shortcuts | Not implemented (Space/arrows/R/F done) | Step 10 |
 
 ---
 
@@ -143,7 +146,7 @@
 | `persistence.test.ts` | 7 | loadState, saveState, clearState, corrupt JSON fallback |
 | `store.test.ts` | 60 | create/update/delete project + decision + option, cascade delete, status transitions, currentId lifecycle, current option select/next/previous + wraparound, reject/restore rules, mark-final rules (selectedOptionId/status/decidedAt/others reset/re-mark), file validation |
 | `importExport.test.ts` | 0 | Placeholder — Step 12 |
-| `keyboard.test.ts` | 23 | getReviewKeyAction key mapping (incl R/F) + typing guard, isTypingTarget, useReviewKeyboard wiring/reject/final/disabled/unmount |
+| `keyboard.test.ts` | 28 | getReviewKeyAction key mapping (incl R/F/Escape/?) + typing guard (incl Escape/?), isTypingTarget, useReviewKeyboard wiring/reject/final/escape/help/disabled/unmount |
 | `notesPanel.test.tsx` | 9 | notes/rationale persist on blur, empty title reverts, line breaks preserved, incomplete-finalized warning show/hide, script-like text rendered as text |
 
 ---

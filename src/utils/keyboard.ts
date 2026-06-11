@@ -14,6 +14,8 @@ export type ReviewKeyAction =
   | "previous"
   | "reject"
   | "final"
+  | "escape"
+  | "help"
   | null;
 
 /**
@@ -38,6 +40,10 @@ export function getReviewKeyAction(e: {
     case "f":
     case "F":
       return "final";
+    case "Escape":
+      return "escape";
+    case "?":
+      return "help";
     default:
       return null;
   }

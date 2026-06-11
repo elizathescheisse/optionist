@@ -7,23 +7,18 @@ type Options = {
   onPrevious: () => void;
   onReject?: () => void;
   onFinal?: () => void;
+  onEscape?: () => void;
+  onHelp?: () => void;
 };
 
-/**
- * Window-level keyboard navigation for option review.
- * Space / ArrowRight → next, ArrowLeft → previous, R → reject/restore,
- * F → mark final.
- *
- * Shortcuts are gated by getReviewKeyAction so they never fire while the
- * user is typing. Reject/final only act when a handler is supplied, so
- * callers that only navigate are unaffected by R/F presses.
- */
 export function useReviewKeyboard({
   enabled = true,
   onNext,
   onPrevious,
   onReject,
   onFinal,
+  onEscape,
+  onHelp,
 }: Options) {
   useEffect(() => {
     if (!enabled) return;
@@ -37,6 +32,8 @@ export function useReviewKeyboard({
         previous: onPrevious,
         reject: onReject,
         final: onFinal,
+        escape: onEscape,
+        help: onHelp,
       };
 
       const fn = handlers[action];
@@ -47,5 +44,5 @@ export function useReviewKeyboard({
 
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [enabled, onNext, onPrevious, onReject, onFinal]);
+  }, [enabled, onNext, onPrevious, onReject, onFinal, onEscape, onHelp]);
 }

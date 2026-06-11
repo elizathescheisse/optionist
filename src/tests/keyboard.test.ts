@@ -30,6 +30,20 @@ describe("getReviewKeyAction", () => {
     expect(getReviewKeyAction(makeEvent("F", null))).toBe("final");
   });
 
+  it("Escape resolves to escape", () => {
+    expect(getReviewKeyAction(makeEvent("Escape", null))).toBe("escape");
+  });
+
+  it("? resolves to help", () => {
+    expect(getReviewKeyAction(makeEvent("?", null))).toBe("help");
+  });
+
+  it("Escape and ? do not fire while typing in an input", () => {
+    const input = document.createElement("input");
+    expect(getReviewKeyAction(makeEvent("Escape", input))).toBeNull();
+    expect(getReviewKeyAction(makeEvent("?", input))).toBeNull();
+  });
+
   it("unrelated keys resolve to null", () => {
     expect(getReviewKeyAction(makeEvent("a", null))).toBeNull();
     expect(getReviewKeyAction(makeEvent("Enter", null))).toBeNull();
@@ -136,6 +150,24 @@ describe("useReviewKeyboard", () => {
     renderHook(() => useReviewKeyboard({ enabled: false, onNext, onPrevious }));
     window.dispatchEvent(new KeyboardEvent("keydown", { key: " " }));
     expect(onNext).not.toHaveBeenCalled();
+  });
+
+  it("Escape calls onEscape when handler is provided", () => {
+    const onEscape = vi.fn();
+    renderHook(() =>
+      useReviewKeyboard({ onNext: vi.fn(), onPrevious: vi.fn(), onEscape })
+    );
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    expect(onEscape).toHaveBeenCalledTimes(1);
+  });
+
+  it("? calls onHelp when handler is provided", () => {
+    const onHelp = vi.fn();
+    renderHook(() =>
+      useReviewKeyboard({ onNext: vi.fn(), onPrevious: vi.fn(), onHelp })
+    );
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "?" }));
+    expect(onHelp).toHaveBeenCalledTimes(1);
   });
 
   it("removes the listener on unmount", () => {
