@@ -7,7 +7,7 @@
 ---
 
 ## Current step
-**Up next: Step 11 — Archive/postpone/reactivate testing pass**
+**Up next: Step 12 — JSON export/import**
 
 ---
 
@@ -144,7 +144,7 @@
 | File | Tests | Covers |
 |---|---|---|
 | `persistence.test.ts` | 7 | loadState, saveState, clearState, corrupt JSON fallback |
-| `store.test.ts` | 60 | create/update/delete project + decision + option, cascade delete, status transitions, currentId lifecycle, current option select/next/previous + wraparound, reject/restore rules, mark-final rules (selectedOptionId/status/decidedAt/others reset/re-mark), file validation |
+| `store.test.ts` | 76 | create/update/delete project + decision + option, cascade delete, status transitions (all source statuses, data preservation, round trips), currentId lifecycle, current option select/next/previous + wraparound, reject/restore rules, mark-final rules (selectedOptionId/status/decidedAt/others reset/re-mark), reviewViewMode, file validation |
 | `importExport.test.ts` | 0 | Placeholder — Step 12 |
 | `keyboard.test.ts` | 28 | getReviewKeyAction key mapping (incl R/F/Escape/?) + typing guard (incl Escape/?), isTypingTarget, useReviewKeyboard wiring/reject/final/escape/help/disabled/unmount |
 | `notesPanel.test.tsx` | 9 | notes/rationale persist on blur, empty title reverts, line breaks preserved, incomplete-finalized warning show/hide, script-like text rendered as text |
