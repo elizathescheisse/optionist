@@ -9,10 +9,15 @@ export function isTypingTarget(element: Element | null): boolean {
   return false;
 }
 
-export type ReviewKeyAction = "next" | "previous" | null;
+export type ReviewKeyAction =
+  | "next"
+  | "previous"
+  | "reject"
+  | "final"
+  | null;
 
 /**
- * Resolve a keyboard event into a navigation action.
+ * Resolve a keyboard event into a review action.
  * Returns null when focus is in a typing target so shortcuts never
  * fire while the user is typing.
  */
@@ -27,6 +32,12 @@ export function getReviewKeyAction(e: {
       return "next";
     case "ArrowLeft":
       return "previous";
+    case "r":
+    case "R":
+      return "reject";
+    case "f":
+    case "F":
+      return "final";
     default:
       return null;
   }

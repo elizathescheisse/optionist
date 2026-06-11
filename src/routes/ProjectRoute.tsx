@@ -8,6 +8,7 @@ import OptionUploader from "../components/options/OptionUploader";
 import OptionViewer from "../components/options/OptionViewer";
 import OptionFilmstrip from "../components/options/OptionFilmstrip";
 import EmptyState from "../components/layout/EmptyState";
+import Button from "../components/shared/Button";
 
 export default function ProjectRoute() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -53,15 +54,34 @@ export default function ProjectRoute() {
 function CenterPanel({ decisionId }: { decisionId: string }) {
   const decision = useAppStore((s) => s.decisions[decisionId]);
   const currentOptionId = useAppStore((s) => s.currentOptionId);
+  const currentOption = useAppStore((s) =>
+    currentOptionId ? s.options[currentOptionId] : undefined
+  );
   const goToNextOption = useAppStore((s) => s.goToNextOption);
   const goToPreviousOption = useAppStore((s) => s.goToPreviousOption);
+  const rejectOption = useAppStore((s) => s.rejectOption);
+  const restoreOption = useAppStore((s) => s.restoreOption);
+  const markOptionFinal = useAppStore((s) => s.markOptionFinal);
 
   const hasOptions = (decision?.optionIds.length ?? 0) > 0;
+
+  function handleReject() {
+    if (!currentOption) return;
+    if (currentOption.status === "active") rejectOption(currentOption.id);
+    else if (currentOption.status === "rejected") restoreOption(currentOption.id);
+    // final → no-op (spec: cannot reject a final option directly)
+  }
+
+  function handleFinal() {
+    if (currentOption) markOptionFinal(currentOption.id);
+  }
 
   useReviewKeyboard({
     enabled: hasOptions,
     onNext: goToNextOption,
     onPrevious: goToPreviousOption,
+    onReject: handleReject,
+    onFinal: handleFinal,
   });
 
   if (!decision) return null;
@@ -94,6 +114,29 @@ function CenterPanel({ decisionId }: { decisionId: string }) {
       ) : (
         <>
           <OptionViewer optionId={currentOptionId} />
+
+          {/* Option review controls */}
+          {currentOption && (
+            <div className="shrink-0 px-4 py-2 border-t border-gray-200 bg-white flex items-center gap-2">
+              <Button
+                variant={currentOption.status === "rejected" ? "secondary" : "danger"}
+                onClick={handleReject}
+                disabled={currentOption.status === "final"}
+              >
+                {currentOption.status === "rejected" ? "Restore" : "Reject"}
+                <span className="ml-1 text-xs opacity-60">R</span>
+              </Button>
+              <Button
+                variant="primary"
+                onClick={handleFinal}
+                disabled={currentOption.status === "final"}
+              >
+                {currentOption.status === "final" ? "Final ✓" : "Mark final"}
+                <span className="ml-1 text-xs opacity-60">F</span>
+              </Button>
+            </div>
+          )}
+
           <OptionFilmstrip decisionId={decision.id} />
         </>
       )}

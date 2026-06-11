@@ -20,10 +20,26 @@ describe("getReviewKeyAction", () => {
     expect(getReviewKeyAction(makeEvent("ArrowLeft", null))).toBe("previous");
   });
 
+  it("R resolves to reject (upper and lower case)", () => {
+    expect(getReviewKeyAction(makeEvent("r", null))).toBe("reject");
+    expect(getReviewKeyAction(makeEvent("R", null))).toBe("reject");
+  });
+
+  it("F resolves to final (upper and lower case)", () => {
+    expect(getReviewKeyAction(makeEvent("f", null))).toBe("final");
+    expect(getReviewKeyAction(makeEvent("F", null))).toBe("final");
+  });
+
   it("unrelated keys resolve to null", () => {
     expect(getReviewKeyAction(makeEvent("a", null))).toBeNull();
     expect(getReviewKeyAction(makeEvent("Enter", null))).toBeNull();
     expect(getReviewKeyAction(makeEvent("ArrowUp", null))).toBeNull();
+  });
+
+  it("R and F do not fire while typing in an input", () => {
+    const input = document.createElement("input");
+    expect(getReviewKeyAction(makeEvent("r", input))).toBeNull();
+    expect(getReviewKeyAction(makeEvent("f", input))).toBeNull();
   });
 
   it("does not fire while typing in an input", () => {
@@ -85,6 +101,32 @@ describe("useReviewKeyboard", () => {
     renderHook(() => useReviewKeyboard({ onNext, onPrevious }));
     window.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft" }));
     expect(onPrevious).toHaveBeenCalledTimes(1);
+    expect(onNext).not.toHaveBeenCalled();
+  });
+
+  it("R calls onReject when handler is provided", () => {
+    const onReject = vi.fn();
+    renderHook(() =>
+      useReviewKeyboard({ onNext: vi.fn(), onPrevious: vi.fn(), onReject })
+    );
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "r" }));
+    expect(onReject).toHaveBeenCalledTimes(1);
+  });
+
+  it("F calls onFinal when handler is provided", () => {
+    const onFinal = vi.fn();
+    renderHook(() =>
+      useReviewKeyboard({ onNext: vi.fn(), onPrevious: vi.fn(), onFinal })
+    );
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "f" }));
+    expect(onFinal).toHaveBeenCalledTimes(1);
+  });
+
+  it("R is a no-op when no onReject handler is provided", () => {
+    const onNext = vi.fn();
+    renderHook(() => useReviewKeyboard({ onNext, onPrevious: vi.fn() }));
+    // Should not throw and should not call navigation handlers
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "r" }));
     expect(onNext).not.toHaveBeenCalled();
   });
 

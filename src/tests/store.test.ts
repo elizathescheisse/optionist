@@ -304,6 +304,92 @@ describe("store — options", () => {
   });
 });
 
+describe("store — reject and final", () => {
+  let projectId: string;
+  let decisionId: string;
+  let o1: string;
+  let o2: string;
+  let o3: string;
+
+  beforeEach(() => {
+    localStorage.clear();
+    store().resetAllData();
+    projectId = store().createProject({ name: "P" });
+    decisionId = store().createDecision(projectId, { title: "D" });
+    o1 = store().addOption(decisionId, { name: "O1", imageDataUrl: "data:image/png;base64,a", imageMimeType: "image/png" });
+    o2 = store().addOption(decisionId, { name: "O2", imageDataUrl: "data:image/png;base64,b", imageMimeType: "image/png" });
+    o3 = store().addOption(decisionId, { name: "O3", imageDataUrl: "data:image/png;base64,c", imageMimeType: "image/png" });
+  });
+
+  it("rejectOption sets an active option to rejected", () => {
+    store().rejectOption(o1);
+    expect(store().options[o1].status).toBe("rejected");
+  });
+
+  it("restoreOption sets a rejected option back to active", () => {
+    store().rejectOption(o1);
+    store().restoreOption(o1);
+    expect(store().options[o1].status).toBe("active");
+  });
+
+  it("rejectOption does not reject a final option", () => {
+    store().markOptionFinal(o1);
+    store().rejectOption(o1);
+    expect(store().options[o1].status).toBe("final");
+  });
+
+  it("restoreOption only affects rejected options", () => {
+    store().restoreOption(o1); // o1 is active
+    expect(store().options[o1].status).toBe("active");
+  });
+
+  it("markOptionFinal sets the option status to final", () => {
+    store().markOptionFinal(o1);
+    expect(store().options[o1].status).toBe("final");
+  });
+
+  it("markOptionFinal sets decision.selectedOptionId", () => {
+    store().markOptionFinal(o2);
+    expect(store().decisions[decisionId].selectedOptionId).toBe(o2);
+  });
+
+  it("markOptionFinal sets decision status to finalized", () => {
+    store().markOptionFinal(o1);
+    expect(store().decisions[decisionId].status).toBe("finalized");
+  });
+
+  it("markOptionFinal sets decidedAt", () => {
+    store().markOptionFinal(o1);
+    expect(store().decisions[decisionId].decidedAt).not.toBeNull();
+  });
+
+  it("markOptionFinal sets other non-rejected options to active", () => {
+    store().markOptionFinal(o1);
+    expect(store().options[o2].status).toBe("active");
+    expect(store().options[o3].status).toBe("active");
+  });
+
+  it("markOptionFinal leaves rejected options rejected", () => {
+    store().rejectOption(o2);
+    store().markOptionFinal(o1);
+    expect(store().options[o2].status).toBe("rejected");
+  });
+
+  it("re-marking a different option final moves the final flag", () => {
+    store().markOptionFinal(o1);
+    store().markOptionFinal(o2);
+    expect(store().options[o1].status).toBe("active");
+    expect(store().options[o2].status).toBe("final");
+    expect(store().decisions[decisionId].selectedOptionId).toBe(o2);
+  });
+
+  it("selected final option belongs to the decision", () => {
+    store().markOptionFinal(o3);
+    const selected = store().decisions[decisionId].selectedOptionId;
+    expect(store().decisions[decisionId].optionIds).toContain(selected);
+  });
+});
+
 describe("store — current option navigation", () => {
   let projectId: string;
   let decisionId: string;

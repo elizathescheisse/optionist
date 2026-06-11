@@ -7,7 +7,7 @@
 ---
 
 ## Current step
-**Up next: Step 8 — Reject and final selection**
+**Up next: Step 9 — Decision notes and final rationale**
 
 ---
 
@@ -19,7 +19,7 @@
 - `localStorage` persistence — loads on startup, saves on every action, storage key `design-decision-tool:v1`
 - Export envelope type (`ExportedAppData`)
 - React Router with four routes wired up
-- Vitest + React Testing Library configured, 71 tests passing
+- Vitest + React Testing Library configured, 89 tests passing
 
 ### Data model
 - All types defined: `Project`, `Decision`, `DesignOption`, `AppState`, `ExportedAppData`
@@ -75,13 +75,22 @@
 
 ### Keyboard navigation (`useReviewKeyboard` hook + `getReviewKeyAction`)
 - Space / ArrowRight → next option, ArrowLeft → previous option
+- R → reject/restore current option, F → mark current option final
 - Wraparound handled by store actions (last→first, first→last)
 - Window-level listener, enabled in the project center panel when a decision has options
 - Typing guard: shortcuts never fire while focus is in an input, textarea, or contenteditable element (`isTypingTarget`)
 - `preventDefault` on matched keys (stops Space from scrolling the page)
+- R/F only act when their handlers are supplied — navigation-only callers ignore them
 - Pure `getReviewKeyAction(event)` resolver lives in `utils/keyboard.ts` for independent unit testing
 - Hook lives in `src/hooks/` (added directory — see decisions.md)
-- R / F / Escape / ? shortcuts not yet handled (Steps 8 and 10)
+- Escape / ? shortcuts not yet handled (Step 10 review route)
+
+### Reject and final selection
+- Center panel review controls (between viewer and filmstrip): Reject/Restore button + Mark final button, with R/F key hints
+- Reject toggle: active → rejected, rejected → active, final → no-op (button disabled)
+- Mark final: sets option to final, decision `selectedOptionId` + status `finalized` + `decidedAt`; other non-rejected options reset to active; rejected options stay rejected
+- Re-marking a different option final moves the final flag and resets the previous final to active
+- Finalized decisions already surface in the sidebar's "Finalized" group (Step 4)
 
 ### Header
 - "Decision Compare" link back to `/`
@@ -115,8 +124,7 @@
 | `DecisionNotesPanel` | Empty `<div />` | Step 9 |
 | Route `/projects/:id/review/:decisionId` | Empty `<div />` | Step 10 |
 | Import/Export buttons | Visible, not wired | Step 12 |
-| `R` / `F` / `Escape` / `?` shortcuts | Not implemented (Space/arrows done) | Steps 8, 10 |
-| Reject / mark final actions | Store actions + thumbnail display exist, no trigger UI | Step 8 |
+| `Escape` / `?` shortcuts | Not implemented (Space/arrows/R/F done) | Step 10 |
 
 ---
 
@@ -125,9 +133,9 @@
 | File | Tests | Covers |
 |---|---|---|
 | `persistence.test.ts` | 7 | loadState, saveState, clearState, corrupt JSON fallback |
-| `store.test.ts` | 48 | create/update/delete project + decision + option, cascade delete, status transitions, currentId lifecycle, setCurrentDecision resets currentOptionId, current option select/next/previous + wraparound, rejected options remain visible, file validation |
+| `store.test.ts` | 60 | create/update/delete project + decision + option, cascade delete, status transitions, currentId lifecycle, current option select/next/previous + wraparound, reject/restore rules, mark-final rules (selectedOptionId/status/decidedAt/others reset/re-mark), file validation |
 | `importExport.test.ts` | 0 | Placeholder — Step 12 |
-| `keyboard.test.ts` | 16 | getReviewKeyAction key mapping + typing guard, isTypingTarget, useReviewKeyboard wiring/enabled/unmount |
+| `keyboard.test.ts` | 23 | getReviewKeyAction key mapping (incl R/F) + typing guard, isTypingTarget, useReviewKeyboard wiring/reject/final/disabled/unmount |
 
 ---
 
