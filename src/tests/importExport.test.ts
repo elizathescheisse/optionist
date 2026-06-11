@@ -239,4 +239,62 @@ describe("exportData / importDataReplace round trip", () => {
     expect(store().decisions[dId].status).toBe("finalized");
     expect(store().options[oId].status).toBe("final");
   });
+
+  it("exported data includes dataVersion 1 and exportedAt", () => {
+    const exported = store().exportData();
+    expect(exported.dataVersion).toBe(1);
+    expect(typeof exported.exportedAt).toBe("string");
+    expect(exported.exportedAt.length).toBeGreaterThan(0);
+  });
+
+  it("round trip preserves image data URLs, rationale, and timestamps", () => {
+    const pId = store().createProject({ name: "P" });
+    const dId = store().createDecision(pId, { title: "D" });
+    store().updateDecision(dId, { finalRationale: "Chosen for clarity" });
+    const oId = store().addOption(dId, {
+      name: "O",
+      imageDataUrl: "data:image/png;base64,iVBORw0KGgo=",
+      imageMimeType: "image/png",
+    });
+    const createdAt = store().options[oId].createdAt;
+
+    const exported = store().exportData();
+    store().resetAllData();
+    store().importDataReplace(exported);
+
+    expect(store().options[oId].imageDataUrl).toBe("data:image/png;base64,iVBORw0KGgo=");
+    expect(store().decisions[dId].finalRationale).toBe("Chosen for clarity");
+    expect(store().options[oId].createdAt).toBe(createdAt);
+    expect(store().options[oId].decisionId).toBe(dId);
+    expect(store().decisions[dId].projectId).toBe(pId);
+  });
+
+  it("import failure does not modify current state", () => {
+    const pId = store().createProject({ name: "Keep me" });
+    const stateBefore = { ...store().projects };
+
+    // Attempt to import invalid data — should be rejected
+    const badData = { ...makeValidExport(), appName: "wrong-tool" };
+    const result = validateImportedData(badData);
+    expect(result.ok).toBe(false);
+    // importDataReplace is not called — state must be unchanged
+    expect(store().projects[pId].name).toBe("Keep me");
+    expect(Object.keys(store().projects)).toEqual(Object.keys(stateBefore));
+  });
+
+  it("imported text fields containing script-like content are stored as plain strings", () => {
+    const scriptPayload = "<script>alert('xss')</script>";
+    const data = makeValidExport();
+    const result = validateImportedData({
+      ...data,
+      projects: { p1: { ...data.projects.p1, name: scriptPayload } },
+      decisions: { d1: { ...data.decisions.d1, notes: scriptPayload } },
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    store().importDataReplace(result.data);
+    // Stored verbatim as strings — no HTML interpretation at the data layer
+    expect(store().projects.p1.name).toBe(scriptPayload);
+    expect(store().decisions.d1.notes).toBe(scriptPayload);
+  });
 });

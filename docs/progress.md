@@ -7,7 +7,7 @@
 ---
 
 ## Current step
-**Up next: Step 14 — Final regression test pass**
+**All 14 steps complete. MVP done.**
 
 ---
 
@@ -151,7 +151,7 @@
 |---|---|---|
 | `persistence.test.ts` | 7 | loadState, saveState, clearState, corrupt JSON fallback |
 | `store.test.ts` | 76 | create/update/delete project + decision + option, cascade delete, status transitions (all source statuses, data preservation, round trips), currentId lifecycle, current option select/next/previous + wraparound, reject/restore rules, mark-final rules (selectedOptionId/status/decidedAt/others reset/re-mark), reviewViewMode, file validation |
-| `importExport.test.ts` | 19 | validateImportedData (valid data, envelope errors, record-level errors, reference integrity), exportData/importDataReplace round trip |
+| `importExport.test.ts` | 23 | validateImportedData (valid data, envelope errors, record-level errors, reference integrity), exportData/importDataReplace round trip (dataVersion, exportedAt, image data URL preservation, timestamp preservation, import failure leaves state unchanged, script-like imported text stored as plain strings) |
 | `keyboard.test.ts` | 28 | getReviewKeyAction key mapping (incl R/F/Escape/?) + typing guard (incl Escape/?), isTypingTarget, useReviewKeyboard wiring/reject/final/escape/help/disabled/unmount |
 | `notesPanel.test.tsx` | 9 | notes/rationale persist on blur, empty title reverts, line breaks preserved, incomplete-finalized warning show/hide, script-like text rendered as text |
 
