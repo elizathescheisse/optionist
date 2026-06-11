@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { useAppStore } from "../store/useAppStore";
+import { validateImageFile } from "../utils/files";
 
 function store() {
   return useAppStore.getState();
@@ -185,10 +186,163 @@ describe("store — decisions", () => {
     expect(store().currentDecisionId).toBe(id);
   });
 
+  it("setCurrentDecision resets currentOptionId to first option of new decision", () => {
+    const d1 = store().createDecision(projectId, { title: "D1" });
+    const d2 = store().createDecision(projectId, { title: "D2" });
+    const o1 = store().addOption(d1, { name: "O1", imageDataUrl: "data:image/png;base64,a", imageMimeType: "image/png" });
+    const o2 = store().addOption(d2, { name: "O2", imageDataUrl: "data:image/png;base64,b", imageMimeType: "image/png" });
+    store().setCurrentDecision(d1);
+    expect(store().currentOptionId).toBe(o1);
+    store().setCurrentDecision(d2);
+    expect(store().currentOptionId).toBe(o2);
+  });
+
+  it("setCurrentDecision sets currentOptionId to null when decision has no options", () => {
+    const id = store().createDecision(projectId, { title: "D" });
+    store().setCurrentDecision(id);
+    expect(store().currentOptionId).toBeNull();
+  });
+
   it("setCurrentDecision can be set to null", () => {
     const id = store().createDecision(projectId, { title: "D" });
     store().setCurrentDecision(id);
     store().setCurrentDecision(null);
     expect(store().currentDecisionId).toBeNull();
+  });
+});
+
+describe("store — options", () => {
+  let projectId: string;
+  let decisionId: string;
+
+  beforeEach(() => {
+    localStorage.clear();
+    store().resetAllData();
+    projectId = store().createProject({ name: "P" });
+    decisionId = store().createDecision(projectId, { title: "D" });
+  });
+
+  it("addOption adds an option with correct fields", () => {
+    const id = store().addOption(decisionId, {
+      name: "Option A",
+      imageDataUrl: "data:image/png;base64,abc",
+      imageMimeType: "image/png",
+    });
+    const option = store().options[id];
+    expect(option).toBeDefined();
+    expect(option.name).toBe("Option A");
+    expect(option.decisionId).toBe(decisionId);
+    expect(option.status).toBe("active");
+    expect(option.imageDataUrl).toBe("data:image/png;base64,abc");
+    expect(option.imageMimeType).toBe("image/png");
+  });
+
+  it("addOption appends id to decision.optionIds", () => {
+    const id = store().addOption(decisionId, {
+      name: "O",
+      imageDataUrl: "data:image/png;base64,abc",
+      imageMimeType: "image/png",
+    });
+    expect(store().decisions[decisionId].optionIds).toContain(id);
+  });
+
+  it("first uploaded option sets currentOptionId", () => {
+    expect(store().currentOptionId).toBeNull();
+    const id = store().addOption(decisionId, {
+      name: "O",
+      imageDataUrl: "data:image/png;base64,abc",
+      imageMimeType: "image/png",
+    });
+    expect(store().currentOptionId).toBe(id);
+  });
+
+  it("second option does not override currentOptionId", () => {
+    const id1 = store().addOption(decisionId, {
+      name: "O1",
+      imageDataUrl: "data:image/png;base64,abc",
+      imageMimeType: "image/png",
+    });
+    store().addOption(decisionId, {
+      name: "O2",
+      imageDataUrl: "data:image/png;base64,def",
+      imageMimeType: "image/png",
+    });
+    expect(store().currentOptionId).toBe(id1);
+  });
+
+  it("updateOption patches name and notes", () => {
+    const id = store().addOption(decisionId, {
+      name: "O",
+      imageDataUrl: "data:image/png;base64,abc",
+      imageMimeType: "image/png",
+    });
+    store().updateOption(id, { name: "Renamed", notes: "Some notes" });
+    expect(store().options[id].name).toBe("Renamed");
+    expect(store().options[id].notes).toBe("Some notes");
+  });
+
+  it("deleteOption removes from state and decision.optionIds", () => {
+    const id = store().addOption(decisionId, {
+      name: "O",
+      imageDataUrl: "data:image/png;base64,abc",
+      imageMimeType: "image/png",
+    });
+    store().deleteOption(id);
+    expect(store().options[id]).toBeUndefined();
+    expect(store().decisions[decisionId].optionIds).not.toContain(id);
+  });
+
+  it("deleteOption clears selectedOptionId on decision if it matched", () => {
+    const id = store().addOption(decisionId, {
+      name: "O",
+      imageDataUrl: "data:image/png;base64,abc",
+      imageMimeType: "image/png",
+    });
+    store().markOptionFinal(id);
+    store().deleteOption(id);
+    expect(store().decisions[decisionId].selectedOptionId).toBeNull();
+  });
+});
+
+describe("file validation", () => {
+  function makeFile(name: string, type: string, size: number): File {
+    const content = new Uint8Array(size).fill(1);
+    return new File([content], name, { type });
+  }
+
+  it("accepts a valid PNG file", () => {
+    expect(validateImageFile(makeFile("a.png", "image/png", 100))).toBeNull();
+  });
+
+  it("accepts a valid JPEG file", () => {
+    expect(validateImageFile(makeFile("a.jpg", "image/jpeg", 100))).toBeNull();
+  });
+
+  it("accepts a valid WebP file", () => {
+    expect(validateImageFile(makeFile("a.webp", "image/webp", 100))).toBeNull();
+  });
+
+  it("accepts a valid GIF file", () => {
+    expect(validateImageFile(makeFile("a.gif", "image/gif", 100))).toBeNull();
+  });
+
+  it("rejects a PDF file", () => {
+    expect(validateImageFile(makeFile("a.pdf", "application/pdf", 100))).toBe("invalid-type");
+  });
+
+  it("rejects an empty file", () => {
+    expect(validateImageFile(makeFile("a.png", "image/png", 0))).toBe("empty");
+  });
+
+  it("rejects a file over 10 MB", () => {
+    expect(
+      validateImageFile(makeFile("a.png", "image/png", 10 * 1024 * 1024 + 1))
+    ).toBe("too-large");
+  });
+
+  it("accepts a file exactly at 10 MB", () => {
+    expect(
+      validateImageFile(makeFile("a.png", "image/png", 10 * 1024 * 1024))
+    ).toBeNull();
   });
 });

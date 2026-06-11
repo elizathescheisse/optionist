@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAppStore } from "../store/useAppStore";
 import DecisionSidebar from "../components/decisions/DecisionSidebar";
+import OptionUploader from "../components/options/OptionUploader";
 import EmptyState from "../components/layout/EmptyState";
 
 export default function ProjectRoute() {
@@ -23,13 +24,11 @@ export default function ProjectRoute() {
 
   return (
     <div className="flex flex-1 overflow-hidden">
-      {/* Left: decisions sidebar */}
       <aside className="w-60 shrink-0 border-r border-gray-200 flex flex-col overflow-hidden">
         <DecisionSidebar projectId={project.id} />
       </aside>
 
-      {/* Center: option viewer / preview */}
-      <main className="flex-1 flex flex-col overflow-y-auto">
+      <main className="flex-1 flex flex-col overflow-hidden">
         {!currentDecisionId ? (
           <EmptyState
             message="Select or create a decision."
@@ -40,7 +39,6 @@ export default function ProjectRoute() {
         )}
       </main>
 
-      {/* Right: notes panel */}
       <aside className="w-64 shrink-0 border-l border-gray-200 flex flex-col overflow-y-auto">
         <RightPanel decisionId={currentDecisionId} />
       </aside>
@@ -50,22 +48,47 @@ export default function ProjectRoute() {
 
 function CenterPanel({ decisionId }: { decisionId: string }) {
   const decision = useAppStore((s) => s.decisions[decisionId]);
+  const currentOptionId = useAppStore((s) => s.currentOptionId);
+  const currentOption = useAppStore((s) =>
+    currentOptionId ? s.options[currentOptionId] : undefined
+  );
+
   if (!decision) return null;
 
   const hasOptions = decision.optionIds.length > 0;
 
-  if (!hasOptions) {
-    return (
-      <EmptyState
-        message="Upload screenshots for this decision."
-        detail="Option upload coming in the next step."
-      />
-    );
-  }
-
-  // Option viewer implemented in Step 6
   return (
-    <EmptyState message="Option viewer coming soon." />
+    <div className="flex flex-col flex-1 overflow-hidden">
+      {/* Decision header bar */}
+      <div className="px-4 py-2.5 border-b border-gray-200 flex items-center justify-between gap-4 shrink-0">
+        <span className="text-sm font-medium text-gray-800 truncate">
+          {decision.title}
+        </span>
+        {hasOptions && (
+          <OptionUploader decisionId={decision.id} compact />
+        )}
+      </div>
+
+      {/* Main content area */}
+      {!hasOptions ? (
+        <div className="flex-1 overflow-y-auto">
+          <OptionUploader decisionId={decision.id} />
+        </div>
+      ) : (
+        <div className="flex-1 flex items-center justify-center bg-gray-50 overflow-hidden p-4">
+          {currentOption ? (
+            <img
+              src={currentOption.imageDataUrl}
+              alt={currentOption.name}
+              className="max-w-full max-h-full object-contain"
+              draggable={false}
+            />
+          ) : (
+            <EmptyState message="No option selected." />
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -77,11 +100,9 @@ function RightPanel({ decisionId }: { decisionId: string | null }) {
       </div>
     );
   }
-
-  // Full notes panel implemented in Step 9
   return (
     <div className="p-4 text-xs text-gray-400">
-      Notes panel coming soon.
+      Notes panel — Step 9.
     </div>
   );
 }

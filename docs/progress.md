@@ -7,7 +7,7 @@
 ---
 
 ## Current step
-**Up next: Step 5 — Image upload and option creation**
+**Up next: Step 6 — Large option viewer and filmstrip**
 
 ---
 
@@ -19,11 +19,12 @@
 - `localStorage` persistence — loads on startup, saves on every action, storage key `design-decision-tool:v1`
 - Export envelope type (`ExportedAppData`)
 - React Router with four routes wired up
-- Vitest + React Testing Library configured, 31 tests passing
+- Vitest + React Testing Library configured, 48 tests passing
 
 ### Data model
 - All types defined: `Project`, `Decision`, `DesignOption`, `AppState`, `ExportedAppData`
 - All store actions implemented and tested: create/update/delete for projects, decisions, and options; archive/postpone/reactivate for decisions; reject/restore/markFinal for options; goToNextOption/goToPreviousOption; importDataReplace/exportData/resetAllData
+- `setCurrentDecision` resets `currentOptionId` to first option of the new decision (or null)
 
 ### Route: `/` — Projects list
 - Create project form (name input, trim + validate, navigates to new project)
@@ -38,11 +39,15 @@
 - Three-column layout: sidebar / center / right panel
 - Redirects to `/` if project ID is invalid
 - Sets `currentProjectId` in store on mount
+- Center panel header shows decision title + "Add screenshots" compact uploader when options exist
+- Center panel shows full `OptionUploader` drop zone when no options
+- Center panel shows current option image (basic `<img>`) when options exist
+- Right panel stub: "Notes panel — Step 9"
 
 ### Decision sidebar (left column)
 - Decisions grouped by status: Active / Finalized / Postponed / Archived
 - Empty groups are hidden
-- Click to select a decision (sets `currentDecisionId`)
+- Click to select a decision (sets `currentDecisionId` + resets `currentOptionId`)
 - Create decision form (title input, trim + validate, auto-selects new decision)
 - Hover to reveal actions per decision:
   - Active → Postpone, Archive, Delete
@@ -51,6 +56,15 @@
   - Archived → Reactivate, Delete
 - Delete decision with confirmation modal (cascades to options)
 - `DecisionStatusBadge` — color-coded per status
+
+### Option upload (`OptionUploader`)
+- Full drop-zone mode (default): drag-and-drop or click to choose multiple files
+- Compact mode: "Add screenshots" button for use in the center panel header
+- Validates each file: MIME type (png/jpeg/webp/gif), size (≤10 MB), not empty
+- Shows per-file error messages for invalid files without blocking valid ones
+- Converts valid files to base64 data URLs
+- Creates one option per valid file via `addOption`
+- First option uploaded to a decision auto-selects as current option
 
 ### Header
 - "Decision Compare" link back to `/`
@@ -77,12 +91,11 @@
 
 | Component / Route | Status | Implemented in |
 |---|---|---|
-| Center panel — option viewer | Shows empty state placeholder | Step 6 |
-| Right panel — notes panel | Shows "Notes panel coming soon" | Step 9 |
+| Center panel — option viewer | Basic `<img>` only, no controls | Step 6 |
+| Right panel — notes panel | Shows "Notes panel — Step 9" | Step 9 |
 | `OptionViewer` | Empty `<div />` | Step 6 |
 | `OptionFilmstrip` | Empty `<div />` | Step 6 |
 | `OptionThumbnail` | Empty `<div />` | Step 6 |
-| `OptionUploader` | Empty `<div />` | Step 5 |
 | `OptionStatusBadge` | Empty `<div />` | Step 6 |
 | `ReviewWorkspace` | Empty `<div />` | Step 10 |
 | `ReviewToolbar` | Empty `<div />` | Step 10 |
@@ -100,7 +113,7 @@
 | File | Tests | Covers |
 |---|---|---|
 | `persistence.test.ts` | 7 | loadState, saveState, clearState, corrupt JSON fallback |
-| `store.test.ts` | 24 | create/update/delete project + decision, cascade delete, status transitions, currentId lifecycle |
+| `store.test.ts` | 41 | create/update/delete project + decision + option, cascade delete, status transitions, currentId lifecycle, setCurrentDecision resets currentOptionId, file validation |
 | `importExport.test.ts` | 0 | Placeholder — Step 12 |
 | `keyboard.test.ts` | 0 | Placeholder — Step 7 |
 
@@ -108,3 +121,4 @@
 
 ## Known issues / decisions made this session
 - Fixed infinite render loop in `ProjectList`: Zustand selectors must not call `Object.values().sort()` — select raw data, transform in component body.
+- Fixed stale `currentOptionId` when switching decisions: `setCurrentDecision` now resets `currentOptionId` to the first option of the new decision.

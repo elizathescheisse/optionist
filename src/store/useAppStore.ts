@@ -237,7 +237,13 @@ export const useAppStore = create<AppStore>((set, get) => ({
   },
 
   setCurrentDecision: (decisionId) => {
-    set((s) => persist({ ...s, currentDecisionId: decisionId }, {}));
+    set((s) => {
+      const decision = decisionId ? s.decisions[decisionId] : null;
+      const firstOptionId = decision?.optionIds[0] ?? null;
+      const next = { ...s, currentDecisionId: decisionId, currentOptionId: firstOptionId };
+      saveState(next);
+      return next;
+    });
   },
 
   // --- Options ---
