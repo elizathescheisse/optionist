@@ -7,7 +7,7 @@
 ---
 
 ## Current step
-**Up next: Step 12 — JSON export/import**
+**Up next: Step 13 — Polish pass**
 
 ---
 
@@ -110,6 +110,13 @@
 - Status controls: Postpone/Archive (active), Archive (finalized), Reactivate (postponed/archived)
 - All user text rendered as text (React escaping); no `dangerouslySetInnerHTML`
 
+### JSON export/import (`ImportExportControls`)
+- Export: calls `store.exportData()`, serializes to JSON, triggers browser download as `optionist-export-YYYY-MM-DD.json` via a blob URL — no network
+- Import: hidden `<input type="file">`, reads file as text, parses JSON, runs `validateImportedData()`, shows inline error on failure
+- Confirmation modal ("Replace all data?") before calling `importDataReplace` — all existing data is replaced
+- Error display inline below buttons (e.g., "File is not valid JSON.", "Invalid appName.", etc.)
+- `validateImportedData()` enforces: correct appName/dataVersion, all record fields present and typed correctly, full reference integrity (project↔decision↔option cross-references)
+
 ### Header
 - "Decision Compare" link back to `/`
 - Breadcrumb shows project name when inside a project route
@@ -135,7 +142,6 @@
 
 | Component / Route | Status | Implemented in |
 |---|---|---|
-| Import/Export buttons | Visible, not wired | Step 12 |
 
 ---
 
@@ -145,7 +151,7 @@
 |---|---|---|
 | `persistence.test.ts` | 7 | loadState, saveState, clearState, corrupt JSON fallback |
 | `store.test.ts` | 76 | create/update/delete project + decision + option, cascade delete, status transitions (all source statuses, data preservation, round trips), currentId lifecycle, current option select/next/previous + wraparound, reject/restore rules, mark-final rules (selectedOptionId/status/decidedAt/others reset/re-mark), reviewViewMode, file validation |
-| `importExport.test.ts` | 0 | Placeholder — Step 12 |
+| `importExport.test.ts` | 19 | validateImportedData (valid data, envelope errors, record-level errors, reference integrity), exportData/importDataReplace round trip |
 | `keyboard.test.ts` | 28 | getReviewKeyAction key mapping (incl R/F/Escape/?) + typing guard (incl Escape/?), isTypingTarget, useReviewKeyboard wiring/reject/final/escape/help/disabled/unmount |
 | `notesPanel.test.tsx` | 9 | notes/rationale persist on blur, empty title reverts, line breaks preserved, incomplete-finalized warning show/hide, script-like text rendered as text |
 
