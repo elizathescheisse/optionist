@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAppStore } from "../store/useAppStore";
 import { Link } from "react-router-dom";
+import { useReviewKeyboard } from "../hooks/useReviewKeyboard";
 import DecisionSidebar from "../components/decisions/DecisionSidebar";
 import OptionUploader from "../components/options/OptionUploader";
 import OptionViewer from "../components/options/OptionViewer";
@@ -52,10 +53,18 @@ export default function ProjectRoute() {
 function CenterPanel({ decisionId }: { decisionId: string }) {
   const decision = useAppStore((s) => s.decisions[decisionId]);
   const currentOptionId = useAppStore((s) => s.currentOptionId);
+  const goToNextOption = useAppStore((s) => s.goToNextOption);
+  const goToPreviousOption = useAppStore((s) => s.goToPreviousOption);
+
+  const hasOptions = (decision?.optionIds.length ?? 0) > 0;
+
+  useReviewKeyboard({
+    enabled: hasOptions,
+    onNext: goToNextOption,
+    onPrevious: goToPreviousOption,
+  });
 
   if (!decision) return null;
-
-  const hasOptions = decision.optionIds.length > 0;
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden">

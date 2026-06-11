@@ -7,7 +7,7 @@
 ---
 
 ## Current step
-**Up next: Step 7 — Keyboard navigation**
+**Up next: Step 8 — Reject and final selection**
 
 ---
 
@@ -19,7 +19,7 @@
 - `localStorage` persistence — loads on startup, saves on every action, storage key `design-decision-tool:v1`
 - Export envelope type (`ExportedAppData`)
 - React Router with four routes wired up
-- Vitest + React Testing Library configured, 55 tests passing
+- Vitest + React Testing Library configured, 71 tests passing
 
 ### Data model
 - All types defined: `Project`, `Decision`, `DesignOption`, `AppState`, `ExportedAppData`
@@ -73,6 +73,16 @@
 - `OptionStatusBadge`: color-coded active/rejected/final label
 - "Review" link in center panel header navigates to the focused review route (route itself is Step 10)
 
+### Keyboard navigation (`useReviewKeyboard` hook + `getReviewKeyAction`)
+- Space / ArrowRight → next option, ArrowLeft → previous option
+- Wraparound handled by store actions (last→first, first→last)
+- Window-level listener, enabled in the project center panel when a decision has options
+- Typing guard: shortcuts never fire while focus is in an input, textarea, or contenteditable element (`isTypingTarget`)
+- `preventDefault` on matched keys (stops Space from scrolling the page)
+- Pure `getReviewKeyAction(event)` resolver lives in `utils/keyboard.ts` for independent unit testing
+- Hook lives in `src/hooks/` (added directory — see decisions.md)
+- R / F / Escape / ? shortcuts not yet handled (Steps 8 and 10)
+
 ### Header
 - "Decision Compare" link back to `/`
 - Breadcrumb shows project name when inside a project route
@@ -105,7 +115,7 @@
 | `DecisionNotesPanel` | Empty `<div />` | Step 9 |
 | Route `/projects/:id/review/:decisionId` | Empty `<div />` | Step 10 |
 | Import/Export buttons | Visible, not wired | Step 12 |
-| Keyboard shortcuts | Not implemented | Step 7 |
+| `R` / `F` / `Escape` / `?` shortcuts | Not implemented (Space/arrows done) | Steps 8, 10 |
 | Reject / mark final actions | Store actions + thumbnail display exist, no trigger UI | Step 8 |
 
 ---
@@ -117,10 +127,12 @@
 | `persistence.test.ts` | 7 | loadState, saveState, clearState, corrupt JSON fallback |
 | `store.test.ts` | 48 | create/update/delete project + decision + option, cascade delete, status transitions, currentId lifecycle, setCurrentDecision resets currentOptionId, current option select/next/previous + wraparound, rejected options remain visible, file validation |
 | `importExport.test.ts` | 0 | Placeholder — Step 12 |
-| `keyboard.test.ts` | 0 | Placeholder — Step 7 |
+| `keyboard.test.ts` | 16 | getReviewKeyAction key mapping + typing guard, isTypingTarget, useReviewKeyboard wiring/enabled/unmount |
 
 ---
 
 ## Known issues / decisions made this session
 - Fixed infinite render loop in `ProjectList`: Zustand selectors must not call `Object.values().sort()` — select raw data, transform in component body.
 - Fixed stale `currentOptionId` when switching decisions: `setCurrentDecision` now resets `currentOptionId` to the first option of the new decision.
+- Fixed `isTypingTarget` crash on non-Element keydown targets (window/document have no `tagName`) — caught by the keyboard hook integration test.
+- Added `src/hooks/` directory for the shared keyboard hook (see decisions.md).

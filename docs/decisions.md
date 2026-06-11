@@ -2,6 +2,14 @@
 
 # Decisions Log
 
+## 2026-06-10 — Added `src/hooks/` directory (deviation from spec layout)
+
+Decision: Added `src/hooks/` (not in the section 5 repo layout) to hold `useReviewKeyboard.ts`.
+
+Rationale: Keyboard navigation is needed by both the project preview (Step 7) and the focused review route (Step 10). A shared React hook is the cleanest home for it; the pure key-resolution logic stays in `utils/keyboard.ts` and is unit-tested independently. Documented here per section 15's requirement to record intentional layout changes.
+
+---
+
 ## 2026-06-10 — Core job
 
 Decision: The core job is to help designers compare design options, make decisions, and preserve decision rationale.
