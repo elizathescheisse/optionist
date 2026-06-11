@@ -9,6 +9,7 @@ import OptionViewer from "../components/options/OptionViewer";
 import OptionFilmstrip from "../components/options/OptionFilmstrip";
 import EmptyState from "../components/layout/EmptyState";
 import Button from "../components/shared/Button";
+import DecisionNotesPanel from "../components/decisions/DecisionNotesPanel";
 
 export default function ProjectRoute() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -152,9 +153,7 @@ function RightPanel({ decisionId }: { decisionId: string | null }) {
       </div>
     );
   }
-  return (
-    <div className="p-4 text-xs text-gray-400">
-      Notes panel — Step 9.
-    </div>
-  );
+  // key remounts the panel when the selected decision changes, resetting
+  // the panel's local draft state to the new decision's stored values.
+  return <DecisionNotesPanel key={decisionId} decisionId={decisionId} />;
 }

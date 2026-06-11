@@ -7,7 +7,7 @@
 ---
 
 ## Current step
-**Up next: Step 9 — Decision notes and final rationale**
+**Up next: Step 10 — Focused review route**
 
 ---
 
@@ -19,7 +19,7 @@
 - `localStorage` persistence — loads on startup, saves on every action, storage key `design-decision-tool:v1`
 - Export envelope type (`ExportedAppData`)
 - React Router with four routes wired up
-- Vitest + React Testing Library configured, 89 tests passing
+- Vitest + React Testing Library configured, 98 tests passing
 
 ### Data model
 - All types defined: `Project`, `Decision`, `DesignOption`, `AppState`, `ExportedAppData`
@@ -41,8 +41,8 @@
 - Sets `currentProjectId` in store on mount
 - Center panel header shows decision title + "Add screenshots" compact uploader + "Review" link when options exist
 - Center panel shows full `OptionUploader` drop zone when no options
-- Center panel shows `OptionViewer` (large image + name + status badge) and `OptionFilmstrip` when options exist
-- Right panel stub: "Notes panel — Step 9"
+- Center panel shows `OptionViewer` + reject/final controls + `OptionFilmstrip` when options exist
+- Right panel shows `DecisionNotesPanel` for the selected decision (remounted per decision via `key`)
 
 ### Decision sidebar (left column)
 - Decisions grouped by status: Active / Finalized / Postponed / Archived
@@ -92,6 +92,15 @@
 - Re-marking a different option final moves the final flag and resets the previous final to active
 - Finalized decisions already surface in the sidebar's "Finalized" group (Step 4)
 
+### Decision notes panel (`DecisionNotesPanel`)
+- Editable title (won't persist empty — reverts to stored value), description, notes, and final rationale fields
+- Persists on blur via `updateDecision` (only when changed)
+- Remounted per decision via `key={decisionId}` so local draft state resets when switching decisions
+- Shows the selected final option (thumbnail + name) when one is chosen
+- Incomplete-finalized warning: shown when status is finalized but final rationale is empty
+- Status controls: Postpone/Archive (active), Archive (finalized), Reactivate (postponed/archived)
+- All user text rendered as text (React escaping); no `dangerouslySetInnerHTML`
+
 ### Header
 - "Decision Compare" link back to `/`
 - Breadcrumb shows project name when inside a project route
@@ -117,7 +126,6 @@
 
 | Component / Route | Status | Implemented in |
 |---|---|---|
-| Right panel — notes panel | Shows "Notes panel — Step 9" | Step 9 |
 | `ReviewWorkspace` | Empty `<div />` | Step 10 |
 | `ReviewToolbar` | Empty `<div />` | Step 10 |
 | `KeyboardShortcutHelp` | Empty `<div />` | Step 10 |
@@ -136,6 +144,7 @@
 | `store.test.ts` | 60 | create/update/delete project + decision + option, cascade delete, status transitions, currentId lifecycle, current option select/next/previous + wraparound, reject/restore rules, mark-final rules (selectedOptionId/status/decidedAt/others reset/re-mark), file validation |
 | `importExport.test.ts` | 0 | Placeholder — Step 12 |
 | `keyboard.test.ts` | 23 | getReviewKeyAction key mapping (incl R/F) + typing guard, isTypingTarget, useReviewKeyboard wiring/reject/final/disabled/unmount |
+| `notesPanel.test.tsx` | 9 | notes/rationale persist on blur, empty title reverts, line breaks preserved, incomplete-finalized warning show/hide, script-like text rendered as text |
 
 ---
 
