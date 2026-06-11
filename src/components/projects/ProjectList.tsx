@@ -2,11 +2,10 @@ import { useAppStore } from "../../store/useAppStore";
 import ProjectCard from "./ProjectCard";
 
 export default function ProjectList() {
-  const projects = useAppStore((s) =>
-    Object.values(s.projects).sort(
-      (a, b) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-    )
+  const projectsById = useAppStore((s) => s.projects);
+
+  const projects = Object.values(projectsById).sort(
+    (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
   );
 
   return (
