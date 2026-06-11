@@ -1,7 +1,13 @@
-export default function EmptyState({ message }: { message: string }) {
+type Props = {
+  message: string;
+  detail?: string;
+};
+
+export default function EmptyState({ message, detail }: Props) {
   return (
-    <div className="flex items-center justify-center p-12 text-gray-400 text-sm">
-      {message}
+    <div className="flex flex-col items-center justify-center py-20 text-center gap-2">
+      <p className="text-sm font-medium text-gray-400">{message}</p>
+      {detail && <p className="text-xs text-gray-300">{detail}</p>}
     </div>
   );
 }
