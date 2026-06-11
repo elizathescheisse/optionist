@@ -304,6 +304,65 @@ describe("store — options", () => {
   });
 });
 
+describe("store — current option navigation", () => {
+  let projectId: string;
+  let decisionId: string;
+  let o1: string;
+  let o2: string;
+  let o3: string;
+
+  beforeEach(() => {
+    localStorage.clear();
+    store().resetAllData();
+    projectId = store().createProject({ name: "P" });
+    decisionId = store().createDecision(projectId, { title: "D" });
+    store().setCurrentDecision(decisionId);
+    o1 = store().addOption(decisionId, { name: "O1", imageDataUrl: "data:image/png;base64,a", imageMimeType: "image/png" });
+    o2 = store().addOption(decisionId, { name: "O2", imageDataUrl: "data:image/png;base64,b", imageMimeType: "image/png" });
+    o3 = store().addOption(decisionId, { name: "O3", imageDataUrl: "data:image/png;base64,c", imageMimeType: "image/png" });
+  });
+
+  it("setCurrentOption selects the clicked option", () => {
+    store().setCurrentOption(o2);
+    expect(store().currentOptionId).toBe(o2);
+  });
+
+  it("goToNextOption advances to the next option", () => {
+    store().setCurrentOption(o1);
+    store().goToNextOption();
+    expect(store().currentOptionId).toBe(o2);
+  });
+
+  it("goToPreviousOption goes back to the previous option", () => {
+    store().setCurrentOption(o2);
+    store().goToPreviousOption();
+    expect(store().currentOptionId).toBe(o1);
+  });
+
+  it("goToNextOption wraps from last to first", () => {
+    store().setCurrentOption(o3);
+    store().goToNextOption();
+    expect(store().currentOptionId).toBe(o1);
+  });
+
+  it("goToPreviousOption wraps from first to last", () => {
+    store().setCurrentOption(o1);
+    store().goToPreviousOption();
+    expect(store().currentOptionId).toBe(o3);
+  });
+
+  it("setCurrentOption does not change option status", () => {
+    store().rejectOption(o2);
+    store().setCurrentOption(o2);
+    expect(store().options[o2].status).toBe("rejected");
+  });
+
+  it("rejected options remain in decision.optionIds", () => {
+    store().rejectOption(o2);
+    expect(store().decisions[decisionId].optionIds).toContain(o2);
+  });
+});
+
 describe("file validation", () => {
   function makeFile(name: string, type: string, size: number): File {
     const content = new Uint8Array(size).fill(1);

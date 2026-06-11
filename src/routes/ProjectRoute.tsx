@@ -1,8 +1,11 @@
 import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAppStore } from "../store/useAppStore";
+import { Link } from "react-router-dom";
 import DecisionSidebar from "../components/decisions/DecisionSidebar";
 import OptionUploader from "../components/options/OptionUploader";
+import OptionViewer from "../components/options/OptionViewer";
+import OptionFilmstrip from "../components/options/OptionFilmstrip";
 import EmptyState from "../components/layout/EmptyState";
 
 export default function ProjectRoute() {
@@ -49,9 +52,6 @@ export default function ProjectRoute() {
 function CenterPanel({ decisionId }: { decisionId: string }) {
   const decision = useAppStore((s) => s.decisions[decisionId]);
   const currentOptionId = useAppStore((s) => s.currentOptionId);
-  const currentOption = useAppStore((s) =>
-    currentOptionId ? s.options[currentOptionId] : undefined
-  );
 
   if (!decision) return null;
 
@@ -65,7 +65,15 @@ function CenterPanel({ decisionId }: { decisionId: string }) {
           {decision.title}
         </span>
         {hasOptions && (
-          <OptionUploader decisionId={decision.id} compact />
+          <div className="flex items-center gap-2 shrink-0">
+            <OptionUploader decisionId={decision.id} compact />
+            <Link
+              to={`/projects/${decision.projectId}/review/${decision.id}`}
+              className="px-3 py-1.5 rounded text-sm font-medium bg-gray-900 text-white hover:bg-gray-700 transition-colors"
+            >
+              Review
+            </Link>
+          </div>
         )}
       </div>
 
@@ -75,18 +83,10 @@ function CenterPanel({ decisionId }: { decisionId: string }) {
           <OptionUploader decisionId={decision.id} />
         </div>
       ) : (
-        <div className="flex-1 flex items-center justify-center bg-gray-50 overflow-hidden p-4">
-          {currentOption ? (
-            <img
-              src={currentOption.imageDataUrl}
-              alt={currentOption.name}
-              className="max-w-full max-h-full object-contain"
-              draggable={false}
-            />
-          ) : (
-            <EmptyState message="No option selected." />
-          )}
-        </div>
+        <>
+          <OptionViewer optionId={currentOptionId} />
+          <OptionFilmstrip decisionId={decision.id} />
+        </>
       )}
     </div>
   );
