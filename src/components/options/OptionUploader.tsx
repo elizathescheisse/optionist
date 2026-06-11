@@ -73,6 +73,8 @@ export default function OptionUploader({ decisionId, compact = false }: Props) {
       accept="image/png,image/jpeg,image/webp,image/gif"
       multiple
       className="sr-only"
+      tabIndex={-1}
+      aria-hidden="true"
       onChange={handleChange}
     />
   );
@@ -105,7 +107,7 @@ export default function OptionUploader({ decisionId, compact = false }: Props) {
   return (
     <div className="flex flex-col gap-3 p-6">
       <div
-        className={`border-2 border-dashed rounded-lg p-10 flex flex-col items-center gap-3 transition-colors cursor-pointer select-none ${
+        className={`border-2 border-dashed rounded-lg p-10 flex flex-col items-center gap-3 transition-colors motion-reduce:transition-none cursor-pointer select-none ${
           isDragging
             ? "border-gray-400 bg-gray-50"
             : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"

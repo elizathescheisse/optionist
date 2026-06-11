@@ -34,7 +34,7 @@ export default function ProjectRoute() {
         <DecisionSidebar projectId={project.id} />
       </aside>
 
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main className="flex-1 flex flex-col overflow-hidden min-w-0">
         {!currentDecisionId ? (
           <EmptyState
             message="Select or create a decision."

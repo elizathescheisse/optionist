@@ -7,7 +7,7 @@
 ---
 
 ## Current step
-**Up next: Step 13 — Polish pass**
+**Up next: Step 14 — Final regression test pass**
 
 ---
 

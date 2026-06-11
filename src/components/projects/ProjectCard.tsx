@@ -33,7 +33,7 @@ export default function ProjectCard({ project }: Props) {
 
   return (
     <>
-      <div className="border border-gray-200 rounded-lg p-4 flex items-center justify-between gap-4 bg-white hover:border-gray-300 transition-colors">
+      <div className="border border-gray-200 rounded-lg p-4 flex items-center justify-between gap-4 bg-white hover:border-gray-300 transition-colors motion-reduce:transition-none">
         <div className="flex flex-col gap-0.5 min-w-0">
           <span className="font-medium text-gray-900 truncate">{project.name}</span>
           {project.description && (

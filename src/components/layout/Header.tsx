@@ -1,8 +1,11 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useMatch } from "react-router-dom";
 import { useAppStore } from "../../store/useAppStore";
 
 export default function Header() {
-  const { projectId } = useParams<{ projectId?: string }>();
+  const projectMatch = useMatch("/projects/:projectId");
+  const reviewMatch = useMatch("/projects/:projectId/review/:decisionId");
+  const projectId =
+    projectMatch?.params.projectId ?? reviewMatch?.params.projectId;
   const project = useAppStore((s) =>
     projectId ? s.projects[projectId] : undefined
   );
@@ -11,7 +14,7 @@ export default function Header() {
     <header className="border-b border-gray-200 bg-white px-6 h-12 flex items-center gap-2 shrink-0">
       <Link
         to="/"
-        className="font-semibold text-gray-900 tracking-tight hover:text-gray-600 transition-colors"
+        className="font-semibold text-gray-900 tracking-tight hover:text-gray-600 transition-colors motion-reduce:transition-none"
       >
         Decision Compare
       </Link>
