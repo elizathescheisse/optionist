@@ -28,13 +28,13 @@ export default function DecisionListItem({ decision, isSelected, onSelect }: Pro
       <div
         className={`group px-3 py-2 rounded-lg cursor-pointer transition-colors motion-reduce:transition-none ${
           isSelected
-            ? "bg-slate-600 text-white"
+            ? "bg-zinc-300 text-gray-900"
             : "hover:bg-gray-50 text-gray-700"
         }`}
         onClick={onSelect}
       >
         <div className="flex items-start justify-between gap-2">
-          <span className={`text-sm font-medium truncate flex-1 leading-snug ${isSelected ? "text-white" : "text-gray-800"}`}>
+          <span className={`text-sm font-medium truncate flex-1 leading-snug ${isSelected ? "text-gray-900" : "text-gray-800"}`}>
             {decision.title}
           </span>
 
@@ -74,7 +74,7 @@ export default function DecisionListItem({ decision, isSelected, onSelect }: Pro
           )}
         </div>
 
-        <span className={`text-xs mt-0.5 block ${isSelected ? "text-gray-300" : "text-gray-400"}`}>
+        <span className={`text-xs mt-0.5 block ${isSelected ? "text-gray-500" : "text-gray-400"}`}>
           {optionCount === 0
             ? "No options"
             : `${optionCount} option${optionCount !== 1 ? "s" : ""}`}
