@@ -28,7 +28,7 @@ export default function DecisionListItem({ decision, isSelected, onSelect }: Pro
       <div
         className={`group px-3 py-2 rounded-lg cursor-pointer transition-colors motion-reduce:transition-none ${
           isSelected
-            ? "bg-gray-900 text-white"
+            ? "bg-slate-600 text-white"
             : "hover:bg-gray-50 text-gray-700"
         }`}
         onClick={onSelect}
