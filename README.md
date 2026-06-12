@@ -1,73 +1,115 @@
-# React + TypeScript + Vite
+# Optionist
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A local-first desktop web app for comparing design options, making decisions, and preserving decision rationale.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## What it does
 
-## React Compiler
+Optionist gives designers a fast, structured workflow for design review:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1. Create a project (e.g. "Brand Refresh")
+2. Add decisions within the project (e.g. "Hero illustration", "Nav bar color")
+3. Upload screenshots for each decision
+4. Review options Lightroom-style — large viewer + bottom filmstrip
+5. Reject weak options, mark one final
+6. Record rationale so the decision is preserved
 
-## Expanding the ESLint configuration
+All data lives in your browser's `localStorage`. Nothing is uploaded anywhere.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Features
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- **Local-first** — no backend, no accounts, no network calls
+- **Project + decision + option hierarchy** — organize work into projects with multiple decisions per project
+- **Image upload** — PNG, JPEG, WebP, GIF up to 10 MB each; stored as base64 data URLs
+- **Keyboard-driven review** — Space/→ next, ← previous, R reject/restore, F mark final, Esc back, ? shortcuts help
+- **Focused review mode** — full-screen `/review` route with fit-width / full-size toggle
+- **Decision status** — active → finalized / postponed / archived
+- **Notes + rationale** — per-decision notes and final rationale fields
+- **JSON export/import** — download all data as a single JSON file and reimport it later; validated before replacing state
+- **Confirmation modals** — deleting a project, decision, or import requires explicit confirmation
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+---
+
+## Stack
+
+| | |
+|---|---|
+| Framework | Vite + React + TypeScript |
+| Styling | Tailwind CSS v4 |
+| State | Zustand |
+| Routing | React Router v7 |
+| Persistence | `localStorage` (key: `design-decision-tool:v1`) |
+| Tests | Vitest + React Testing Library (142 tests) |
+
+---
+
+## Getting started
+
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Then open [http://localhost:5173](http://localhost:5173).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Running tests
+
+```bash
+npm test
 ```
+
+---
+
+## Deploying
+
+This is a pure static site. To deploy to Vercel:
+
+1. Push to GitHub (already done)
+2. Go to [vercel.com](https://vercel.com) → Add New Project → import this repo
+3. Build command: `npm run build` · Output directory: `dist`
+4. Deploy — every push to `main` redeploys automatically
+
+---
+
+## Project structure
+
+```
+src/
+  routes/          # ProjectsRoute, ProjectRoute, ReviewRoute, NotFoundRoute
+  components/
+    layout/        # AppShell, Header, EmptyState
+    projects/      # ProjectList, ProjectCard, CreateProjectForm, ImportExportControls
+    decisions/     # DecisionSidebar, DecisionListItem, DecisionNotesPanel, …
+    options/       # OptionUploader, OptionViewer, OptionFilmstrip, OptionThumbnail, …
+    review/        # ReviewWorkspace, ReviewToolbar, KeyboardShortcutHelp
+    shared/        # Button, TextInput, Textarea, Modal, FileInput
+  store/           # Zustand store + localStorage persistence
+  types/           # Domain types + import/export envelope
+  utils/           # IDs, dates, file validation, import validation, keyboard
+  tests/           # 142 tests across 5 files
+docs/
+  mvp-spec.md      # Full product + engineering spec
+  build-plan.md    # 14-step implementation order
+  decisions.md     # Dated technical/product decision log
+  progress.md      # Session-start reference: what's built, test coverage
+```
+
+---
+
+## Keyboard shortcuts
+
+| Key | Action |
+|---|---|
+| `Space` / `→` | Next option |
+| `←` | Previous option |
+| `R` | Reject / restore current option |
+| `F` | Mark current option final |
+| `Esc` | Return to project (from review mode) |
+| `?` | Toggle shortcut help |
+
+Shortcuts are disabled while focus is inside any input, textarea, or editable element.
