@@ -3,9 +3,9 @@ import Header from "./Header";
 
 export default function AppShell({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="h-full flex flex-col bg-white">
       <Header />
-      <main className="flex-1 flex flex-col">{children}</main>
+      <main className="flex-1 flex flex-col overflow-hidden">{children}</main>
     </div>
   );
 }

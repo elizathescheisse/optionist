@@ -3,6 +3,11 @@
 @layer base {
   html,
   body {
+    height: 100%;
     background-color: #fff;
+  }
+
+  #root {
+    height: 100%;
   }
 }
