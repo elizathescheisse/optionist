@@ -33,30 +33,35 @@ export default function ProjectCard({ project }: Props) {
 
   return (
     <>
-      <div className="border border-gray-200 rounded-lg p-4 flex items-center justify-between gap-4 bg-white hover:border-gray-300 transition-colors motion-reduce:transition-none">
-        <div className="flex flex-col gap-0.5 min-w-0">
-          <span className="font-medium text-gray-900 truncate">{project.name}</span>
-          {project.description && (
-            <span className="text-sm text-gray-500 truncate">{project.description}</span>
-          )}
-          <span className="text-xs text-gray-400 mt-0.5">
-            {totalDecisions === 0
-              ? "No decisions"
-              : `${totalDecisions} decision${totalDecisions !== 1 ? "s" : ""}${
-                  finalizedDecisions > 0 ? ` · ${finalizedDecisions} finalized` : ""
-                }`}
-            {" · "}Updated {formatDate(project.updatedAt)}
-          </span>
+      <div
+        className="bg-white rounded-xl p-4 flex items-center justify-between gap-4 shadow-sm hover:shadow-md transition-shadow motion-reduce:transition-none cursor-pointer group"
+        onClick={() => navigate(`/projects/${project.id}`)}
+      >
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center shrink-0 text-gray-500 font-semibold text-sm">
+            {project.name.charAt(0).toUpperCase()}
+          </div>
+          <div className="flex flex-col gap-0.5 min-w-0">
+            <span className="font-medium text-gray-900 truncate text-sm">{project.name}</span>
+            {project.description && (
+              <span className="text-xs text-gray-400 truncate">{project.description}</span>
+            )}
+            <span className="text-xs text-gray-400">
+              {totalDecisions === 0
+                ? "No decisions"
+                : `${totalDecisions} decision${totalDecisions !== 1 ? "s" : ""}${
+                    finalizedDecisions > 0 ? ` · ${finalizedDecisions} finalized` : ""
+                  }`}
+              {" · "}Updated {formatDate(project.updatedAt)}
+            </span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity motion-reduce:opacity-100">
           <Button
-            variant="secondary"
-            onClick={() => navigate(`/projects/${project.id}`)}
+            variant="danger"
+            onClick={(e) => { e.stopPropagation(); setShowDeleteModal(true); }}
           >
-            Open
-          </Button>
-          <Button variant="danger" onClick={() => setShowDeleteModal(true)}>
             Delete
           </Button>
         </div>

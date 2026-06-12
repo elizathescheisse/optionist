@@ -29,12 +29,14 @@ export default function ProjectRoute() {
   if (!project) return null;
 
   return (
-    <div className="flex flex-1 overflow-hidden">
-      <aside className="w-60 shrink-0 border-r border-gray-200 flex flex-col overflow-hidden">
+    <div className="flex flex-1 overflow-hidden gap-px bg-gray-200">
+      {/* Left sidebar */}
+      <aside className="w-60 shrink-0 bg-white flex flex-col overflow-hidden">
         <DecisionSidebar projectId={project.id} />
       </aside>
 
-      <main className="flex-1 flex flex-col overflow-hidden min-w-0">
+      {/* Center panel */}
+      <main className="flex-1 flex flex-col overflow-hidden min-w-0 bg-white">
         {!currentDecisionId ? (
           <EmptyState
             message="Select or create a decision."
@@ -45,7 +47,8 @@ export default function ProjectRoute() {
         )}
       </main>
 
-      <aside className="w-64 shrink-0 border-l border-gray-200 flex flex-col overflow-y-auto">
+      {/* Right panel */}
+      <aside className="w-64 shrink-0 bg-white flex flex-col overflow-y-auto">
         <RightPanel decisionId={currentDecisionId} />
       </aside>
     </div>
@@ -70,7 +73,6 @@ function CenterPanel({ decisionId }: { decisionId: string }) {
     if (!currentOption) return;
     if (currentOption.status === "active") rejectOption(currentOption.id);
     else if (currentOption.status === "rejected") restoreOption(currentOption.id);
-    // final → no-op (spec: cannot reject a final option directly)
   }
 
   function handleFinal() {
@@ -90,7 +92,7 @@ function CenterPanel({ decisionId }: { decisionId: string }) {
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
       {/* Decision header bar */}
-      <div className="px-4 py-2.5 border-b border-gray-200 flex items-center justify-between gap-4 shrink-0">
+      <div className="px-4 py-2.5 border-b border-gray-100 flex items-center justify-between gap-4 shrink-0">
         <span className="text-sm font-medium text-gray-800 truncate">
           {decision.title}
         </span>
@@ -99,7 +101,7 @@ function CenterPanel({ decisionId }: { decisionId: string }) {
             <OptionUploader decisionId={decision.id} compact />
             <Link
               to={`/projects/${decision.projectId}/review/${decision.id}`}
-              className="px-3 py-1.5 rounded text-sm font-medium bg-gray-900 text-white hover:bg-gray-700 transition-colors"
+              className="px-3 py-1.5 rounded-md text-sm font-medium bg-gray-900 text-white hover:bg-gray-700 transition-colors shadow-sm"
             >
               Review
             </Link>
@@ -118,14 +120,14 @@ function CenterPanel({ decisionId }: { decisionId: string }) {
 
           {/* Option review controls */}
           {currentOption && (
-            <div className="shrink-0 px-4 py-2 border-t border-gray-200 bg-white flex items-center gap-2">
+            <div className="shrink-0 px-4 py-2 border-t border-gray-100 bg-white flex items-center gap-2">
               <Button
                 variant={currentOption.status === "rejected" ? "secondary" : "danger"}
                 onClick={handleReject}
                 disabled={currentOption.status === "final"}
               >
                 {currentOption.status === "rejected" ? "Restore" : "Reject"}
-                <span className="ml-1 text-xs opacity-60">R</span>
+                <span className="ml-1 text-xs opacity-50">R</span>
               </Button>
               <Button
                 variant="primary"
@@ -133,7 +135,7 @@ function CenterPanel({ decisionId }: { decisionId: string }) {
                 disabled={currentOption.status === "final"}
               >
                 {currentOption.status === "final" ? "Final ✓" : "Mark final"}
-                <span className="ml-1 text-xs opacity-60">F</span>
+                <span className="ml-1 text-xs opacity-50">F</span>
               </Button>
             </div>
           )}
@@ -153,7 +155,5 @@ function RightPanel({ decisionId }: { decisionId: string | null }) {
       </div>
     );
   }
-  // key remounts the panel when the selected decision changes, resetting
-  // the panel's local draft state to the new decision's stored values.
   return <DecisionNotesPanel key={decisionId} decisionId={decisionId} />;
 }

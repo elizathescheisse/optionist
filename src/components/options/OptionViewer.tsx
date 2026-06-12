@@ -20,20 +20,20 @@ export default function OptionViewer({ optionId }: Props) {
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden bg-gray-50">
-      <div className="flex-1 overflow-auto flex items-center justify-center p-4">
+      <div className="flex-1 overflow-auto flex items-center justify-center p-6">
         <img
           src={option.imageDataUrl}
           alt={option.name}
           draggable={false}
           className={
             reviewViewMode === "fit-width"
-              ? "max-w-full max-h-full object-contain"
-              : "max-w-none"
+              ? "max-w-full max-h-full object-contain rounded shadow-sm"
+              : "max-w-none rounded shadow-sm"
           }
         />
       </div>
-      <div className="shrink-0 px-4 py-2 border-t border-gray-200 bg-white flex items-center gap-2">
-        <span className="text-sm font-medium text-gray-800 truncate">
+      <div className="shrink-0 px-4 py-2 border-t border-gray-100 bg-white flex items-center gap-2">
+        <span className="text-sm font-medium text-gray-700 truncate">
           {option.name}
         </span>
         <OptionStatusBadge status={option.status} />

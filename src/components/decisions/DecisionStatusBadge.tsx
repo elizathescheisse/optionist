@@ -1,10 +1,10 @@
 import type { DecisionStatus } from "../../types/domain";
 
 const STYLES: Record<DecisionStatus, string> = {
-  active: "bg-blue-50 text-blue-600",
-  finalized: "bg-green-50 text-green-700",
-  postponed: "bg-yellow-50 text-yellow-700",
-  archived: "bg-gray-100 text-gray-500",
+  active: "bg-blue-50 text-blue-500",
+  finalized: "bg-emerald-50 text-emerald-600",
+  postponed: "bg-amber-50 text-amber-600",
+  archived: "bg-gray-100 text-gray-400",
 };
 
 const LABELS: Record<DecisionStatus, string> = {
@@ -16,7 +16,7 @@ const LABELS: Record<DecisionStatus, string> = {
 
 export default function DecisionStatusBadge({ status }: { status: DecisionStatus }) {
   return (
-    <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${STYLES[status]}`}>
+    <span className={`text-xs font-medium px-2 py-0.5 rounded-full shrink-0 ${STYLES[status]}`}>
       {LABELS[status]}
     </span>
   );
