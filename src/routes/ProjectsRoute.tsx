@@ -8,7 +8,7 @@ export default function ProjectsRoute() {
   const projectCount = useAppStore((s) => Object.keys(s.projects).length);
 
   return (
-    <div className="flex-1 flex flex-col max-w-3xl w-full mx-auto px-6 py-8 gap-6">
+    <div className="flex-1 flex flex-col max-w-3xl w-full mx-auto px-6 py-8 gap-6 overflow-y-auto">
       <div className="flex items-center justify-between">
         <h1 className="text-base font-semibold text-gray-900">Projects</h1>
         <ImportExportControls />
