@@ -31,6 +31,7 @@ All data lives in your browser's `localStorage`. Nothing is uploaded anywhere.
 - **Decision status** — active → finalized / postponed / archived
 - **Notes + rationale** — per-decision notes and final rationale fields
 - **JSON export/import** — download all data as a single JSON file and reimport it later; validated before replacing state
+- **Seed data** — drop a `seed.json` export in `public/` to share a project with someone; they run `npm run dev` and your data is already loaded
 - **Confirmation modals** — deleting a project, decision, or import requires explicit confirmation
 
 ---
