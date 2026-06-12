@@ -1,5 +1,7 @@
 # Optionist
 
+**[optionist.vercel.app](https://optionist.vercel.app)**
+
 A local-first desktop web app for comparing design options, making decisions, and preserving decision rationale.
 
 ---
