@@ -67,6 +67,28 @@ npm test
 
 ---
 
+## Sharing with seed data
+
+You can bundle your Optionist data with the project so someone else gets your workspace pre-loaded when they run the app locally — no manual import needed.
+
+**To share your data:**
+
+1. In Optionist, click **Export JSON** — this downloads `optionist-export-YYYY-MM-DD.json`
+2. Rename the file to `seed.json` and place it in the `public/` folder
+3. Share the project folder (zip, repo, etc.)
+
+**For the recipient:**
+
+```bash
+npm install && npm run dev
+```
+
+The app opens with your data already loaded. From that point on it's theirs — they can edit freely and the seed file is never used again (it only loads when localStorage is empty).
+
+> `public/seed.json` is gitignored by default so private design work isn't accidentally committed to a public repo. If you intentionally want to commit it (e.g. a team repo), remove it from `.gitignore`.
+
+---
+
 ## Deploying
 
 This is a pure static site. To deploy to Vercel:

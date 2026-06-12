@@ -1,6 +1,6 @@
 import type { AppState } from "../types/domain";
 
-const STORAGE_KEY = "design-decision-tool:v1";
+export const STORAGE_KEY = "design-decision-tool:v1";
 
 export const EMPTY_STATE: AppState = {
   projects: {},
