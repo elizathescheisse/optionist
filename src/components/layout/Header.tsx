@@ -16,7 +16,7 @@ export default function Header() {
         to="/"
         className="font-semibold text-gray-900 tracking-tight hover:text-gray-600 transition-colors motion-reduce:transition-none"
       >
-        Decision Compare
+        Optionist
       </Link>
       {project && (
         <>

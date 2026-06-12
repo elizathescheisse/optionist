@@ -31,6 +31,7 @@ All data lives in your browser's `localStorage`. Nothing is uploaded anywhere.
 - **Decision status** — active → finalized / postponed / archived
 - **Notes + rationale** — per-decision notes and final rationale fields
 - **JSON export/import** — download all data as a single JSON file and reimport it later; validated before replacing state
+- **Seed data** — drop a `seed.json` export in `public/` to share a project with someone; they run `npm run dev` and your data is already loaded
 - **Confirmation modals** — deleting a project, decision, or import requires explicit confirmation
 
 ---
@@ -64,6 +65,28 @@ Then open [http://localhost:5173](http://localhost:5173).
 ```bash
 npm test
 ```
+
+---
+
+## Sharing with seed data
+
+You can bundle your Optionist data with the project so someone else gets your workspace pre-loaded when they run the app locally — no manual import needed.
+
+**To share your data:**
+
+1. In Optionist, click **Export JSON** — this downloads `optionist-export-YYYY-MM-DD.json`
+2. Rename the file to `seed.json` and place it in the `public/` folder
+3. Share the project folder (zip, repo, etc.)
+
+**For the recipient:**
+
+```bash
+npm install && npm run dev
+```
+
+The app opens with your data already loaded. From that point on it's theirs — they can edit freely and the seed file is never used again (it only loads when localStorage is empty).
+
+> `public/seed.json` is gitignored by default so private design work isn't accidentally committed to a public repo. If you intentionally want to commit it (e.g. a team repo), remove it from `.gitignore`.
 
 ---
 

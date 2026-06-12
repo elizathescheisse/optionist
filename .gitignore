@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# Seed data — place an Optionist export here to pre-load data on first launch.
+# Gitignored by default so private design work isn't accidentally committed.
+# See README.md for the sharing workflow.
+public/seed.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
