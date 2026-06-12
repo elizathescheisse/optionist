@@ -104,6 +104,19 @@ Example: `gh keyboard shortcut for deleting an option` → creates an issue titl
 
 ## GitHub Workflow
 
+### Pre-PR screenshot
+
+Before opening every PR, take a screenshot of the app with demo data and save it to `screenshots/`:
+
+```bash
+node scripts/make-demo-seed.js          # writes public/seed.json from demodata/
+node scripts/screenshot-demo.js <pr-n>  # saves screenshots/YYYY-MM-DD-pr<N>.jpg
+```
+
+The screenshot script launches a headless browser, clears localStorage, reloads the app (which picks up seed.json), navigates into the demo project, selects the first decision, and saves the result. Commit the screenshot as part of the same PR branch.
+
+Also run `npm run build` before every PR to catch TypeScript errors before Vercel does.
+
 ### Branching and pull requests
 
 Whenever a new branch is pushed to origin, always open a pull request immediately — do not leave a branch without a PR.
