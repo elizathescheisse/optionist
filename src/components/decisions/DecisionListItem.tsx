@@ -12,7 +12,6 @@ type Props = {
 export default function DecisionListItem({ decision, isSelected, onSelect }: Props) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const deleteDecision = useAppStore((s) => s.deleteDecision);
-  const archiveDecision = useAppStore((s) => s.archiveDecision);
   const postponeDecision = useAppStore((s) => s.postponeDecision);
   const reactivateDecision = useAppStore((s) => s.reactivateDecision);
   const setCurrentDecision = useAppStore((s) => s.setCurrentDecision);
