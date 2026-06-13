@@ -437,6 +437,36 @@ describe("store — current option navigation", () => {
     expect(store().currentOptionId).toBe(o3);
   });
 
+  it("goToNextOption skips rejected options", () => {
+    store().rejectOption(o2);
+    store().setCurrentOption(o1);
+    store().goToNextOption();
+    expect(store().currentOptionId).toBe(o3);
+  });
+
+  it("goToPreviousOption skips rejected options", () => {
+    store().rejectOption(o2);
+    store().setCurrentOption(o3);
+    store().goToPreviousOption();
+    expect(store().currentOptionId).toBe(o1);
+  });
+
+  it("goToNextOption wraps correctly while skipping rejected", () => {
+    store().rejectOption(o1);
+    store().setCurrentOption(o3);
+    store().goToNextOption();
+    expect(store().currentOptionId).toBe(o2); // wraps, skips rejected o1
+  });
+
+  it("goToNextOption does nothing when all options are rejected", () => {
+    store().setCurrentOption(o1);
+    store().rejectOption(o1);
+    store().rejectOption(o2);
+    store().rejectOption(o3);
+    store().goToNextOption();
+    expect(store().currentOptionId).toBe(o1); // unchanged
+  });
+
   it("setCurrentOption does not change option status", () => {
     store().rejectOption(o2);
     store().setCurrentOption(o2);

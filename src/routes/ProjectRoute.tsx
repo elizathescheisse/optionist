@@ -69,6 +69,13 @@ function CenterPanel({ decisionId }: { decisionId: string }) {
   const [finalizeOptionId, setFinalizeOptionId] = useState<string | null>(null);
 
   const hasOptions = (decision?.optionIds.length ?? 0) > 0;
+  // Returns a number (not an array) so the selector is stable
+  const navigableCount = useAppStore((s) => {
+    const d = s.decisions[decisionId];
+    if (!d) return 0;
+    return d.optionIds.filter((id) => s.options[id]?.status !== "rejected").length;
+  });
+  const allRejected = hasOptions && navigableCount === 0;
 
   function handleReject() {
     if (!currentOption) return;
@@ -99,6 +106,14 @@ function CenterPanel({ decisionId }: { decisionId: string }) {
           message="No screenshots yet."
           detail="Add screenshots from the right panel →"
         />
+      ) : allRejected ? (
+        <>
+          <EmptyState
+            message="All options rejected."
+            detail="Upload new screenshots or click a thumbnail below to restore one."
+          />
+          <OptionFilmstrip decisionId={decision.id} />
+        </>
       ) : (
         <>
           <OptionViewer optionId={currentOptionId} />

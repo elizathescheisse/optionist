@@ -389,9 +389,11 @@ export const useAppStore = create<AppStore>((set, get) => ({
     set((s) => {
       const decision = s.currentDecisionId ? s.decisions[s.currentDecisionId] : null;
       if (!decision || decision.optionIds.length === 0) return s;
-      const idx = decision.optionIds.indexOf(s.currentOptionId ?? "");
-      const nextIdx = (idx + 1) % decision.optionIds.length;
-      const next = { ...s, currentOptionId: decision.optionIds[nextIdx] };
+      const navigable = decision.optionIds.filter((id) => s.options[id]?.status !== "rejected");
+      if (navigable.length === 0) return s;
+      const idx = navigable.indexOf(s.currentOptionId ?? "");
+      const nextIdx = (idx + 1) % navigable.length;
+      const next = { ...s, currentOptionId: navigable[nextIdx] };
       saveState(next);
       return next;
     });
@@ -401,9 +403,11 @@ export const useAppStore = create<AppStore>((set, get) => ({
     set((s) => {
       const decision = s.currentDecisionId ? s.decisions[s.currentDecisionId] : null;
       if (!decision || decision.optionIds.length === 0) return s;
-      const idx = decision.optionIds.indexOf(s.currentOptionId ?? "");
-      const prevIdx = (idx - 1 + decision.optionIds.length) % decision.optionIds.length;
-      const next = { ...s, currentOptionId: decision.optionIds[prevIdx] };
+      const navigable = decision.optionIds.filter((id) => s.options[id]?.status !== "rejected");
+      if (navigable.length === 0) return s;
+      const idx = navigable.indexOf(s.currentOptionId ?? "");
+      const prevIdx = (idx - 1 + navigable.length) % navigable.length;
+      const next = { ...s, currentOptionId: navigable[prevIdx] };
       saveState(next);
       return next;
     });
