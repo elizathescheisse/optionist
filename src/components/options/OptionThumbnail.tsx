@@ -15,8 +15,8 @@ export default function OptionThumbnail({ option, isCurrent, index, onSelect }: 
       title={option.name}
       className={`relative shrink-0 w-24 h-20 rounded-lg overflow-hidden border-2 transition-all motion-reduce:transition-none bg-gray-100 ${
         isCurrent
-          ? "border-gray-900 shadow-md"
-          : "border-transparent hover:border-gray-300"
+          ? "border-transparent ring-2 ring-gray-900 ring-offset-1"
+          : "border-transparent hover:border-gray-200"
       }`}
     >
       <img

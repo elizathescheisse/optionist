@@ -43,7 +43,7 @@ export default function OptionActionsBar({ decisionId, onMarkFinal, onReject }: 
           disabled={!currentOption || isDecisionFinalized}
         >
           {isRejected ? "Restore" : "Reject"}
-          <span className="ml-1 text-xs opacity-50">R</span>
+          <kbd className="ml-1 inline-flex items-center rounded bg-gray-100 px-1 py-0.5 text-xs font-mono text-gray-400 leading-none">R</kbd>
         </Button>
 
         {isDecisionFinalized ? (
@@ -53,7 +53,7 @@ export default function OptionActionsBar({ decisionId, onMarkFinal, onReject }: 
         ) : (
           <Button variant="primary" onClick={onMarkFinal} disabled={!currentOption}>
             Mark final
-            <span className="ml-1 text-xs opacity-50">F</span>
+            <kbd className="ml-1 inline-flex items-center rounded bg-white/20 px-1 py-0.5 text-xs font-mono text-white/60 leading-none">F</kbd>
           </Button>
         )}
       </div>

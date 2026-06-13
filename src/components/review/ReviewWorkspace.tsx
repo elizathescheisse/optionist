@@ -86,7 +86,7 @@ export default function ReviewWorkspace({ projectId, decisionId }: Props) {
             disabled={currentOption.status === "final"}
           >
             {currentOption.status === "rejected" ? "Restore" : "Reject"}
-            <span className="ml-1 text-xs opacity-60">R</span>
+            <kbd className="ml-1 inline-flex items-center rounded bg-gray-100 px-1 py-0.5 text-xs font-mono text-gray-400 leading-none">R</kbd>
           </Button>
           <Button
             variant="primary"
@@ -94,7 +94,7 @@ export default function ReviewWorkspace({ projectId, decisionId }: Props) {
             disabled={currentOption.status === "final"}
           >
             {currentOption.status === "final" ? "Final ✓" : "Mark final"}
-            <span className="ml-1 text-xs opacity-60">F</span>
+            <kbd className="ml-1 inline-flex items-center rounded bg-white/20 px-1 py-0.5 text-xs font-mono text-white/60 leading-none">F</kbd>
           </Button>
         </div>
       )}
