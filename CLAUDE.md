@@ -12,6 +12,24 @@
 
 ---
 
+## Plans
+
+Plans should be short enough that Eliza will actually read them. The goal is a decision record, not a spec document.
+
+**Format:**
+- **What + Why** — 2–3 sentences max. What are we building and what problem does it solve?
+- **Changes** — a short bulleted list: file name + one-line description of what changes. No code snippets, no prose explaining how it works.
+- **Skipping** — only include this section if there's a real deliberate decision worth flagging (e.g. "not doing X because Y"). Max 3–4 items, inline not a table.
+- **Verify** — 2–3 bullets on how to confirm it worked.
+
+**Rules:**
+- No code snippets in plans. Those belong in implementation.
+- Don't repeat context already established in conversation.
+- If a plan is getting long, it's a sign the scope is too big — split it, or cut what isn't essential for Eliza to approve.
+- The plan exists so Eliza can say yes or no with confidence. If she can't read it, it isn't working.
+
+---
+
 ## HUMAN.md
 
 At the start of each session, read `HUMAN.md`. If a reminder in it is directly relevant to what we're currently doing, surface it quietly at the bottom of your response under a `---` divider. Only surface a reminder when it genuinely applies — not on every response.
@@ -88,7 +106,20 @@ These are non-obvious rules that aren't in the standard docs for any of these to
 
 ---
 
+## Plans
+
+When a plan is made for work to be implemented in this project, save it as a markdown file in the `plans/` folder at the project root. Use a descriptive kebab-case filename (e.g. `plans/add-keyboard-shortcuts.md`). Keep plans there even after the work is done — they're a useful record of decisions.
+
+---
+
 ## Shorthand commands
+
+### `pb <prompt>`
+When the user types `pb <prompt>`, append a new bullet point to `docs/PromptsBacklog.md` with the prompt text exactly as written. Confirm what was added. Do not act on the prompt — just save it for later.
+
+At the start of each session, if `docs/PromptsBacklog.md` has items in it, quietly mention it so Eliza knows there are queued prompts to work through.
+
+---
 
 ### `gh <topic>`
 When the user types `gh <topic>` (e.g. `gh add dark mode`, `gh filmstrip flickers on resize`), create a GitHub issue for this project using the `gh` CLI.
@@ -118,6 +149,8 @@ The screenshot script launches a headless browser, clears localStorage, reloads 
 Also run `npm run build` before every PR to catch TypeScript errors before Vercel does.
 
 ### Branching and pull requests
+
+**Never commit directly to `main`.** Every change — no matter how small — goes on a new branch first. Create the branch before writing any code or making any edits. The pattern is always: `git checkout -b <branch-name>` → make changes → commit → push → open PR.
 
 Whenever a new branch is pushed to origin, always open a pull request immediately — do not leave a branch without a PR.
 
