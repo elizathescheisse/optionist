@@ -1,9 +1,9 @@
 import type { OptionStatus } from "../../types/domain";
 
 const STYLES: Record<OptionStatus, string> = {
-  active: "bg-blue-50 text-blue-600",
-  rejected: "bg-red-50 text-red-600",
-  final: "bg-green-50 text-green-700",
+  active: "bg-blue-50 text-blue-500",
+  rejected: "bg-red-50 text-red-500",
+  final: "bg-emerald-50 text-emerald-600",
 };
 
 const LABELS: Record<OptionStatus, string> = {
@@ -14,7 +14,7 @@ const LABELS: Record<OptionStatus, string> = {
 
 export default function OptionStatusBadge({ status }: { status: OptionStatus }) {
   return (
-    <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${STYLES[status]}`}>
+    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${STYLES[status]}`}>
       {LABELS[status]}
     </span>
   );

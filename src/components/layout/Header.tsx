@@ -11,17 +11,22 @@ export default function Header() {
   );
 
   return (
-    <header className="border-b border-gray-200 bg-white px-6 h-12 flex items-center gap-2 shrink-0">
+    <header className="bg-white border-b border-gray-100 px-5 h-12 flex items-center gap-3 shrink-0">
       <Link
         to="/"
-        className="font-semibold text-gray-900 tracking-tight hover:text-gray-600 transition-colors motion-reduce:transition-none"
+        className="flex items-center gap-2 hover:opacity-75 transition-opacity motion-reduce:transition-none"
       >
-        Optionist
+        <span className="w-6 h-6 rounded-md bg-gray-900 flex items-center justify-center text-white text-xs font-bold select-none">
+          O
+        </span>
+        <span className="font-semibold text-gray-900 tracking-tight text-sm">
+          Optionist
+        </span>
       </Link>
       {project && (
         <>
-          <span className="text-gray-300 select-none">/</span>
-          <span className="text-sm text-gray-600 truncate max-w-xs">
+          <span className="text-gray-200 select-none text-sm">/</span>
+          <span className="text-sm text-gray-500 truncate max-w-xs">
             {project.name}
           </span>
         </>

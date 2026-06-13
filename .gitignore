@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Demo screenshots — committed to git as a visual history of each PR
+# screenshots/
+
 # Seed data — place an Optionist export here to pre-load data on first launch.
 # Gitignored by default so private design work isn't accidentally committed.
 # See README.md for the sharing workflow.

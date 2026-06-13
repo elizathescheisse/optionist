@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useAppStore } from "../../store/useAppStore";
 import type { Decision } from "../../types/domain";
-import DecisionStatusBadge from "./DecisionStatusBadge";
 import Modal from "../shared/Modal";
 
 type Props = {
@@ -13,7 +12,6 @@ type Props = {
 export default function DecisionListItem({ decision, isSelected, onSelect }: Props) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const deleteDecision = useAppStore((s) => s.deleteDecision);
-  const archiveDecision = useAppStore((s) => s.archiveDecision);
   const postponeDecision = useAppStore((s) => s.postponeDecision);
   const reactivateDecision = useAppStore((s) => s.reactivateDecision);
   const setCurrentDecision = useAppStore((s) => s.setCurrentDecision);
@@ -28,76 +26,62 @@ export default function DecisionListItem({ decision, isSelected, onSelect }: Pro
   return (
     <>
       <div
-        className={`group px-3 py-2 rounded cursor-pointer flex flex-col gap-1 transition-colors ${
-          isSelected ? "bg-gray-100" : "hover:bg-gray-50"
+        className={`group px-3 py-2 rounded-lg cursor-pointer transition-colors motion-reduce:transition-none ${
+          isSelected
+            ? "bg-zinc-300 text-gray-900"
+            : "hover:bg-gray-50 text-gray-700"
         }`}
         onClick={onSelect}
       >
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-sm font-medium text-gray-800 truncate flex-1">
+        <div className="flex items-start justify-between gap-2">
+          <span className={`text-sm font-medium truncate flex-1 leading-snug ${isSelected ? "text-gray-900" : "text-gray-800"}`}>
             {decision.title}
           </span>
-          <DecisionStatusBadge status={decision.status} />
-        </div>
 
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-xs text-gray-400">
-            {optionCount === 0
-              ? "No options"
-              : `${optionCount} option${optionCount !== 1 ? "s" : ""}`}
-            {decision.status === "finalized" && decision.selectedOptionId && " · ✓ Final chosen"}
-          </span>
-
-          <div className="hidden group-hover:flex items-center gap-1">
-            {(decision.status === "archived" || decision.status === "postponed") && (
+          {/* Actions — shown on hover (only when not selected) */}
+          {!isSelected && (
+            <div className="hidden group-hover:flex items-center gap-1 shrink-0 mt-0.5">
+              {(decision.status === "archived" || decision.status === "postponed") && (
+                <button
+                  className="text-xs text-blue-500 hover:text-blue-700"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    reactivateDecision(decision.id);
+                    setCurrentDecision(decision.id);
+                  }}
+                >
+                  Restore
+                </button>
+              )}
+              {decision.status === "active" && (
+                <>
+                  <button
+                    className="text-xs text-gray-400 hover:text-gray-600"
+                    onClick={(e) => { e.stopPropagation(); postponeDecision(decision.id); }}
+                  >
+                    Pause
+                  </button>
+                  <span className="text-gray-200 text-xs">·</span>
+                </>
+              )}
               <button
-                className="text-xs text-blue-500 hover:text-blue-700"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  reactivateDecision(decision.id);
-                  setCurrentDecision(decision.id);
-                }}
+                className="text-xs text-red-400 hover:text-red-600"
+                onClick={(e) => { e.stopPropagation(); setShowDeleteModal(true); }}
               >
-                Reactivate
+                Delete
               </button>
-            )}
-            {decision.status === "active" && (
-              <>
-                <button
-                  className="text-xs text-gray-400 hover:text-gray-600"
-                  onClick={(e) => { e.stopPropagation(); postponeDecision(decision.id); }}
-                >
-                  Postpone
-                </button>
-                <span className="text-gray-200">·</span>
-                <button
-                  className="text-xs text-gray-400 hover:text-gray-600"
-                  onClick={(e) => { e.stopPropagation(); archiveDecision(decision.id); }}
-                >
-                  Archive
-                </button>
-                <span className="text-gray-200">·</span>
-              </>
-            )}
-            {decision.status === "finalized" && (
-              <>
-                <button
-                  className="text-xs text-gray-400 hover:text-gray-600"
-                  onClick={(e) => { e.stopPropagation(); archiveDecision(decision.id); }}
-                >
-                  Archive
-                </button>
-                <span className="text-gray-200">·</span>
-              </>
-            )}
-            <button
-              className="text-xs text-red-400 hover:text-red-600"
-              onClick={(e) => { e.stopPropagation(); setShowDeleteModal(true); }}
-            >
-              Delete
-            </button>
-          </div>
+            </div>
+          )}
         </div>
+
+        <span className={`text-xs mt-0.5 block ${isSelected ? "text-gray-500" : "text-gray-400"}`}>
+          {optionCount === 0
+            ? "No options"
+            : `${optionCount} option${optionCount !== 1 ? "s" : ""}`}
+          {decision.status === "finalized" && decision.selectedOptionId && " · ✓ Final"}
+          {decision.status === "postponed" && " · Paused"}
+          {decision.status === "archived" && " · Archived"}
+        </span>
       </div>
 
       {showDeleteModal && (

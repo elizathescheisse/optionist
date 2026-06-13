@@ -6,12 +6,12 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 export default function Button({ variant = "secondary", className = "", ...props }: Props) {
   const base =
-    "px-3 py-1.5 rounded text-sm font-medium transition-colors motion-reduce:transition-none " +
-    "disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-gray-900";
+    "px-3 py-1.5 rounded-md text-sm font-medium transition-colors motion-reduce:transition-none " +
+    "disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-gray-900";
   const variants = {
-    primary: "bg-gray-900 text-white hover:bg-gray-700",
-    secondary: "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50",
-    danger: "bg-white border border-red-300 text-red-600 hover:bg-red-50",
+    primary: "bg-gray-900 text-white hover:bg-gray-700 shadow-sm",
+    secondary: "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 shadow-sm",
+    danger: "bg-white border border-red-200 text-red-500 hover:bg-red-50 shadow-sm",
   };
   return <button className={`${base} ${variants[variant]} ${className}`} {...props} />;
 }

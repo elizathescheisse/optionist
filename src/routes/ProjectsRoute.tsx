@@ -8,22 +8,24 @@ export default function ProjectsRoute() {
   const projectCount = useAppStore((s) => Object.keys(s.projects).length);
 
   return (
-    <div className="flex-1 flex flex-col max-w-3xl w-full mx-auto px-6 py-8 gap-6 overflow-y-auto">
-      <div className="flex items-center justify-between">
-        <h1 className="text-base font-semibold text-gray-900">Projects</h1>
-        <ImportExportControls />
+    <div className="flex-1 overflow-y-auto">
+      <div className="max-w-2xl w-full mx-auto px-6 py-10 flex flex-col gap-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-lg font-semibold text-gray-900 tracking-tight">Projects</h1>
+          <ImportExportControls />
+        </div>
+
+        <CreateProjectForm />
+
+        {projectCount === 0 ? (
+          <EmptyState
+            message="No projects yet."
+            detail="Create a project above to start comparing design options."
+          />
+        ) : (
+          <ProjectList />
+        )}
       </div>
-
-      <CreateProjectForm />
-
-      {projectCount === 0 ? (
-        <EmptyState
-          message="No projects yet."
-          detail="Create a project above to start comparing design options."
-        />
-      ) : (
-        <ProjectList />
-      )}
     </div>
   );
 }

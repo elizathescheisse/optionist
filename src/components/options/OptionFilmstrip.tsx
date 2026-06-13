@@ -18,7 +18,7 @@ export default function OptionFilmstrip({ decisionId }: Props) {
     .filter(Boolean);
 
   return (
-    <div className="shrink-0 border-t border-gray-200 bg-white">
+    <div className="shrink-0 border-t border-gray-100 bg-white">
       <div className="flex gap-2 overflow-x-auto p-3">
         {orderedOptions.map((option, index) => (
           <OptionThumbnail
