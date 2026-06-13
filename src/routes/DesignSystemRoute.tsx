@@ -5,206 +5,170 @@ import Textarea from "../components/shared/Textarea";
 import Card from "../components/ui/Card";
 import Badge from "../components/ui/Badge";
 import Pill from "../components/ui/Pill";
-import Divider from "../components/ui/Divider";
-import Tabs from "../components/ui/Tabs";
 import EmptyState from "../components/ui/EmptyState";
 import PageHeader from "../components/ui/PageHeader";
 import SectionHeader from "../components/ui/SectionHeader";
 import Modal from "../components/shared/Modal";
+import { cn } from "../utils/cn";
+
+const NAV = [
+  { id: "overview", label: "Overview" },
+  { id: "colors", label: "Colors" },
+  { id: "typography", label: "Typography" },
+  { id: "spacing", label: "Spacing" },
+  { id: "buttons", label: "Buttons" },
+  { id: "forms", label: "Forms" },
+  { id: "cards", label: "Cards" },
+  { id: "states", label: "Component states" },
+  { id: "dark", label: "Dark QA" },
+] as const;
 
 const COLORS = [
-  { name: "Primary Blue", hex: "#4D61A3", token: "primary", usage: "Primary actions, selected states, active navigation, key highlights." },
-  { name: "Orange", hex: "#EBA03F", token: "accent-orange", usage: "Tags, empty states, option badges, onboarding accents." },
-  { name: "Yellow", hex: "#FDD86A", token: "accent-yellow", usage: "Decorative accents, illustrations, warm highlights." },
-  { name: "Pink", hex: "#FF6E99", token: "accent-pink", usage: "Decorative accents, onboarding moments." },
-  { name: "Rose", hex: "#D1416C", token: "accent-rose", usage: "Decision-status accents, decorative use." },
-  { name: "Background", hex: "#F5F7FB", token: "bg", usage: "App canvas background." },
-  { name: "Surface", hex: "#FFFFFF", token: "surface", usage: "Cards, panels, inputs." },
-  { name: "Border", hex: "#E5E9F2", token: "border", usage: "Dividers, input borders, card outlines." },
-  { name: "Text", hex: "#151827", token: "text", usage: "Primary body and heading text." },
-  { name: "Text Muted", hex: "#677085", token: "text-muted", usage: "Secondary text, descriptions." },
-  { name: "Success", hex: "#059669", token: "success", usage: "Confirmed states, positive feedback." },
-  { name: "Warning", hex: "#D97706", token: "warning", usage: "Caution states, missing rationale." },
-  { name: "Error", hex: "#DC2626", token: "error", usage: "Errors, destructive actions." },
-  { name: "Info", hex: "#2563EB", token: "info", usage: "Informational badges and hints." },
-];
-
-const TYPE_SAMPLES = [
-  { role: "Display", class: "text-3xl font-semibold leading-tight", size: "36px", weight: "600", usage: "Marketing headlines" },
-  { role: "Page title", class: "text-xl font-semibold leading-tight", size: "22px", weight: "600", usage: "Dashboard and page headers" },
-  { role: "Section title", class: "text-md font-semibold", size: "16px", weight: "600", usage: "Section headers within pages" },
-  { role: "Card title", class: "text-sm font-medium", size: "14px", weight: "500", usage: "Comparison and option card titles" },
-  { role: "Body", class: "text-sm leading-normal", size: "14px", weight: "400", usage: "Default UI text" },
-  { role: "Small text", class: "text-xs leading-normal", size: "12px", weight: "400", usage: "Metadata, timestamps" },
-  { role: "Label", class: "text-xs font-medium uppercase tracking-wider", size: "12px", weight: "500", usage: "Form labels, section labels" },
-  { role: "Caption", class: "text-xs text-text-soft", size: "12px", weight: "400", usage: "Helper text, footnotes" },
-  { role: "Button text", class: "text-sm font-medium", size: "14px", weight: "500", usage: "All button labels" },
+  { name: "Primary", hex: "#4D61A3", usage: "Actions, active nav" },
+  { name: "App background", hex: "#F4F6FB", usage: "Canvas" },
+  { name: "App panel", hex: "#FFFFFF", usage: "Cards, inspector" },
+  { name: "Border", hex: "#E3E8F2", usage: "Dividers" },
+  { name: "Text", hex: "#151827", usage: "Body copy" },
+  { name: "Success", hex: "#059669", usage: "Decided states" },
 ];
 
 export default function DesignSystemRoute() {
-  const [tab, setTab] = useState("colors");
+  const [section, setSection] = useState<(typeof NAV)[number]["id"]>("overview");
   const [showModal, setShowModal] = useState(false);
   const [darkPreview, setDarkPreview] = useState(false);
 
   return (
-    <div className="flex-1 overflow-y-auto">
-      <div className="max-w-4xl w-full mx-auto px-6 py-10 flex flex-col gap-8">
-        <PageHeader
-          title="Design System"
-          subtitle="Optionist visual language — tokens, typography, and components."
-        />
+    <div className="flex-1 overflow-hidden flex bg-app-bg">
+      <nav className="w-48 shrink-0 border-r border-app-border p-3 flex flex-col gap-0.5 overflow-y-auto">
+        {NAV.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            onClick={() => setSection(item.id)}
+            className={cn(
+              "text-left px-3 py-2 rounded-md text-sm font-medium",
+              section === item.id ? "bg-primary-soft text-primary" : "text-text-muted hover:bg-app-surface-soft",
+            )}
+          >
+            {item.label}
+          </button>
+        ))}
+      </nav>
 
-        <Tabs
-          tabs={[
-            { id: "colors", label: "Colors" },
-            { id: "typography", label: "Typography" },
-            { id: "components", label: "Components" },
-            { id: "layout", label: "Layout" },
-          ]}
-          activeId={tab}
-          onChange={setTab}
-        />
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-3xl mx-auto px-6 py-10 flex flex-col gap-8">
+          <PageHeader
+            title="Design System"
+            subtitle="Optionist visual language — preserved dark settings feel, app surface tokens."
+          />
 
-        {tab === "colors" && (
-          <section className="flex flex-col gap-4">
-            <SectionHeader title="Brand palette" description="Use accents sparingly — mostly on tags, badges, and empty states." />
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {section === "overview" && (
+            <Card padding="md">
+              <p className="text-sm text-text-muted leading-relaxed">
+                Login/auth uses <code className="text-xs">--token-auth-panel</code> (deep purple).
+                Logged-in app uses <code className="text-xs">--app-*</code> layered surfaces.
+                Radius: 8 / 12 / 18 / 24. Button heights: 32 / 40 / 48px.
+              </p>
+            </Card>
+          )}
+
+          {section === "colors" && (
+            <div className="grid grid-cols-2 gap-3">
               {COLORS.map((c) => (
                 <Card key={c.name} padding="sm">
-                  <div
-                    className="w-full h-12 rounded-md mb-2 border border-border"
-                    style={{ backgroundColor: c.hex }}
-                  />
+                  <div className="w-full h-10 rounded-md mb-2 border border-app-border" style={{ backgroundColor: c.hex }} />
                   <p className="text-sm font-medium text-text">{c.name}</p>
-                  <p className="text-xs font-mono text-text-muted">{c.hex}</p>
-                  <p className="text-xs text-text-soft mt-1">{c.usage}</p>
+                  <p className="text-xs text-text-soft">{c.usage}</p>
                 </Card>
               ))}
             </div>
-          </section>
-        )}
+          )}
 
-        {tab === "typography" && (
-          <section className="flex flex-col gap-4">
-            <SectionHeader title="Type scale" description="Geist Sans — single family for MVP." />
-            <div className="flex flex-col gap-4">
-              {TYPE_SAMPLES.map((t) => (
-                <Card key={t.role} padding="md">
-                  <p className={t.class}>{t.role} — The quick brown fox</p>
-                  <p className="text-xs text-text-soft mt-2">
-                    {t.size} / weight {t.weight} — {t.usage}
-                  </p>
-                </Card>
-              ))}
+          {section === "typography" && (
+            <div className="flex flex-col gap-3">
+              <Card padding="md"><p className="text-3xl font-semibold">Display 36px</p></Card>
+              <Card padding="md"><p className="text-xl font-semibold">Page title 22px</p></Card>
+              <Card padding="md"><p className="text-sm">Body 14px — Geist Sans</p></Card>
+              <Card padding="md"><p className="text-xs font-medium uppercase tracking-wider text-text-muted">Label</p></Card>
             </div>
-          </section>
-        )}
+          )}
 
-        {tab === "components" && (
-          <section className="flex flex-col gap-6">
-            <div>
-              <SectionHeader title="Buttons" />
-              <div className="flex flex-wrap gap-2">
-                <Button variant="primary">Primary</Button>
-                <Button variant="secondary">Secondary</Button>
-                <Button variant="ghost">Ghost</Button>
-                <Button variant="destructive">Destructive</Button>
-                <Button variant="primary" disabled>Disabled</Button>
-              </div>
+          {section === "spacing" && (
+            <Card padding="md">
+              <ul className="text-sm text-text-muted space-y-2">
+                <li>Sidebar: 240px</li>
+                <li>Topbar: 72px</li>
+                <li>Inspector: 320px (w-80)</li>
+                <li>Card padding: sm 12 / md 20 / lg 24</li>
+              </ul>
+            </Card>
+          )}
+
+          {section === "buttons" && (
+            <div className="flex flex-wrap gap-2">
+              <Button variant="primary">Primary</Button>
+              <Button variant="secondary">Secondary</Button>
+              <Button variant="outline">Outline</Button>
+              <Button variant="ghost">Ghost</Button>
+              <Button variant="quiet">Quiet</Button>
+              <Button variant="destructive">Destructive</Button>
+              <Button variant="primary" disabled>Disabled</Button>
             </div>
+          )}
 
-            <div>
-              <SectionHeader title="Inputs" />
-              <div className="max-w-sm flex flex-col gap-3">
-                <TextInput label="Default input" placeholder="Enter text…" />
-                <TextInput label="With error" error="This field is required." />
-                <Textarea label="Textarea" rows={2} placeholder="Notes…" />
-              </div>
+          {section === "forms" && (
+            <div className="max-w-sm flex flex-col gap-3">
+              <TextInput label="Default" placeholder="Enter text…" />
+              <TextInput label="Error" error="Required field" />
+              <Textarea label="Textarea" rows={2} />
             </div>
+          )}
 
-            <div>
-              <SectionHeader title="Badges & pills" />
+          {section === "cards" && (
+            <div className="grid grid-cols-2 gap-3">
+              <Card padding="md">Default</Card>
+              <Card padding="md" hover>Hover</Card>
+              <Card padding="md" selected>Selected</Card>
+            </div>
+          )}
+
+          {section === "states" && (
+            <section className="flex flex-col gap-6">
+              <SectionHeader title="Interactive states" description="Default, focus (Tab), disabled, error." />
               <div className="flex flex-wrap gap-2 items-center">
                 <Badge>Default</Badge>
                 <Badge variant="primary">Primary</Badge>
                 <Badge variant="success">Success</Badge>
-                <Badge variant="warning">Warning</Badge>
-                <Pill active>Active pill</Pill>
-                <Pill>Inactive pill</Pill>
+                <Pill active>Active</Pill>
+                <Pill>Inactive</Pill>
               </div>
-            </div>
+              <EmptyState message="Empty state" detail="Helper copy for empty views." />
+              <Button variant="secondary" onClick={() => setShowModal(true)}>Open modal</Button>
+            </section>
+          )}
 
-            <div>
-              <SectionHeader title="Cards" />
-              <div className="grid grid-cols-2 gap-3">
-                <Card padding="md">Default card</Card>
-                <Card padding="md" hover>Hover card</Card>
-                <Card padding="md" selected>Selected card</Card>
-              </div>
-            </div>
-
-            <div>
-              <SectionHeader title="Empty state" />
-              <EmptyState message="No comparisons yet" detail="Create your first comparison to get started." />
-            </div>
-
-            <div>
-              <SectionHeader title="Modal" />
-              <Button variant="secondary" onClick={() => setShowModal(true)}>
-                Open modal
+          {section === "dark" && (
+            <>
+              <Button variant={darkPreview ? "primary" : "secondary"} size="sm" onClick={() => setDarkPreview(!darkPreview)}>
+                Toggle dark preview panel
               </Button>
-            </div>
-
-            <Divider label="Dark mode preview" />
-
-            <div className="flex items-center gap-2 mb-2">
-              <Button
-                variant={darkPreview ? "primary" : "secondary"}
-                size="sm"
-                onClick={() => setDarkPreview(!darkPreview)}
-              >
-                Toggle dark preview
-              </Button>
-            </div>
-            <div
-              data-theme={darkPreview ? "dark" : "light"}
-              className="rounded-lg border border-border p-6 bg-bg"
-            >
-              <p className="text-text font-medium">Preview panel</p>
-              <p className="text-text-muted text-sm mt-1">
-                Token-based surfaces in {darkPreview ? "dark" : "light"} mode.
-              </p>
-              <div className="flex gap-2 mt-3">
-                <Button variant="primary" size="sm">Primary</Button>
-                <Button variant="secondary" size="sm">Secondary</Button>
+              <div data-theme={darkPreview ? "dark" : "light"} className="rounded-xl border border-app-border p-6 bg-app-bg space-y-4">
+                <p className="text-text font-medium">Dark QA — settings navy preserved</p>
+                <Card padding="md"><p className="text-text-muted text-sm">Card on app-bg</p></Card>
+                <div className="flex gap-2">
+                  <Button variant="primary" size="sm">Primary</Button>
+                  <Button variant="secondary" size="sm">Secondary</Button>
+                </div>
+                <TextInput label="Input in theme" placeholder="Type here…" />
               </div>
-            </div>
-          </section>
-        )}
-
-        {tab === "layout" && (
-          <section className="flex flex-col gap-4">
-            <SectionHeader title="Layout tokens" />
-            <Card padding="md">
-              <ul className="text-sm text-text-muted flex flex-col gap-2">
-                <li>Sidebar width: 260px</li>
-                <li>Topbar height: 72px</li>
-                <li>Max content width: 1440px</li>
-                <li>Radius sm/md/lg/xl: 8 / 14 / 22 / 28px</li>
-                <li>Canvas: soft gray bg · Content: white card surfaces</li>
-              </ul>
-            </Card>
-          </section>
-        )}
+            </>
+          )}
+        </div>
       </div>
 
       {showModal && (
-        <Modal
-          title="Example modal"
-          onConfirm={() => setShowModal(false)}
-          onCancel={() => setShowModal(false)}
-        >
-          Modals trap focus and close on Escape.
+        <Modal title="Example modal" onConfirm={() => setShowModal(false)} onCancel={() => setShowModal(false)}>
+          Standard modal with sm/md/lg sizes and footer slots.
         </Modal>
       )}
     </div>

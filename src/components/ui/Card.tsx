@@ -25,7 +25,7 @@ export default function Card({
   return (
     <div
       className={cn(
-        "bg-surface border border-border rounded-lg shadow-sm",
+        "bg-app-panel border border-app-border rounded-lg shadow-card",
         PADDING[padding],
         hover &&
           "transition-all motion-reduce:transition-none hover:shadow-md hover:-translate-y-0.5 cursor-pointer",

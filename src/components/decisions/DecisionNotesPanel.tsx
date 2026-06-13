@@ -87,7 +87,7 @@ export default function DecisionNotesPanel({ decisionId }: Props) {
         </label>
 
         <div className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-text-muted">Screenshots</span>
+          <span className="text-xs font-medium text-text-muted">Design options</span>
           <div className="-mx-4">
             <OptionUploader decisionId={decisionId} panel />
           </div>

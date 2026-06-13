@@ -26,7 +26,7 @@ export default function DecisionListItem({ decision, isSelected, onSelect }: Pro
     if (isPostponed) return "Paused";
     if (isArchived) return "Archived";
     return optionCount === 0
-      ? "No screenshots"
+      ? "No design options"
       : `${optionCount} screenshot${optionCount !== 1 ? "s" : ""}`;
   }
 

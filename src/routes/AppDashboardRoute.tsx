@@ -11,6 +11,13 @@ import EmptyState from "../components/ui/EmptyState";
 import PageHeader from "../components/ui/PageHeader";
 import Badge from "../components/ui/Badge";
 import type { Decision, ID } from "../types/domain";
+import { logTimelineEvent } from "../services/timeline";
+
+const TEMPLATES = [
+  { id: "blank", label: "Blank comparison", description: "Start from scratch" },
+  { id: "dashboard", label: "Dashboard review", description: "Layout and IA decisions" },
+  { id: "brand", label: "Brand direction", description: "Visual identity options" },
+];
 
 function getRecentDecisions(
   decisions: Record<ID, Decision>,
@@ -24,6 +31,12 @@ function getRecentDecisions(
       ...d,
       projectName: projects[d.projectId]?.name ?? "Unknown",
     }));
+}
+
+function getReviewQueue(decisions: Record<ID, Decision>) {
+  return Object.values(decisions)
+    .filter((d) => d.decisionStatus !== "decided" && d.dueDate)
+    .sort((a, b) => a.dueDate.localeCompare(b.dueDate));
 }
 
 export default function AppDashboardRoute() {
@@ -40,13 +53,16 @@ export default function AppDashboardRoute() {
   const [description, setDescription] = useState("");
   const [audience, setAudience] = useState("");
   const [decisionDate, setDecisionDate] = useState("");
+  const [templateId, setTemplateId] = useState("blank");
 
   const decisionList = Object.values(decisions);
   const activeCount = decisionList.filter((d) => d.status === "active").length;
   const finalizedCount = decisionList.filter((d) => d.status === "finalized").length;
+  const inReviewCount = decisionList.filter((d) => d.decisionStatus === "in_review").length;
   const recent = getRecentDecisions(decisions, projects);
+  const reviewQueue = getReviewQueue(decisions);
 
-  const welcomeName = onboarding?.role ?? user?.name ?? "there";
+  const welcomeName = settingsName(onboarding?.role, user?.name);
 
   function handleCreate() {
     if (!title.trim()) return;
@@ -58,15 +74,30 @@ export default function AppDashboardRoute() {
       });
     }
 
+    const template = TEMPLATES.find((t) => t.id === templateId);
     const decisionId = createDecision(projectId, {
       title: title.trim(),
       description: [
-        description.trim(),
+        description.trim() || template?.description || "",
         audience.trim() ? `Audience: ${audience.trim()}` : "",
-        decisionDate ? `Decision needed by: ${decisionDate}` : "",
       ]
         .filter(Boolean)
         .join("\n"),
+    });
+
+    if (decisionDate) {
+      useAppStore.getState().updateDecision(decisionId, {
+        dueDate: decisionDate,
+        audience: audience.trim(),
+        decisionStatus: "in_review",
+      });
+    }
+
+    logTimelineEvent({
+      type: "comparison_created",
+      decisionId,
+      projectId,
+      label: `Created: ${title.trim()}`,
     });
 
     setShowCreate(false);
@@ -74,42 +105,69 @@ export default function AppDashboardRoute() {
     setDescription("");
     setAudience("");
     setDecisionDate("");
+    setTemplateId("blank");
     navigate(`/app/comparisons/${decisionId}`);
   }
 
   return (
-    <div className="flex-1 overflow-y-auto">
+    <div className="flex-1 overflow-y-auto bg-app-bg">
       <div className="max-w-4xl w-full mx-auto px-6 py-10 flex flex-col gap-8">
         <PageHeader
           title={`Welcome back, ${welcomeName}`}
           subtitle="Compare design directions and capture decisions in one place."
           action={
-            <Button variant="primary" onClick={() => setShowCreate(true)}>
-              Create Comparison
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => navigate("/app/projects")}>
+                View projects
+              </Button>
+              <Button variant="primary" onClick={() => setShowCreate(true)}>
+                Create Comparison
+              </Button>
+            </div>
           }
         />
 
-        <div className="grid grid-cols-3 gap-4">
-          <Card padding="md">
-            <p className="text-xs text-text-soft font-medium uppercase tracking-wider">
-              Active comparisons
-            </p>
-            <p className="text-2xl font-semibold text-text mt-1">{activeCount}</p>
-          </Card>
-          <Card padding="md">
-            <p className="text-xs text-text-soft font-medium uppercase tracking-wider">
-              Decisions captured
-            </p>
-            <p className="text-2xl font-semibold text-text mt-1">{finalizedCount}</p>
-          </Card>
-          <Card padding="md">
-            <p className="text-xs text-text-soft font-medium uppercase tracking-wider">
-              Stakeholders involved
-            </p>
-            <p className="text-2xl font-semibold text-text mt-1">—</p>
-          </Card>
+        <Card padding="lg" className="bg-gradient-to-br from-app-panel to-primary-soft/30 border-primary/10">
+          <p className="text-sm text-text-muted">
+            Ready to review? Open a comparison, upload design options, gather feedback, and capture the decision — all in one workspace.
+          </p>
+          <Button variant="primary" className="mt-4" onClick={() => setShowCreate(true)}>
+            Start a comparison
+          </Button>
+        </Card>
+
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard label="Active comparisons" value={activeCount} onClick={() => navigate("/app/projects")} />
+          <StatCard label="In review" value={inReviewCount} />
+          <StatCard label="Decisions captured" value={finalizedCount} />
+          <StatCard label="Projects" value={Object.keys(projects).length} onClick={() => navigate("/app/projects")} />
         </div>
+
+        {reviewQueue.length > 0 && (
+          <section>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-md font-semibold text-text">Review queue</h2>
+              <Link to="/app/history" className="text-xs text-primary hover:underline">
+                View history
+              </Link>
+            </div>
+            <div className="flex flex-col gap-2">
+              {reviewQueue.map((d) => (
+                <Link key={d.id} to={`/app/comparisons/${d.id}`} className="block">
+                  <Card hover padding="md">
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <p className="text-sm font-medium text-text">{d.title}</p>
+                        <p className="text-xs text-text-soft">Due {d.dueDate}</p>
+                      </div>
+                      <Badge variant="warning">Due soon</Badge>
+                    </div>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         <section>
           <h2 className="text-md font-semibold text-text mb-4">Recent comparisons</h2>
@@ -126,29 +184,23 @@ export default function AppDashboardRoute() {
           ) : (
             <div className="flex flex-col gap-2">
               {recent.map((d) => (
-                <Link
-                  key={d.id}
-                  to={`/app/comparisons/${d.id}`}
-                  className="block"
-                >
+                <Link key={d.id} to={`/app/comparisons/${d.id}`} className="block">
                   <Card hover padding="md">
                     <div className="flex items-center justify-between gap-4">
                       <div>
                         <p className="text-sm font-medium text-text">{d.title}</p>
-                        <p className="text-xs text-text-soft mt-0.5">
-                          {d.projectName}
-                        </p>
+                        <p className="text-xs text-text-soft mt-0.5">{d.projectName}</p>
                       </div>
                       <Badge
                         variant={
-                          d.status === "finalized"
+                          d.decisionStatus === "decided"
                             ? "success"
-                            : d.status === "active"
-                              ? "primary"
+                            : d.decisionStatus === "in_review"
+                              ? "info"
                               : "default"
                         }
                       >
-                        {d.status}
+                        {d.decisionStatus.replace("_", " ")}
                       </Badge>
                     </div>
                   </Card>
@@ -163,11 +215,31 @@ export default function AppDashboardRoute() {
         <Modal
           title="Create Comparison"
           confirmLabel="Create"
+          size="md"
           onConfirm={handleCreate}
           onCancel={() => setShowCreate(false)}
-          className="max-w-md"
         >
           <div className="flex flex-col gap-3">
+            <div>
+              <p className="text-xs font-medium text-text-muted mb-2">Template</p>
+              <div className="flex flex-col gap-1">
+                {TEMPLATES.map((t) => (
+                  <label key={t.id} className="flex items-center gap-2 text-sm text-text cursor-pointer">
+                    <input
+                      type="radio"
+                      name="template"
+                      checked={templateId === t.id}
+                      onChange={() => {
+                        setTemplateId(t.id);
+                        if (t.id !== "blank" && !title) setTitle(t.label);
+                      }}
+                    />
+                    {t.label}
+                    <span className="text-text-soft text-xs">— {t.description}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
             <TextInput
               label="Comparison title"
               value={title}
@@ -175,10 +247,11 @@ export default function AppDashboardRoute() {
               placeholder="Dashboard direction review"
             />
             <Textarea
-              label="Description"
+              label="Decision to make"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
+              placeholder="What decision needs to be made?"
             />
             <TextInput
               label="Audience"
@@ -197,4 +270,33 @@ export default function AppDashboardRoute() {
       )}
     </div>
   );
+}
+
+function settingsName(role?: string, name?: string) {
+  return role ?? name ?? "there";
+}
+
+function StatCard({
+  label,
+  value,
+  onClick,
+}: {
+  label: string;
+  value: number;
+  onClick?: () => void;
+}) {
+  const inner = (
+    <>
+      <p className="text-xs text-text-soft font-medium uppercase tracking-wider">{label}</p>
+      <p className="text-2xl font-semibold text-text mt-1">{value}</p>
+    </>
+  );
+  if (onClick) {
+    return (
+      <button type="button" onClick={onClick} className="text-left w-full">
+        <Card padding="md" hover>{inner}</Card>
+      </button>
+    );
+  }
+  return <Card padding="md">{inner}</Card>;
 }

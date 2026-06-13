@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes } from "react";
 import { cn } from "../../utils/cn";
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: "primary" | "secondary" | "ghost" | "destructive";
+  variant?: "primary" | "secondary" | "outline" | "ghost" | "quiet" | "destructive";
   size?: "sm" | "md" | "lg";
 };
 
@@ -20,18 +20,21 @@ export default function Button({
   );
 
   const sizes = {
-    sm: "px-2.5 py-1 text-xs",
-    md: "px-3 py-1.5 text-sm",
-    lg: "px-4 py-2.5 text-md",
+    sm: "h-8 px-3 text-xs",
+    md: "h-10 px-4 text-sm",
+    lg: "h-12 px-5 text-md",
   };
 
   const variants = {
     primary: "bg-primary text-white hover:opacity-90 shadow-sm",
     secondary:
-      "bg-surface border border-border text-text-muted hover:bg-surface-muted shadow-sm",
-    ghost: "bg-transparent text-text-muted hover:bg-surface-muted",
+      "bg-app-surface border border-app-border text-text-muted hover:bg-app-surface-soft shadow-sm",
+    outline:
+      "bg-transparent border border-app-border text-text hover:bg-app-surface-soft",
+    ghost: "bg-transparent text-text-muted hover:bg-app-surface-soft",
+    quiet: "bg-transparent text-text-soft hover:text-text hover:bg-app-surface-soft",
     destructive:
-      "bg-surface border border-error/30 text-error hover:bg-error-soft shadow-sm",
+      "bg-app-surface border border-error/30 text-error hover:bg-error-soft shadow-sm",
   };
 
   return (

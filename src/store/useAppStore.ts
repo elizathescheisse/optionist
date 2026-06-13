@@ -7,6 +7,7 @@ import type {
   ReviewViewMode,
   ID,
 } from "../types/domain";
+import { DEFAULT_PRESENTATION_SETTINGS } from "../types/domain";
 import type { ExportedAppData } from "../types/importExport";
 import { loadState, saveState, EMPTY_STATE } from "./persistence";
 import { createId } from "../utils/ids";
@@ -19,7 +20,28 @@ type AppStore = AppState & {
   setCurrentProject: (projectId: ID | null) => void;
 
   createDecision: (projectId: ID, input: { title: string; description?: string }) => ID;
-  updateDecision: (decisionId: ID, patch: Partial<Pick<Decision, "title" | "description" | "notes" | "finalRationale" | "openConcerns" | "nextSteps">>) => void;
+  updateDecision: (
+    decisionId: ID,
+    patch: Partial<
+      Pick<
+        Decision,
+        | "title"
+        | "description"
+        | "notes"
+        | "finalRationale"
+        | "openConcerns"
+        | "nextSteps"
+        | "audience"
+        | "dueDate"
+        | "owner"
+        | "summary"
+        | "compareMode"
+        | "decisionStatus"
+        | "presentationSettings"
+        | "status"
+      >
+    >,
+  ) => void;
   deleteDecision: (decisionId: ID) => void;
   archiveDecision: (decisionId: ID) => void;
   postponeDecision: (decisionId: ID) => void;
@@ -27,7 +49,12 @@ type AppStore = AppState & {
   setCurrentDecision: (decisionId: ID | null) => void;
 
   addOption: (decisionId: ID, input: { name: string; imageDataUrl: string; imageMimeType: DesignOption["imageMimeType"] }) => ID;
-  updateOption: (optionId: ID, patch: Partial<Pick<DesignOption, "name" | "notes">>) => void;
+  updateOption: (
+    optionId: ID,
+    patch: Partial<
+      Pick<DesignOption, "name" | "notes" | "summary" | "pros" | "risks" | "displayStatus">
+    >,
+  ) => void;
   deleteOption: (optionId: ID) => void;
   rejectOption: (optionId: ID) => void;
   restoreOption: (optionId: ID) => void;
@@ -129,12 +156,19 @@ export const useAppStore = create<AppStore>((set, get) => ({
       title: title.trim(),
       description: description.trim(),
       status: "active",
+      decisionStatus: "not_started",
       optionIds: [],
       selectedOptionId: null,
       notes: "",
       finalRationale: "",
       openConcerns: "",
       nextSteps: "",
+      audience: "",
+      dueDate: "",
+      owner: "",
+      summary: "",
+      compareMode: "grid",
+      presentationSettings: { ...DEFAULT_PRESENTATION_SETTINGS },
       decidedAt: null,
       archivedAt: null,
       createdAt: ts,
@@ -259,6 +293,10 @@ export const useAppStore = create<AppStore>((set, get) => ({
       imageDataUrl,
       imageMimeType,
       status: "active",
+      displayStatus: "draft",
+      summary: "",
+      pros: "",
+      risks: "",
       notes: "",
       createdAt: ts,
       updatedAt: ts,
@@ -329,7 +367,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
     set((s) => {
       const option = s.options[optionId];
       if (!option || option.status === "final") return s;
-      const updated = { ...option, status: "rejected" as const, updatedAt: now() };
+      const updated = { ...option, status: "rejected" as const, displayStatus: "rejected" as const, updatedAt: now() };
       const next = { ...s, options: { ...s.options, [optionId]: updated } };
       saveState(next);
       return next;
@@ -340,7 +378,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
     set((s) => {
       const option = s.options[optionId];
       if (!option || option.status !== "rejected") return s;
-      const updated = { ...option, status: "active" as const, updatedAt: now() };
+      const updated = { ...option, status: "active" as const, displayStatus: "ready" as const, updatedAt: now() };
       const next = { ...s, options: { ...s.options, [optionId]: updated } };
       saveState(next);
       return next;
@@ -359,7 +397,12 @@ export const useAppStore = create<AppStore>((set, get) => ({
         const o = s.options[oId];
         if (!o) continue;
         if (oId === optionId) {
-          updatedOptions[oId] = { ...o, status: "final", updatedAt: now() };
+          updatedOptions[oId] = {
+            ...o,
+            status: "final",
+            displayStatus: "selected",
+            updatedAt: now(),
+          };
         } else if (o.status !== "rejected") {
           updatedOptions[oId] = { ...o, status: "active", updatedAt: now() };
         }
@@ -368,6 +411,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
       const updatedDecision: Decision = {
         ...decision,
         status: "finalized",
+        decisionStatus: "decided",
         selectedOptionId: optionId,
         decidedAt: now(),
         updatedAt: now(),

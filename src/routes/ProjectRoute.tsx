@@ -4,15 +4,20 @@ import { useAppStore } from "../store/useAppStore";
 import { useReviewKeyboard } from "../hooks/useReviewKeyboard";
 import { WorkspaceShell } from "../components/layout/AppShell";
 import DecisionSidebar from "../components/decisions/DecisionSidebar";
-import OptionViewer from "../components/options/OptionViewer";
 import OptionActionsBar from "../components/options/OptionActionsBar";
 import OptionFilmstrip from "../components/options/OptionFilmstrip";
 import EmptyState from "../components/ui/EmptyState";
-import DecisionNotesPanel from "../components/decisions/DecisionNotesPanel";
+import PageHeader from "../components/ui/PageHeader";
 import FinalizeDecisionModal from "../components/decisions/FinalizeDecisionModal";
-import StakeholderFeedbackPanel from "../components/comparisons/StakeholderFeedbackPanel";
+import DecisionSummaryBar from "../components/comparisons/DecisionSummaryBar";
+import CompareModeControl from "../components/comparisons/CompareModeControl";
+import ComparisonEmptyState from "../components/comparisons/ComparisonEmptyState";
+import OptionCardGrid from "../components/comparisons/OptionCardGrid";
+import ComparisonInspector from "../components/comparisons/ComparisonInspector";
 import Button from "../components/shared/Button";
 import { useToast } from "../context/ToastContext";
+import type { CompareMode } from "../types/domain";
+import { logTimelineEvent } from "../services/timeline";
 
 type Props = {
   projectIdOverride?: string;
@@ -38,38 +43,51 @@ export default function ProjectRoute({ projectIdOverride }: Props) {
 
   return (
     <WorkspaceShell>
-      <div className="flex flex-1 overflow-hidden bg-surface-muted">
-        <aside className="w-60 shrink-0 bg-surface-muted flex flex-col overflow-hidden border-r border-border">
+      <div className="flex flex-1 overflow-hidden bg-app-bg">
+        <aside className="w-56 shrink-0 bg-app-panel flex flex-col overflow-hidden border-r border-app-border">
           <DecisionSidebar projectId={project.id} />
         </aside>
 
-        <main className="flex-1 flex flex-col overflow-hidden min-w-0 bg-surface">
+        <main className="flex-1 flex flex-col overflow-hidden min-w-0">
           {!currentDecisionId ? (
-            <EmptyState
-              message="Select or create a comparison."
-              detail="Use the sidebar to add your first comparison."
-            />
+            <div className="flex-1 flex items-center justify-center p-8">
+              <EmptyState
+                message="Select or create a comparison."
+                detail="Use the sidebar to add your first comparison."
+              />
+            </div>
           ) : (
-            <CenterPanel decisionId={currentDecisionId} />
+            <ComparisonWorkspace decisionId={currentDecisionId} projectName={project.name} />
           )}
         </main>
 
-        <aside className="w-72 shrink-0 bg-surface-muted flex flex-col overflow-hidden border-l border-border">
-          <RightPanel decisionId={currentDecisionId} />
+        <aside className="w-80 shrink-0 flex flex-col overflow-hidden border-l border-app-border">
+          {currentDecisionId ? (
+            <ComparisonInspector key={currentDecisionId} decisionId={currentDecisionId} />
+          ) : (
+            <div className="p-4 text-xs text-text-soft">Select a comparison to inspect.</div>
+          )}
         </aside>
       </div>
     </WorkspaceShell>
   );
 }
 
-function CenterPanel({ decisionId }: { decisionId: string }) {
+function ComparisonWorkspace({
+  decisionId,
+  projectName,
+}: {
+  decisionId: string;
+  projectName: string;
+}) {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const decision = useAppStore((s) => s.decisions[decisionId]);
-  const currentOptionId = useAppStore((s) => s.currentOptionId);
   const currentOption = useAppStore((s) =>
     s.currentOptionId ? s.options[s.currentOptionId] : undefined,
   );
+  const updateDecision = useAppStore((s) => s.updateDecision);
+  const setCurrentOption = useAppStore((s) => s.setCurrentOption);
   const goToNextOption = useAppStore((s) => s.goToNextOption);
   const goToPreviousOption = useAppStore((s) => s.goToPreviousOption);
   const rejectOption = useAppStore((s) => s.rejectOption);
@@ -79,12 +97,17 @@ function CenterPanel({ decisionId }: { decisionId: string }) {
   const [finalizeOptionId, setFinalizeOptionId] = useState<string | null>(null);
 
   const hasOptions = (decision?.optionIds.length ?? 0) > 0;
-  const navigableCount = useAppStore((s) => {
-    const d = s.decisions[decisionId];
-    if (!d) return 0;
-    return d.optionIds.filter((id) => s.options[id]?.status !== "rejected").length;
-  });
-  const allRejected = hasOptions && navigableCount === 0;
+  const compareMode = decision?.compareMode ?? "grid";
+
+  useEffect(() => {
+    if (decision && decision.optionIds.length === 2 && decision.compareMode === "grid") {
+      updateDecision(decisionId, { compareMode: "side-by-side" });
+    }
+  }, [decision?.optionIds.length, decisionId, decision, updateDecision]);
+
+  function setCompareMode(mode: CompareMode) {
+    updateDecision(decisionId, { compareMode: mode });
+  }
 
   function handleReject() {
     if (!currentOption) return;
@@ -99,7 +122,7 @@ function CenterPanel({ decisionId }: { decisionId: string }) {
   }
 
   useReviewKeyboard({
-    enabled: hasOptions && !showFinalizeModal,
+    enabled: hasOptions && compareMode === "focus" && !showFinalizeModal,
     onNext: goToNextOption,
     onPrevious: goToPreviousOption,
     onReject: handleReject,
@@ -108,59 +131,99 @@ function CenterPanel({ decisionId }: { decisionId: string }) {
 
   if (!decision) return null;
 
+  const badgeVariant =
+    decision.decisionStatus === "decided"
+      ? "success"
+      : decision.decisionStatus === "in_review"
+        ? "info"
+        : "default";
+
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-2 border-b border-border shrink-0">
-        <div>
-          <h2 className="text-sm font-semibold text-text">{decision.title}</h2>
-          {decision.description && (
-            <p className="text-xs text-text-muted mt-0.5 line-clamp-1">
-              {decision.description}
-            </p>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => showToast("Figma import is coming soon.")}
-          >
-            Import from Figma
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() =>
-              navigate(`/app/comparisons/${decisionId}/present?present=1`)
-            }
-          >
-            Present
-          </Button>
-        </div>
+      <div className="px-5 py-4 border-b border-app-border bg-app-panel shrink-0">
+        <PageHeader
+          breadcrumbs={[
+            { label: "Projects", to: "/app/projects" },
+            { label: projectName, to: `/app/projects/${decision.projectId}` },
+            { label: decision.title },
+          ]}
+          title={decision.title}
+          subtitle={decision.description || "Compare design options and capture the decision."}
+          badge={{
+            label: decision.decisionStatus.replace("_", " "),
+            variant: badgeVariant,
+          }}
+          action={
+            <div className="flex items-center gap-2">
+              <CompareModeControl
+                mode={compareMode}
+                onChange={setCompareMode}
+                optionCount={decision.optionIds.length}
+              />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => showToast("Figma import coming soon")}
+              >
+                Import
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() =>
+                  navigate(`/app/comparisons/${decisionId}/present?present=1`)
+                }
+              >
+                Present
+              </Button>
+            </div>
+          }
+        />
       </div>
 
+      <DecisionSummaryBar
+        status={decision.decisionStatus}
+        onMarkInReview={() =>
+          updateDecision(decisionId, { decisionStatus: "in_review" })
+        }
+        onMarkDecided={() =>
+          updateDecision(decisionId, { decisionStatus: "decided" })
+        }
+        onReopen={() => {
+          updateDecision(decisionId, {
+            decisionStatus: "in_review",
+            status: "active",
+          });
+          logTimelineEvent({
+            type: "comparison_reopened",
+            decisionId,
+            projectId: decision.projectId,
+            label: `Reopened: ${decision.title}`,
+          });
+        }}
+      />
+
       {!hasOptions ? (
-        <EmptyState
-          message="No screenshots yet."
-          detail="Add screenshots from the right panel →"
+        <ComparisonEmptyState
+          onUploadClick={() => showToast("Use Assets tab in the inspector to upload")}
         />
-      ) : allRejected ? (
-        <>
-          <EmptyState
-            message="All options rejected."
-            detail="Upload new screenshots or click a thumbnail below to restore one."
-          />
-          <OptionFilmstrip decisionId={decision.id} />
-        </>
       ) : (
         <>
-          <OptionViewer optionId={currentOptionId} />
-          <OptionActionsBar
+          <OptionCardGrid
             decisionId={decisionId}
-            onMarkFinal={handleFinal}
-            onReject={handleReject}
+            mode={compareMode}
+            onSelectOption={setCurrentOption}
           />
-          <OptionFilmstrip decisionId={decision.id} />
+          {compareMode === "focus" && (
+            <>
+              <OptionActionsBar
+                decisionId={decisionId}
+                onMarkFinal={handleFinal}
+                onReject={handleReject}
+              />
+              <OptionFilmstrip decisionId={decision.id} />
+            </>
+          )}
         </>
       )}
 
@@ -174,22 +237,6 @@ function CenterPanel({ decisionId }: { decisionId: string }) {
           }}
         />
       )}
-    </div>
-  );
-}
-
-function RightPanel({ decisionId }: { decisionId: string | null }) {
-  if (!decisionId) {
-    return (
-      <div className="p-4 text-xs text-text-soft">
-        Select a comparison to see notes.
-      </div>
-    );
-  }
-  return (
-    <div className="flex flex-col h-full overflow-hidden">
-      <DecisionNotesPanel key={decisionId} decisionId={decisionId} />
-      <StakeholderFeedbackPanel decisionId={decisionId} />
     </div>
   );
 }

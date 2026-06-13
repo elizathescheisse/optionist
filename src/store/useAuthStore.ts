@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import type { CompareMode } from "../types/domain";
 import { getItem, setItem, removeItem, STORAGE_KEYS } from "../services/storage";
 
 export type AuthUser = {
@@ -17,8 +18,25 @@ export type OnboardingAnswers = {
 };
 
 export type AppSettings = {
-  theme: "light" | "dark";
+  theme: "light" | "dark" | "system";
   name?: string;
+  density?: "comfortable" | "compact";
+  defaultCompareView?: CompareMode;
+  reduceMotion?: boolean;
+  presentationDefaults?: {
+    showRecommendation: boolean;
+    hideNotes: boolean;
+    showExecutiveSummary: boolean;
+  };
+  notifications?: {
+    emailDigest: boolean;
+    decisionReminders: boolean;
+    feedbackAlerts: boolean;
+  };
+  workflow?: {
+    requireRationale: boolean;
+    warnOnUndecided: boolean;
+  };
 };
 
 type AuthStore = {
@@ -43,11 +61,39 @@ function loadOnboarding(): OnboardingAnswers | null {
 }
 
 function loadSettings(): AppSettings {
-  return getItem<AppSettings>(STORAGE_KEYS.settings) ?? { theme: "light" };
+  return (
+    getItem<AppSettings>(STORAGE_KEYS.settings) ?? {
+      theme: "light",
+      density: "comfortable",
+      defaultCompareView: "grid",
+      reduceMotion: false,
+      presentationDefaults: {
+        showRecommendation: true,
+        hideNotes: true,
+        showExecutiveSummary: true,
+      },
+      notifications: {
+        emailDigest: false,
+        decisionReminders: true,
+        feedbackAlerts: true,
+      },
+      workflow: {
+        requireRationale: false,
+        warnOnUndecided: true,
+      },
+    }
+  );
 }
 
-function applyTheme(theme: "light" | "dark") {
-  document.documentElement.setAttribute("data-theme", theme);
+function resolveTheme(theme: AppSettings["theme"]): "light" | "dark" {
+  if (theme === "system") {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  return theme;
+}
+
+function applyTheme(theme: AppSettings["theme"]) {
+  document.documentElement.setAttribute("data-theme", resolveTheme(theme));
 }
 
 export const useAuthStore = create<AuthStore>((set, get) => ({

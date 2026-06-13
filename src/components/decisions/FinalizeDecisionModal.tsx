@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAppStore } from "../../store/useAppStore";
+import { logTimelineEvent } from "../../services/timeline";
 import Button from "../shared/Button";
 import Textarea from "../shared/Textarea";
 
@@ -27,12 +28,26 @@ export default function FinalizeDecisionModal({ decisionId, optionId, onClose }:
       finalRationale: rationale.trim(),
       openConcerns: openConcerns.trim(),
       nextSteps: nextSteps.trim(),
+      decisionStatus: "decided",
+    });
+    logTimelineEvent({
+      type: "decision_captured",
+      decisionId,
+      projectId: decision.projectId,
+      label: `Decision captured: ${option.name}`,
     });
     onClose();
   }
 
   function handleSkip() {
     markOptionFinal(optionId);
+    updateDecision(decisionId, { decisionStatus: "decided" });
+    logTimelineEvent({
+      type: "decision_captured",
+      decisionId,
+      projectId: decision.projectId,
+      label: `Decision captured: ${option.name}`,
+    });
     onClose();
   }
 

@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { validateImportedData } from "../utils/validation";
 import { useAppStore } from "../store/useAppStore";
 import type { ExportedAppData } from "../types/importExport";
+import { DEFAULT_PRESENTATION_SETTINGS } from "../types/domain";
 
 function store() {
   return useAppStore.getState();
@@ -30,12 +31,19 @@ function makeValidExport(): ExportedAppData {
         title: "Decision",
         description: "",
         status: "active",
+        decisionStatus: "in_review",
         optionIds: ["o1"],
         selectedOptionId: null,
         notes: "",
         finalRationale: "",
         openConcerns: "",
         nextSteps: "",
+        audience: "",
+        dueDate: "",
+        owner: "",
+        summary: "",
+        compareMode: "grid",
+        presentationSettings: { ...DEFAULT_PRESENTATION_SETTINGS },
         decidedAt: null,
         archivedAt: null,
         createdAt: "2026-01-01T00:00:00.000Z",
@@ -50,6 +58,10 @@ function makeValidExport(): ExportedAppData {
         imageDataUrl: "data:image/png;base64,abc",
         imageMimeType: "image/png",
         status: "active",
+        displayStatus: "ready",
+        summary: "",
+        pros: "",
+        risks: "",
         notes: "",
         createdAt: "2026-01-01T00:00:00.000Z",
         updatedAt: "2026-01-01T00:00:00.000Z",

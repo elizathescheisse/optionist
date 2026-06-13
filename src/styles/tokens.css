@@ -1,4 +1,4 @@
-/* Optionist design tokens — light defaults on :root, dark overrides on [data-theme="dark"] */
+/* Optionist design tokens */
 
 :root,
 [data-theme="light"] {
@@ -11,10 +11,23 @@
   --token-accent-yellow: #fdd86a;
   --token-accent-pink: #ff6e99;
   --token-accent-rose: #d1416c;
-  --token-bg: #f5f7fb;
-  --token-surface: #ffffff;
-  --token-surface-muted: #f8fafd;
-  --token-border: #e5e9f2;
+
+  /* App surface model */
+  --token-app-bg: #f4f6fb;
+  --token-app-surface: #ffffff;
+  --token-app-surface-soft: #f8fafd;
+  --token-app-panel: #ffffff;
+  --token-app-panel-muted: #f6f8fc;
+  --token-app-border: #e3e8f2;
+  --token-app-border-strong: #d5dbeb;
+  --token-app-sidebar: #ffffff;
+
+  /* Legacy aliases → app tokens */
+  --token-bg: var(--token-app-bg);
+  --token-surface: var(--token-app-surface);
+  --token-surface-muted: var(--token-app-panel-muted);
+  --token-border: var(--token-app-border);
+
   --token-text: #151827;
   --token-text-muted: #677085;
   --token-text-soft: #98a1b3;
@@ -24,34 +37,49 @@
   --token-warning-soft: #fffbeb;
   --token-error: #dc2626;
   --token-error-soft: #fef2f2;
+  --token-danger: #dc2626;
   --token-info: #2563eb;
   --token-info-soft: #eff6ff;
 
+  --token-shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.05);
+  --token-shadow-modal: 0 24px 80px rgba(15, 23, 42, 0.22);
+  --token-shadow-popover: 0 16px 48px rgba(15, 23, 42, 0.16);
   --token-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
-  --token-shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
-  --token-shadow-lg: 0 18px 48px rgba(15, 23, 42, 0.12);
+  --token-shadow-md: var(--token-shadow-card);
+  --token-shadow-lg: var(--token-shadow-popover);
 }
 
 [data-theme="dark"] {
   color-scheme: dark;
 
   --token-primary: #8ea0ff;
-  --token-primary-soft: #232b54;
-  --token-bg: #0f1424;
-  --token-surface: #171d31;
-  --token-surface-muted: #202740;
-  --token-border: #2d3654;
-  --token-text: #f6f7fb;
+  --token-primary-soft: #26315f;
+  --token-app-bg: #0f1424;
+  --token-app-sidebar: #161c2f;
+  --token-app-surface: #171d31;
+  --token-app-surface-soft: #202740;
+  --token-app-panel: #171d31;
+  --token-app-panel-muted: #202740;
+  --token-app-border: #2c3552;
+  --token-app-border-strong: #3a4568;
+
+  --token-bg: var(--token-app-bg);
+  --token-surface: var(--token-app-surface);
+  --token-surface-muted: var(--token-app-panel-muted);
+  --token-border: var(--token-app-border);
+
+  --token-text: #f5f7fb;
   --token-text-muted: #b8c0d4;
   --token-text-soft: #7f8aa8;
+  --token-danger: #ff6b6b;
   --token-success-soft: #064e3b;
   --token-warning-soft: #451a03;
   --token-error-soft: #450a0a;
   --token-info-soft: #1e3a5f;
 
-  --token-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
-  --token-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.3);
-  --token-shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.4);
+  --token-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --token-shadow-modal: 0 24px 80px rgba(0, 0, 0, 0.45);
+  --token-shadow-popover: 0 16px 48px rgba(0, 0, 0, 0.35);
 }
 
 @theme inline {
@@ -64,6 +92,16 @@
   --color-accent-yellow: var(--token-accent-yellow);
   --color-accent-pink: var(--token-accent-pink);
   --color-accent-rose: var(--token-accent-rose);
+
+  --color-app-bg: var(--token-app-bg);
+  --color-app-surface: var(--token-app-surface);
+  --color-app-surface-soft: var(--token-app-surface-soft);
+  --color-app-panel: var(--token-app-panel);
+  --color-app-panel-muted: var(--token-app-panel-muted);
+  --color-app-border: var(--token-app-border);
+  --color-app-border-strong: var(--token-app-border-strong);
+  --color-app-sidebar: var(--token-app-sidebar);
+
   --color-bg: var(--token-bg);
   --color-surface: var(--token-surface);
   --color-surface-muted: var(--token-surface-muted);
@@ -77,19 +115,23 @@
   --color-warning-soft: var(--token-warning-soft);
   --color-error: var(--token-error);
   --color-error-soft: var(--token-error-soft);
+  --color-danger: var(--token-danger);
   --color-info: var(--token-info);
   --color-info-soft: var(--token-info-soft);
 
   --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 22px;
-  --radius-xl: 28px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
 
+  --shadow-card: var(--token-shadow-card);
+  --shadow-modal: var(--token-shadow-modal);
+  --shadow-popover: var(--token-shadow-popover);
   --shadow-sm: var(--token-shadow-sm);
   --shadow-md: var(--token-shadow-md);
   --shadow-lg: var(--token-shadow-lg);
 
-  --spacing-sidebar: 260px;
+  --spacing-sidebar: 240px;
   --spacing-topbar: 72px;
   --spacing-layout-max: 1440px;
 
@@ -105,17 +147,11 @@
   --leading-normal: 1.45;
   --leading-relaxed: 1.65;
 
-  --font-weight-regular: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
-
   --z-dropdown: 50;
   --z-modal: 100;
   --z-toast: 200;
 
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
-  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
   --duration-fast: 120ms;
   --duration-normal: 200ms;
   --duration-slow: 320ms;
