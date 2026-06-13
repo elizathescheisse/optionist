@@ -23,6 +23,8 @@ export type Decision = {
   selectedOptionId: ID | null;
   notes: string;
   finalRationale: string;
+  openConcerns: string;
+  nextSteps: string;
   decidedAt: ISODateString | null;
   archivedAt: ISODateString | null;
   createdAt: ISODateString;

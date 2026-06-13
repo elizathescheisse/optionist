@@ -25,7 +25,7 @@ export default function ReviewToolbar({
   return (
     <div className="shrink-0 flex items-center gap-3 px-4 py-2.5 border-b border-gray-100 bg-white">
       <button
-        onClick={() => navigate(`/projects/${projectId}`)}
+        onClick={() => navigate(`/app/projects/${projectId}`)}
         className="text-sm text-gray-400 hover:text-gray-900 flex items-center gap-1 shrink-0 transition-colors motion-reduce:transition-none"
         aria-label="Back to project"
       >

@@ -1,20 +1,26 @@
 import type { OptionStatus } from "../../types/domain";
+import { cn } from "../../utils/cn";
 
 const STYLES: Record<OptionStatus, string> = {
-  active: "bg-blue-50 text-blue-500",
-  rejected: "bg-red-50 text-red-500",
-  final: "bg-emerald-50 text-emerald-600",
+  active: "bg-primary-soft text-primary",
+  rejected: "bg-error-soft text-error",
+  final: "bg-success-soft text-success",
 };
 
 const LABELS: Record<OptionStatus, string> = {
-  active: "Active",
-  rejected: "Rejected",
-  final: "Final",
+  active: "Ready for Review",
+  rejected: "Not Selected",
+  final: "Selected",
 };
 
 export default function OptionStatusBadge({ status }: { status: OptionStatus }) {
   return (
-    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${STYLES[status]}`}>
+    <span
+      className={cn(
+        "text-xs font-medium px-2 py-0.5 rounded-full shrink-0",
+        STYLES[status],
+      )}
+    >
       {LABELS[status]}
     </span>
   );
