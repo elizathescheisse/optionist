@@ -35,9 +35,9 @@ export default function DecisionListItem({ decision, isSelected, onSelect }: Pro
       className={`group px-3 py-2 rounded-lg cursor-pointer transition-colors motion-reduce:transition-none ${
         isSelected
           ? isFinalized
-            ? "bg-gray-100 text-gray-700"
+            ? "bg-gray-200/60 text-gray-700"
             : "bg-zinc-300 text-gray-900"
-          : "hover:bg-gray-50 text-gray-700"
+          : "hover:bg-gray-200/50 text-gray-700"
       }`}
       onClick={onSelect}
     >
