@@ -1,5 +1,4 @@
 import { useAppStore } from "../../store/useAppStore";
-import OptionStatusBadge from "./OptionStatusBadge";
 import EmptyState from "../layout/EmptyState";
 
 type Props = {
@@ -31,12 +30,6 @@ export default function OptionViewer({ optionId }: Props) {
               : "max-w-none rounded shadow-sm"
           }
         />
-      </div>
-      <div className="shrink-0 px-4 py-2 border-t border-gray-100 bg-white flex items-center gap-2">
-        <span className="text-sm font-medium text-gray-700 truncate">
-          {option.name}
-        </span>
-        <OptionStatusBadge status={option.status} />
       </div>
     </div>
   );

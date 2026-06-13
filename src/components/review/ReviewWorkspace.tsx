@@ -7,6 +7,7 @@ import OptionFilmstrip from "../options/OptionFilmstrip";
 import Button from "../shared/Button";
 import ReviewToolbar from "./ReviewToolbar";
 import KeyboardShortcutHelp from "./KeyboardShortcutHelp";
+import FinalizeDecisionModal from "../decisions/FinalizeDecisionModal";
 
 type Props = {
   projectId: string;
@@ -24,9 +25,10 @@ export default function ReviewWorkspace({ projectId, decisionId }: Props) {
   const goToPreviousOption = useAppStore((s) => s.goToPreviousOption);
   const rejectOption = useAppStore((s) => s.rejectOption);
   const restoreOption = useAppStore((s) => s.restoreOption);
-  const markOptionFinal = useAppStore((s) => s.markOptionFinal);
 
   const [showHelp, setShowHelp] = useState(false);
+  const [showFinalizeModal, setShowFinalizeModal] = useState(false);
+  const [finalizeOptionId, setFinalizeOptionId] = useState<string | null>(null);
 
   const hasOptions = (decision?.optionIds.length ?? 0) > 0;
   const currentIndex =
@@ -47,11 +49,13 @@ export default function ReviewWorkspace({ projectId, decisionId }: Props) {
   }
 
   function handleFinal() {
-    if (currentOption) markOptionFinal(currentOption.id);
+    if (!currentOption) return;
+    setFinalizeOptionId(currentOption.id);
+    setShowFinalizeModal(true);
   }
 
   useReviewKeyboard({
-    enabled: hasOptions,
+    enabled: hasOptions && !showFinalizeModal,
     onNext: goToNextOption,
     onPrevious: goToPreviousOption,
     onReject: handleReject,
@@ -98,6 +102,17 @@ export default function ReviewWorkspace({ projectId, decisionId }: Props) {
       <OptionFilmstrip decisionId={decisionId} />
 
       {showHelp && <KeyboardShortcutHelp onClose={() => setShowHelp(false)} />}
+
+      {showFinalizeModal && finalizeOptionId && (
+        <FinalizeDecisionModal
+          decisionId={decisionId}
+          optionId={finalizeOptionId}
+          onClose={() => {
+            setShowFinalizeModal(false);
+            setFinalizeOptionId(null);
+          }}
+        />
+      )}
     </div>
   );
 }

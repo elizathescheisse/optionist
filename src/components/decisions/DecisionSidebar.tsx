@@ -1,22 +1,29 @@
+import { useState, type FormEvent } from "react";
 import { useAppStore } from "../../store/useAppStore";
 import type { DecisionStatus } from "../../types/domain";
 import DecisionListItem from "./DecisionListItem";
-import CreateDecisionForm from "./CreateDecisionForm";
+import Button from "../shared/Button";
+import TextInput from "../shared/TextInput";
+import SessionReviewModal from "./SessionReviewModal";
 
-const GROUPS: { status: DecisionStatus; label: string }[] = [
-  { status: "active", label: "Active" },
-  { status: "finalized", label: "Finalized" },
+type Props = { projectId: string };
+
+const SECONDARY_GROUPS: { status: DecisionStatus; label: string }[] = [
   { status: "postponed", label: "Postponed" },
   { status: "archived", label: "Archived" },
 ];
-
-type Props = { projectId: string };
 
 export default function DecisionSidebar({ projectId }: Props) {
   const project = useAppStore((s) => s.projects[projectId]);
   const decisions = useAppStore((s) => s.decisions);
   const currentDecisionId = useAppStore((s) => s.currentDecisionId);
   const setCurrentDecision = useAppStore((s) => s.setCurrentDecision);
+  const createDecision = useAppStore((s) => s.createDecision);
+
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newTitle, setNewTitle] = useState("");
+  const [addError, setAddError] = useState("");
+  const [showReview, setShowReview] = useState(false);
 
   if (!project) return null;
 
@@ -24,43 +31,165 @@ export default function DecisionSidebar({ projectId }: Props) {
     .map((id) => decisions[id])
     .filter(Boolean);
 
-  const grouped = GROUPS.map(({ status, label }) => ({
+  const activeDecisions = projectDecisions.filter((d) => d.status === "active");
+  const finalizedDecisions = projectDecisions.filter((d) => d.status === "finalized");
+  const hasFinalized = finalizedDecisions.length > 0;
+
+  const secondaryGroups = SECONDARY_GROUPS.map(({ status, label }) => ({
     label,
     status,
     items: projectDecisions.filter((d) => d.status === status),
   })).filter((g) => g.items.length > 0);
 
+  function handleAdd(e: FormEvent) {
+    e.preventDefault();
+    const trimmed = newTitle.trim();
+    if (!trimmed) {
+      setAddError("Title is required.");
+      return;
+    }
+    const id = createDecision(projectId, { title: trimmed });
+    setCurrentDecision(id);
+    setNewTitle("");
+    setAddError("");
+    setShowAddForm(false);
+  }
+
   return (
-    <div className="flex flex-col h-full">
-      <div className="px-4 pt-4 pb-2 shrink-0">
-        <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest">
-          Decisions
-        </span>
-      </div>
+    <>
+      <div className="flex flex-col h-full">
+        {/* Header */}
+        <div className="px-4 pt-4 pb-2 shrink-0 flex items-center justify-between">
+          <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest">
+            Decisions
+          </span>
+          <button
+            onClick={() => {
+              setShowAddForm((v) => !v);
+              setAddError("");
+            }}
+            className="w-5 h-5 flex items-center justify-center rounded text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors text-base leading-none"
+            aria-label="Add decision"
+            title="Add decision"
+          >
+            +
+          </button>
+        </div>
 
-      <CreateDecisionForm projectId={projectId} />
-
-      <div className="flex-1 overflow-y-auto flex flex-col gap-4 px-2 py-2">
-        {grouped.length === 0 ? (
-          <p className="text-xs text-gray-400 px-2 py-1">No decisions yet.</p>
-        ) : (
-          grouped.map(({ label, status, items }) => (
-            <div key={status} className="flex flex-col gap-0.5">
-              <span className="text-xs font-medium text-gray-300 px-2 pt-1 pb-0.5 uppercase tracking-wider">
-                {label}
-              </span>
-              {items.map((decision) => (
-                <DecisionListItem
-                  key={decision.id}
-                  decision={decision}
-                  isSelected={currentDecisionId === decision.id}
-                  onSelect={() => setCurrentDecision(decision.id)}
-                />
-              ))}
+        {/* Inline add form */}
+        {showAddForm && (
+          <form onSubmit={handleAdd} className="flex flex-col gap-1 px-3 pb-2 shrink-0">
+            <div className="flex gap-1.5">
+              <TextInput
+                autoFocus
+                placeholder="Decision title"
+                value={newTitle}
+                onChange={(e) => {
+                  setNewTitle(e.target.value);
+                  if (addError) setAddError("");
+                }}
+                className="text-xs py-1"
+                aria-label="New decision title"
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") {
+                    setShowAddForm(false);
+                    setNewTitle("");
+                  }
+                }}
+              />
+              <Button type="submit" variant="primary" className="text-xs py-1 px-2 shrink-0">
+                Add
+              </Button>
             </div>
-          ))
+            {addError && <p className="text-xs text-red-500">{addError}</p>}
+          </form>
         )}
+
+        {/* Decision list */}
+        <div className="flex-1 overflow-y-auto flex flex-col py-1">
+          {/* Active decisions */}
+          {activeDecisions.length === 0 && finalizedDecisions.length === 0 && secondaryGroups.length === 0 && (
+            <p className="text-xs text-gray-400 px-4 py-2">
+              No decisions yet. Click + to add one.
+            </p>
+          )}
+
+          <div className="flex flex-col gap-0.5 px-2">
+            {activeDecisions.map((decision) => (
+              <DecisionListItem
+                key={decision.id}
+                decision={decision}
+                isSelected={currentDecisionId === decision.id}
+                onSelect={() => setCurrentDecision(decision.id)}
+              />
+            ))}
+          </div>
+
+          {/* Decided section */}
+          {finalizedDecisions.length > 0 && (
+            <div className="flex flex-col gap-0.5 mt-2">
+              <div className="flex items-center gap-2 px-4 py-1">
+                <span className="text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Decided
+                </span>
+                <div className="flex-1 h-px bg-gray-100" />
+              </div>
+              <div className="px-2 flex flex-col gap-0.5">
+                {finalizedDecisions.map((decision) => (
+                  <DecisionListItem
+                    key={decision.id}
+                    decision={decision}
+                    isSelected={currentDecisionId === decision.id}
+                    onSelect={() => setCurrentDecision(decision.id)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Postponed / Archived */}
+          {secondaryGroups.map(({ label, status, items }) => (
+            <div key={status} className="flex flex-col gap-0.5 mt-2">
+              <div className="flex items-center gap-2 px-4 py-1">
+                <span className="text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  {label}
+                </span>
+                <div className="flex-1 h-px bg-gray-100" />
+              </div>
+              <div className="px-2 flex flex-col gap-0.5">
+                {items.map((decision) => (
+                  <DecisionListItem
+                    key={decision.id}
+                    decision={decision}
+                    isSelected={currentDecisionId === decision.id}
+                    onSelect={() => setCurrentDecision(decision.id)}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Review button — pinned to bottom */}
+        <div className="shrink-0 px-3 py-3 border-t border-gray-100">
+          <Button
+            variant="primary"
+            className="w-full"
+            onClick={() => setShowReview(true)}
+            disabled={!hasFinalized}
+            title={!hasFinalized ? "Finalize a decision first" : undefined}
+          >
+            Review decisions
+          </Button>
+        </div>
       </div>
-    </div>
+
+      {showReview && (
+        <SessionReviewModal
+          projectId={projectId}
+          onClose={() => setShowReview(false)}
+        />
+      )}
+    </>
   );
 }

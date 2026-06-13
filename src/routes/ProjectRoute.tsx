@@ -1,15 +1,14 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAppStore } from "../store/useAppStore";
-import { Link } from "react-router-dom";
 import { useReviewKeyboard } from "../hooks/useReviewKeyboard";
 import DecisionSidebar from "../components/decisions/DecisionSidebar";
-import OptionUploader from "../components/options/OptionUploader";
 import OptionViewer from "../components/options/OptionViewer";
+import OptionActionsBar from "../components/options/OptionActionsBar";
 import OptionFilmstrip from "../components/options/OptionFilmstrip";
 import EmptyState from "../components/layout/EmptyState";
-import Button from "../components/shared/Button";
 import DecisionNotesPanel from "../components/decisions/DecisionNotesPanel";
+import FinalizeDecisionModal from "../components/decisions/FinalizeDecisionModal";
 
 export default function ProjectRoute() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -48,7 +47,7 @@ export default function ProjectRoute() {
       </main>
 
       {/* Right panel */}
-      <aside className="w-64 shrink-0 bg-white flex flex-col overflow-y-auto">
+      <aside className="w-64 shrink-0 bg-white flex flex-col overflow-hidden">
         <RightPanel decisionId={currentDecisionId} />
       </aside>
     </div>
@@ -59,13 +58,15 @@ function CenterPanel({ decisionId }: { decisionId: string }) {
   const decision = useAppStore((s) => s.decisions[decisionId]);
   const currentOptionId = useAppStore((s) => s.currentOptionId);
   const currentOption = useAppStore((s) =>
-    currentOptionId ? s.options[currentOptionId] : undefined
+    s.currentOptionId ? s.options[s.currentOptionId] : undefined
   );
   const goToNextOption = useAppStore((s) => s.goToNextOption);
   const goToPreviousOption = useAppStore((s) => s.goToPreviousOption);
   const rejectOption = useAppStore((s) => s.rejectOption);
   const restoreOption = useAppStore((s) => s.restoreOption);
-  const markOptionFinal = useAppStore((s) => s.markOptionFinal);
+
+  const [showFinalizeModal, setShowFinalizeModal] = useState(false);
+  const [finalizeOptionId, setFinalizeOptionId] = useState<string | null>(null);
 
   const hasOptions = (decision?.optionIds.length ?? 0) > 0;
 
@@ -76,11 +77,13 @@ function CenterPanel({ decisionId }: { decisionId: string }) {
   }
 
   function handleFinal() {
-    if (currentOption) markOptionFinal(currentOption.id);
+    if (!currentOption) return;
+    setFinalizeOptionId(currentOption.id);
+    setShowFinalizeModal(true);
   }
 
   useReviewKeyboard({
-    enabled: hasOptions,
+    enabled: hasOptions && !showFinalizeModal,
     onNext: goToNextOption,
     onPrevious: goToPreviousOption,
     onReject: handleReject,
@@ -91,57 +94,32 @@ function CenterPanel({ decisionId }: { decisionId: string }) {
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
-      {/* Decision header bar */}
-      <div className="px-4 py-2.5 border-b border-gray-100 flex items-center justify-between gap-4 shrink-0">
-        <span className="text-sm font-medium text-gray-800 truncate">
-          {decision.title}
-        </span>
-        {hasOptions && (
-          <div className="flex items-center gap-2 shrink-0">
-            <OptionUploader decisionId={decision.id} compact />
-            <Link
-              to={`/projects/${decision.projectId}/review/${decision.id}`}
-              className="px-3 py-1.5 rounded-md text-sm font-medium bg-gray-900 text-white hover:bg-gray-700 transition-colors shadow-sm"
-            >
-              Review
-            </Link>
-          </div>
-        )}
-      </div>
-
-      {/* Main content area */}
       {!hasOptions ? (
-        <div className="flex-1 overflow-y-auto">
-          <OptionUploader decisionId={decision.id} />
-        </div>
+        <EmptyState
+          message="No screenshots yet."
+          detail="Add screenshots from the right panel →"
+        />
       ) : (
         <>
           <OptionViewer optionId={currentOptionId} />
-
-          {/* Option review controls */}
-          {currentOption && (
-            <div className="shrink-0 px-4 py-2 border-t border-gray-100 bg-white flex items-center gap-2">
-              <Button
-                variant={currentOption.status === "rejected" ? "secondary" : "danger"}
-                onClick={handleReject}
-                disabled={currentOption.status === "final"}
-              >
-                {currentOption.status === "rejected" ? "Restore" : "Reject"}
-                <span className="ml-1 text-xs opacity-50">R</span>
-              </Button>
-              <Button
-                variant="primary"
-                onClick={handleFinal}
-                disabled={currentOption.status === "final"}
-              >
-                {currentOption.status === "final" ? "Final ✓" : "Mark final"}
-                <span className="ml-1 text-xs opacity-50">F</span>
-              </Button>
-            </div>
-          )}
-
+          <OptionActionsBar
+            decisionId={decisionId}
+            onMarkFinal={handleFinal}
+            onReject={handleReject}
+          />
           <OptionFilmstrip decisionId={decision.id} />
         </>
+      )}
+
+      {showFinalizeModal && finalizeOptionId && (
+        <FinalizeDecisionModal
+          decisionId={decisionId}
+          optionId={finalizeOptionId}
+          onClose={() => {
+            setShowFinalizeModal(false);
+            setFinalizeOptionId(null);
+          }}
+        />
       )}
     </div>
   );
