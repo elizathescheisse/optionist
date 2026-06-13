@@ -113,10 +113,10 @@ export default function OptionUploader({ decisionId, compact = false, panel = fa
   return (
     <div className={`flex flex-col gap-2 ${outerPad}`}>
       <div
-        className={`border-2 border-dashed rounded-lg ${innerPad} flex flex-col items-center gap-2 transition-colors motion-reduce:transition-none cursor-pointer select-none ${
+        className={`rounded-xl border ${innerPad} flex flex-col items-center gap-2 transition-colors motion-reduce:transition-none cursor-pointer select-none ${
           isDragging
-            ? "border-gray-400 bg-gray-50"
-            : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+            ? "border-gray-300 bg-gray-100"
+            : "border-gray-100 bg-gray-50 hover:border-gray-200 hover:bg-gray-100"
         }`}
         onClick={() => inputRef.current?.click()}
         onDragOver={(e) => {
