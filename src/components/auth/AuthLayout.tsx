@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import AuthBackgroundVideo from "./AuthBackgroundVideo";
 
 type Props = {
   children: React.ReactNode;
@@ -8,13 +9,8 @@ export default function AuthLayout({ children }: Props) {
   return (
     <div className="min-h-full grid lg:grid-cols-2">
       {/* Left — brand storytelling */}
-      <div className="relative hidden lg:flex flex-col justify-between p-12 bg-primary text-white overflow-hidden">
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-16 left-12 w-48 h-32 rounded-lg bg-white/10 rotate-[-6deg]" />
-          <div className="absolute top-32 left-32 w-56 h-36 rounded-lg bg-accent-yellow/30 rotate-[4deg]" />
-          <div className="absolute bottom-24 right-16 w-52 h-32 rounded-lg bg-accent-pink/20 rotate-[-3deg]" />
-          <div className="absolute bottom-40 left-20 w-44 h-28 rounded-lg bg-white/10 rotate-[8deg]" />
-        </div>
+      <div className="relative hidden lg:flex flex-col justify-between p-12 bg-auth-panel text-white overflow-hidden min-h-full">
+        <AuthBackgroundVideo />
 
         <div className="relative z-10">
           <Link to="/login" className="flex items-center gap-2.5">
@@ -25,7 +21,7 @@ export default function AuthLayout({ children }: Props) {
           </Link>
         </div>
 
-        <div className="relative z-10 flex flex-col gap-6 max-w-md">
+        <div className="relative z-10 flex flex-col gap-6 max-w-md -translate-y-[50px]">
           <h1 className="text-2xl font-semibold leading-tight tracking-tight">
             Compare design directions. Capture decisions. Move forward with confidence.
           </h1>

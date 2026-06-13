@@ -6,6 +6,7 @@
 
   --token-primary: #4d61a3;
   --token-primary-soft: #eef1ff;
+  --token-auth-panel: #1e1848;
   --token-accent-orange: #eba03f;
   --token-accent-yellow: #fdd86a;
   --token-accent-pink: #ff6e99;
@@ -58,6 +59,7 @@
 
   --color-primary: var(--token-primary);
   --color-primary-soft: var(--token-primary-soft);
+  --color-auth-panel: var(--token-auth-panel);
   --color-accent-orange: var(--token-accent-orange);
   --color-accent-yellow: var(--token-accent-yellow);
   --color-accent-pink: var(--token-accent-pink);
