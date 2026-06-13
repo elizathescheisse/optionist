@@ -28,9 +28,9 @@ export default function ProjectRoute() {
   if (!project) return null;
 
   return (
-    <div className="flex flex-1 overflow-hidden bg-gray-50">
+    <div className="flex flex-1 overflow-hidden bg-gray-100">
       {/* Left sidebar — receded surface */}
-      <aside className="w-60 shrink-0 bg-gray-50 flex flex-col overflow-hidden border-r border-gray-200/60">
+      <aside className="w-60 shrink-0 bg-gray-100 flex flex-col overflow-hidden border-r border-gray-200">
         <DecisionSidebar projectId={project.id} />
       </aside>
 
@@ -47,7 +47,7 @@ export default function ProjectRoute() {
       </main>
 
       {/* Right panel — receded surface */}
-      <aside className="w-64 shrink-0 bg-gray-50 flex flex-col overflow-hidden border-l border-gray-200/60">
+      <aside className="w-64 shrink-0 bg-gray-100 flex flex-col overflow-hidden border-l border-gray-200">
         <RightPanel decisionId={currentDecisionId} />
       </aside>
     </div>
