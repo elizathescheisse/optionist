@@ -1,7 +1,9 @@
-import { Link, useMatch } from "react-router-dom";
+import { Link, useMatch, useNavigate } from "react-router-dom";
 import { useAppStore } from "../../store/useAppStore";
+import Button from "../shared/Button";
 
 export default function Header() {
+  const navigate = useNavigate();
   const projectMatch = useMatch("/projects/:projectId");
   const reviewMatch = useMatch("/projects/:projectId/review/:decisionId");
   const projectId =
@@ -31,6 +33,15 @@ export default function Header() {
           </span>
         </>
       )}
+      <div className="ml-auto">
+        <Button
+          variant="secondary"
+          className="text-xs"
+          onClick={() => navigate("/history")}
+        >
+          View History
+        </Button>
+      </div>
     </header>
   );
 }

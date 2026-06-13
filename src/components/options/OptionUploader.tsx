@@ -11,6 +11,8 @@ import Button from "../shared/Button";
 type Props = {
   decisionId: string;
   compact?: boolean;
+  /** Renders a smaller drop zone suited for the right panel */
+  panel?: boolean;
 };
 
 const ERROR_MESSAGES: Record<FileValidationError, string> = {
@@ -19,7 +21,7 @@ const ERROR_MESSAGES: Record<FileValidationError, string> = {
   empty: "File is empty.",
 };
 
-export default function OptionUploader({ decisionId, compact = false }: Props) {
+export default function OptionUploader({ decisionId, compact = false, panel = false }: Props) {
   const [isDragging, setIsDragging] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -104,10 +106,14 @@ export default function OptionUploader({ decisionId, compact = false }: Props) {
     );
   }
 
+  const outerPad = panel ? "p-3" : "p-6";
+  const innerPad = panel ? "p-4 py-5" : "p-10";
+  const bodyText = panel ? "text-xs" : "text-sm";
+
   return (
-    <div className="flex flex-col gap-3 p-6">
+    <div className={`flex flex-col gap-2 ${outerPad}`}>
       <div
-        className={`border-2 border-dashed rounded-lg p-10 flex flex-col items-center gap-3 transition-colors motion-reduce:transition-none cursor-pointer select-none ${
+        className={`border-2 border-dashed rounded-lg ${innerPad} flex flex-col items-center gap-2 transition-colors motion-reduce:transition-none cursor-pointer select-none ${
           isDragging
             ? "border-gray-400 bg-gray-50"
             : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
@@ -120,7 +126,7 @@ export default function OptionUploader({ decisionId, compact = false }: Props) {
         onDragLeave={() => setIsDragging(false)}
         onDrop={handleDrop}
       >
-        <p className="text-sm text-gray-500 text-center">
+        <p className={`${bodyText} text-gray-500 text-center`}>
           {isLoading
             ? "Loading…"
             : "Drop screenshots here, or click to choose files"}
@@ -131,6 +137,7 @@ export default function OptionUploader({ decisionId, compact = false }: Props) {
         <Button
           type="button"
           variant="secondary"
+          className={panel ? "text-xs py-1" : ""}
           onClick={(e) => {
             e.stopPropagation();
             inputRef.current?.click();
