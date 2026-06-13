@@ -16,11 +16,11 @@ export default function ReviewRoute() {
 
   useEffect(() => {
     if (!project) {
-      navigate("/");
+      navigate("/app/projects");
       return;
     }
     if (!decision) {
-      navigate(`/projects/${projectId}`);
+      navigate(`/app/projects/${projectId}`);
       return;
     }
     setCurrentProject(project.id);

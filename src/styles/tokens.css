@@ -1,0 +1,122 @@
+/* Optionist design tokens — light defaults on :root, dark overrides on [data-theme="dark"] */
+
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  --token-primary: #4d61a3;
+  --token-primary-soft: #eef1ff;
+  --token-auth-panel: #1e1848;
+  --token-accent-orange: #eba03f;
+  --token-accent-yellow: #fdd86a;
+  --token-accent-pink: #ff6e99;
+  --token-accent-rose: #d1416c;
+  --token-bg: #f5f7fb;
+  --token-surface: #ffffff;
+  --token-surface-muted: #f8fafd;
+  --token-border: #e5e9f2;
+  --token-text: #151827;
+  --token-text-muted: #677085;
+  --token-text-soft: #98a1b3;
+  --token-success: #059669;
+  --token-success-soft: #ecfdf5;
+  --token-warning: #d97706;
+  --token-warning-soft: #fffbeb;
+  --token-error: #dc2626;
+  --token-error-soft: #fef2f2;
+  --token-info: #2563eb;
+  --token-info-soft: #eff6ff;
+
+  --token-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --token-shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --token-shadow-lg: 0 18px 48px rgba(15, 23, 42, 0.12);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --token-primary: #8ea0ff;
+  --token-primary-soft: #232b54;
+  --token-bg: #0f1424;
+  --token-surface: #171d31;
+  --token-surface-muted: #202740;
+  --token-border: #2d3654;
+  --token-text: #f6f7fb;
+  --token-text-muted: #b8c0d4;
+  --token-text-soft: #7f8aa8;
+  --token-success-soft: #064e3b;
+  --token-warning-soft: #451a03;
+  --token-error-soft: #450a0a;
+  --token-info-soft: #1e3a5f;
+
+  --token-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --token-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.3);
+  --token-shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.4);
+}
+
+@theme inline {
+  --font-sans: "Geist Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --color-primary: var(--token-primary);
+  --color-primary-soft: var(--token-primary-soft);
+  --color-auth-panel: var(--token-auth-panel);
+  --color-accent-orange: var(--token-accent-orange);
+  --color-accent-yellow: var(--token-accent-yellow);
+  --color-accent-pink: var(--token-accent-pink);
+  --color-accent-rose: var(--token-accent-rose);
+  --color-bg: var(--token-bg);
+  --color-surface: var(--token-surface);
+  --color-surface-muted: var(--token-surface-muted);
+  --color-border: var(--token-border);
+  --color-text: var(--token-text);
+  --color-text-muted: var(--token-text-muted);
+  --color-text-soft: var(--token-text-soft);
+  --color-success: var(--token-success);
+  --color-success-soft: var(--token-success-soft);
+  --color-warning: var(--token-warning);
+  --color-warning-soft: var(--token-warning-soft);
+  --color-error: var(--token-error);
+  --color-error-soft: var(--token-error-soft);
+  --color-info: var(--token-info);
+  --color-info-soft: var(--token-info-soft);
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-xl: 28px;
+
+  --shadow-sm: var(--token-shadow-sm);
+  --shadow-md: var(--token-shadow-md);
+  --shadow-lg: var(--token-shadow-lg);
+
+  --spacing-sidebar: 260px;
+  --spacing-topbar: 72px;
+  --spacing-layout-max: 1440px;
+
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-md: 16px;
+  --text-lg: 18px;
+  --text-xl: 22px;
+  --text-2xl: 28px;
+  --text-3xl: 36px;
+
+  --leading-tight: 1.15;
+  --leading-normal: 1.45;
+  --leading-relaxed: 1.65;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --z-dropdown: 50;
+  --z-modal: 100;
+  --z-toast: 200;
+
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --duration-fast: 120ms;
+  --duration-normal: 200ms;
+  --duration-slow: 320ms;
+}

@@ -24,7 +24,7 @@ describe("DecisionNotesPanel — persistence", () => {
 
   it("persists notes on blur", () => {
     render(<DecisionNotesPanel decisionId={decisionId} />);
-    const notes = screen.getByPlaceholderText("Working notes for this decision…");
+    const notes = screen.getByPlaceholderText(/Working notes — not shown in presentation mode/);
     fireEvent.change(notes, { target: { value: "Consider accessibility" } });
     fireEvent.blur(notes);
     expect(store().decisions[decisionId].notes).toBe("Consider accessibility");
@@ -32,7 +32,7 @@ describe("DecisionNotesPanel — persistence", () => {
 
   it("persists final rationale on blur", () => {
     render(<DecisionNotesPanel decisionId={decisionId} />);
-    const rationale = screen.getByPlaceholderText("Why was the final option chosen?");
+    const rationale = screen.getByPlaceholderText("Why was this direction chosen?");
     fireEvent.change(rationale, { target: { value: "Best contrast" } });
     fireEvent.blur(rationale);
     expect(store().decisions[decisionId].finalRationale).toBe("Best contrast");
@@ -48,7 +48,7 @@ describe("DecisionNotesPanel — persistence", () => {
 
   it("preserves line breaks in notes (stored verbatim)", () => {
     render(<DecisionNotesPanel decisionId={decisionId} />);
-    const notes = screen.getByPlaceholderText("Working notes for this decision…");
+    const notes = screen.getByPlaceholderText(/Working notes — not shown in presentation mode/);
     fireEvent.change(notes, { target: { value: "line one\nline two" } });
     fireEvent.blur(notes);
     expect(store().decisions[decisionId].notes).toBe("line one\nline two");
@@ -65,7 +65,7 @@ describe("DecisionNotesPanel — incomplete finalized warning", () => {
     });
     store().markOptionFinal(optionId);
     render(<DecisionNotesPanel decisionId={decisionId} />);
-    expect(screen.getByText(/finalized but has no rationale/i)).toBeInTheDocument();
+    expect(screen.getByText(/rationale is missing/i)).toBeInTheDocument();
   });
 
   it("hides the warning once rationale is present", () => {
@@ -78,13 +78,13 @@ describe("DecisionNotesPanel — incomplete finalized warning", () => {
     store().markOptionFinal(optionId);
     store().updateDecision(decisionId, { finalRationale: "Chosen for clarity" });
     render(<DecisionNotesPanel decisionId={decisionId} />);
-    expect(screen.queryByText(/finalized but has no rationale/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/rationale is missing/i)).not.toBeInTheDocument();
   });
 
   it("shows no warning for an active decision", () => {
     const { decisionId } = setup();
     render(<DecisionNotesPanel decisionId={decisionId} />);
-    expect(screen.queryByText(/finalized but has no rationale/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/rationale is missing/i)).not.toBeInTheDocument();
   });
 });
 
@@ -107,7 +107,7 @@ describe("DecisionNotesPanel — safe text rendering", () => {
   it("keeps script-like notes as a plain string value", () => {
     const { decisionId } = setup();
     render(<DecisionNotesPanel decisionId={decisionId} />);
-    const notes = screen.getByPlaceholderText("Working notes for this decision…");
+    const notes = screen.getByPlaceholderText(/Working notes — not shown in presentation mode/);
     fireEvent.change(notes, { target: { value: "<img src=x onerror=alert(1)>" } });
     fireEvent.blur(notes);
     expect(store().decisions[decisionId].notes).toBe("<img src=x onerror=alert(1)>");

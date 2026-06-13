@@ -35,7 +35,7 @@ export default function ProjectCard({ project }: Props) {
     <>
       <div
         className="bg-white rounded-xl p-4 flex items-center justify-between gap-4 shadow-sm hover:shadow-md transition-shadow motion-reduce:transition-none cursor-pointer group"
-        onClick={() => navigate(`/projects/${project.id}`)}
+        onClick={() => navigate(`/app/projects/${project.id}`)}
       >
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center shrink-0 text-gray-500 font-semibold text-sm">
@@ -59,7 +59,7 @@ export default function ProjectCard({ project }: Props) {
 
         <div className="flex items-center gap-2 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity motion-reduce:opacity-100">
           <Button
-            variant="danger"
+            variant="destructive"
             onClick={(e) => { e.stopPropagation(); setShowDeleteModal(true); }}
           >
             Delete
@@ -73,7 +73,7 @@ export default function ProjectCard({ project }: Props) {
           onConfirm={handleDelete}
           onCancel={() => setShowDeleteModal(false)}
           confirmLabel="Delete"
-          confirmVariant="danger"
+          confirmVariant="destructive"
         >
           <p>
             <strong>{project.name}</strong> and all its decisions and options

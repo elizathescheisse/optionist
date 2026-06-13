@@ -38,7 +38,7 @@ export default function ReviewWorkspace({ projectId, decisionId }: Props) {
   const totalOptions = decision?.optionIds.length ?? 0;
 
   function goBack() {
-    navigate(`/projects/${projectId}`);
+    navigate(`/app/projects/${projectId}`);
   }
 
   function handleReject() {
@@ -81,7 +81,7 @@ export default function ReviewWorkspace({ projectId, decisionId }: Props) {
       {currentOption && (
         <div className="shrink-0 px-4 py-2 border-t border-gray-200 bg-white flex items-center gap-2">
           <Button
-            variant={currentOption.status === "rejected" ? "secondary" : "danger"}
+            variant={currentOption.status === "rejected" ? "secondary" : "destructive"}
             onClick={handleReject}
             disabled={currentOption.status === "final"}
           >

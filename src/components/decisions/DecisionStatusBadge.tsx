@@ -1,22 +1,28 @@
 import type { DecisionStatus } from "../../types/domain";
+import { cn } from "../../utils/cn";
 
 const STYLES: Record<DecisionStatus, string> = {
-  active: "bg-blue-50 text-blue-500",
-  finalized: "bg-emerald-50 text-emerald-600",
-  postponed: "bg-amber-50 text-amber-600",
-  archived: "bg-gray-100 text-gray-400",
+  active: "bg-primary-soft text-primary",
+  finalized: "bg-success-soft text-success",
+  postponed: "bg-warning-soft text-warning",
+  archived: "bg-surface-muted text-text-soft",
 };
 
 const LABELS: Record<DecisionStatus, string> = {
-  active: "Active",
-  finalized: "Finalized",
+  active: "In Review",
+  finalized: "Decided",
   postponed: "Postponed",
   archived: "Archived",
 };
 
 export default function DecisionStatusBadge({ status }: { status: DecisionStatus }) {
   return (
-    <span className={`text-xs font-medium px-2 py-0.5 rounded-full shrink-0 ${STYLES[status]}`}>
+    <span
+      className={cn(
+        "text-xs font-medium px-2 py-0.5 rounded-full shrink-0",
+        STYLES[status],
+      )}
+    >
       {LABELS[status]}
     </span>
   );
