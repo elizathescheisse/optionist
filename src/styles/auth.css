@@ -1,0 +1,141 @@
+/* Premium auth hero — overlays and decorative accents */
+
+.auth-hero {
+  position: relative;
+  isolation: isolate;
+}
+
+.auth-hero__media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.auth-hero__video {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  transform: scale(1.05);
+  object-fit: cover;
+  opacity: 0.85;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-hero__video {
+    display: none;
+  }
+}
+
+.auth-hero__overlay-base {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(circle at 70% 20%, rgba(82, 100, 170, 0.24), transparent 36%),
+    linear-gradient(
+      90deg,
+      rgba(14, 18, 48, 0.92) 0%,
+      rgba(31, 32, 78, 0.82) 52%,
+      rgba(31, 32, 78, 0.72) 100%
+    );
+}
+
+.auth-hero__overlay-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    radial-gradient(ellipse at center, transparent 40%, rgba(14, 18, 48, 0.45) 100%),
+    linear-gradient(to top, rgba(14, 18, 48, 0.55) 0%, transparent 35%);
+  pointer-events: none;
+}
+
+.auth-hero__dots {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.22) 1px, transparent 1px);
+  background-size: 14px 14px;
+  opacity: 0.22;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.auth-hero__dots--tr {
+  top: 12%;
+  right: 8%;
+}
+
+.auth-hero__dots--bl {
+  bottom: 18%;
+  left: 55%;
+}
+
+.auth-hero__curve {
+  position: absolute;
+  pointer-events: none;
+  z-index: 3;
+  opacity: 0.18;
+}
+
+.auth-hero__curve svg {
+  width: 100%;
+  height: 100%;
+}
+
+.auth-hero__curve--bl {
+  bottom: 8%;
+  left: -2%;
+  width: 280px;
+  height: 120px;
+}
+
+.auth-hero__content {
+  position: relative;
+  z-index: 10;
+}
+
+.auth-hero__headline {
+  max-width: 600px;
+  font-size: clamp(2rem, 3vw, 2.75rem);
+  line-height: 1.08;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.auth-card {
+  width: min(100%, var(--token-auth-card-width));
+  padding: var(--token-auth-card-padding);
+  background: var(--token-app-panel);
+  border: 1px solid var(--token-app-border);
+  border-radius: var(--token-auth-radius-card);
+  box-shadow: var(--token-auth-shadow-card);
+}
+
+@media (max-width: 640px) {
+  .auth-card {
+    padding: 32px 24px;
+  }
+
+  .auth-hero__dots,
+  .auth-hero__curve {
+    display: none;
+  }
+}
+
+@media (max-width: 1023px) {
+  .auth-hero--compact {
+    min-height: 220px;
+  }
+
+  .auth-hero--compact .auth-hero__headline {
+    font-size: 1.5rem;
+  }
+
+  .auth-hero--compact .auth-hero__bullets {
+    display: none;
+  }
+}

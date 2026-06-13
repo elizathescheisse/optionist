@@ -1,106 +1,148 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "../../components/auth/AuthLayout";
+import AuthCard from "../../components/auth/AuthCard";
+import AuthDivider from "../../components/auth/AuthDivider";
+import AuthFooterLink from "../../components/auth/AuthFooterLink";
+import SocialAuthButtons from "../../components/auth/SocialAuthButtons";
+import AuthInput from "../../components/auth/AuthInput";
+import PasswordInput from "../../components/auth/PasswordInput";
 import GuestOnly from "../../components/auth/GuestOnly";
-import SocialLoginButtons from "../../components/auth/SocialLoginButtons";
-import Button from "../../components/shared/Button";
-import TextInput from "../../components/shared/TextInput";
-import Divider from "../../components/ui/Divider";
 import { useAuthStore } from "../../store/useAuthStore";
 import { cn } from "../../utils/cn";
+
+function isValidEmail(value: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
 
 export default function LoginRoute() {
   const navigate = useNavigate();
   const login = useAuthStore((s) => s.login);
-  const [showEmail, setShowEmail] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [rememberMe, setRememberMe] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [formError, setFormError] = useState("");
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError("");
-    if (login(email.trim(), password)) {
-      navigate("/app");
-    } else {
-      setError("Invalid credentials. Try test@test.com / test.");
+    setFormError("");
+    setEmailError("");
+    setPasswordError("");
+
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) {
+      setEmailError("Email is required.");
+      return;
     }
+    if (!isValidEmail(trimmedEmail)) {
+      setEmailError("Enter a valid email address.");
+      return;
+    }
+    if (!password) {
+      setPasswordError("Password is required.");
+      return;
+    }
+
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 400));
+
+    if (login(trimmedEmail, password)) {
+      navigate("/app");
+      return;
+    }
+
+    setLoading(false);
+    setFormError("Invalid email or password.");
   }
 
   return (
     <GuestOnly>
       <AuthLayout>
-        <div className="flex flex-col gap-6">
-          <div>
-            <h1 className="text-xl font-semibold text-text">Welcome back</h1>
-            <p className="text-sm text-text-muted mt-1">
-              Sign in to your Optionist workspace
-            </p>
-          </div>
+        <AuthCard>
+          <div className="flex flex-col gap-8">
+            <div className="text-center flex flex-col gap-2">
+              <h1 className="text-2xl font-semibold text-text tracking-tight">Welcome back</h1>
+              <p className="text-sm text-text-muted">Sign in to your Optionist workspace</p>
+            </div>
 
-          {!showEmail ? (
-            <SocialLoginButtons onEmailClick={() => setShowEmail(true)} />
-          ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <div
+            <SocialAuthButtons disabled={loading} />
+
+            <AuthDivider />
+
+            <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
+              <AuthInput
+                label="Email"
+                type="email"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setEmailError("");
+                  setFormError("");
+                }}
+                placeholder="you@company.com"
+                error={emailError}
+                disabled={loading}
+              />
+
+              <PasswordInput
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setPasswordError("");
+                  setFormError("");
+                }}
+                placeholder="Enter your password"
+                error={passwordError}
+                disabled={loading}
+              />
+
+              <div className="flex items-center justify-between gap-4 text-sm">
+                <label className="flex items-center gap-2.5 text-text-muted cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    disabled={loading}
+                    className="w-4 h-4 rounded border-app-border text-primary focus-visible:ring-2 focus-visible:ring-primary"
+                  />
+                  Keep me signed in
+                </label>
+                <Link
+                  to="/forgot-password"
+                  className="text-primary font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded shrink-0"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+
+              {formError && (
+                <p className="text-sm text-error text-center" role="alert">
+                  {formError}
+                </p>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading}
                 className={cn(
-                  "flex flex-col gap-4",
-                  "animate-[fadeSlideIn_200ms_var(--ease-standard)_forwards]",
+                  "w-full h-[var(--token-auth-button-height)] rounded-[var(--token-auth-radius-control)]",
+                  "bg-primary text-white text-sm font-semibold",
+                  "hover:opacity-90 transition-opacity motion-reduce:transition-none",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+                  "disabled:opacity-60 disabled:cursor-not-allowed",
                 )}
               >
-                <TextInput
-                  label="Email"
-                  type="email"
-                  autoComplete="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="test@test.com"
-                  helperText="Demo: test@test.com / test"
-                />
-                <TextInput
-                  label="Password"
-                  type="password"
-                  autoComplete="current-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="test"
-                  helperText={error ? undefined : "Password: test"}
-                  error={error || undefined}
-                />
-              </div>
-              <Button type="submit" variant="primary" className="w-full">
-                Sign in
-              </Button>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowEmail(false);
-                  setError("");
-                }}
-                className="text-sm text-text-muted hover:text-primary transition-colors"
-              >
-                Use another sign-in method
+                {loading ? "Signing in…" : "Sign in"}
               </button>
             </form>
-          )}
 
-          <Divider />
-
-          <div className="flex flex-col items-center gap-2 text-sm">
-            <Link
-              to="/forgot-password"
-              className="text-text-muted hover:text-primary transition-colors"
-            >
-              Forgot password?
-            </Link>
-            <p className="text-text-soft">
-              Don&apos;t have an account?{" "}
-              <Link to="/signup" className="text-primary font-medium hover:underline">
-                Sign up
-              </Link>
-            </p>
+            <AuthFooterLink />
           </div>
-        </div>
+        </AuthCard>
       </AuthLayout>
     </GuestOnly>
   );

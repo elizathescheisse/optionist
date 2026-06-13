@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthLayout from "../../components/auth/AuthLayout";
+import AuthCard from "../../components/auth/AuthCard";
 import GuestOnly from "../../components/auth/GuestOnly";
 import Button from "../../components/shared/Button";
 import TextInput from "../../components/shared/TextInput";
@@ -117,6 +118,7 @@ export default function OnboardingRoute() {
   return (
     <GuestOnly>
       <AuthLayout>
+        <AuthCard>
         <div className="flex flex-col gap-6">
           {/* Step indicator */}
           <div className="flex items-center gap-2">
@@ -202,6 +204,7 @@ export default function OnboardingRoute() {
             </Button>
           </div>
         </div>
+        </AuthCard>
       </AuthLayout>
     </GuestOnly>
   );
