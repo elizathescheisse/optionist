@@ -114,7 +114,7 @@ export default function DecisionSidebar({ projectId }: Props) {
             </p>
           )}
 
-          <div className="flex flex-col gap-0.5 px-2">
+          <div className="flex flex-col gap-2 px-3">
             {activeDecisions.map((decision) => (
               <DecisionListItem
                 key={decision.id}
@@ -134,7 +134,7 @@ export default function DecisionSidebar({ projectId }: Props) {
                 </span>
                 <div className="flex-1 h-px bg-gray-100" />
               </div>
-              <div className="px-2 flex flex-col gap-0.5">
+              <div className="px-3 flex flex-col gap-2">
                 {finalizedDecisions.map((decision) => (
                   <DecisionListItem
                     key={decision.id}
@@ -156,7 +156,7 @@ export default function DecisionSidebar({ projectId }: Props) {
                 </span>
                 <div className="flex-1 h-px bg-gray-100" />
               </div>
-              <div className="px-2 flex flex-col gap-0.5">
+              <div className="px-3 flex flex-col gap-2">
                 {items.map((decision) => (
                   <DecisionListItem
                     key={decision.id}
