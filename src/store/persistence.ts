@@ -17,13 +17,7 @@ export function loadState(): AppState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return EMPTY_STATE;
-    const parsed = JSON.parse(raw) as AppState;
-    // Backfill new fields on older saved state
-    for (const d of Object.values(parsed.decisions ?? {})) {
-      if (d.openConcerns === undefined) d.openConcerns = "";
-      if (d.nextSteps === undefined) d.nextSteps = "";
-    }
-    return parsed;
+    return JSON.parse(raw) as AppState;
   } catch {
     return EMPTY_STATE;
   }

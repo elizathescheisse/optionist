@@ -6,7 +6,6 @@ import Button from "../shared/Button";
 import DecisionStatusBadge from "./DecisionStatusBadge";
 import OptionUploader from "../options/OptionUploader";
 import Modal from "../shared/Modal";
-import Divider from "../ui/Divider";
 
 type Props = { decisionId: string };
 
@@ -15,19 +14,19 @@ export default function DecisionNotesPanel({ decisionId }: Props) {
   const selectedOption = useAppStore((s) =>
     s.decisions[decisionId]?.selectedOptionId
       ? s.options[s.decisions[decisionId].selectedOptionId!]
-      : undefined,
+      : undefined
   );
   const updateDecision = useAppStore((s) => s.updateDecision);
   const postponeDecision = useAppStore((s) => s.postponeDecision);
   const reactivateDecision = useAppStore((s) => s.reactivateDecision);
   const deleteDecision = useAppStore((s) => s.deleteDecision);
 
+  // Local draft state; the panel is remounted per decision via a key prop,
+  // so these initialize correctly when the selected decision changes.
   const [title, setTitle] = useState(decision?.title ?? "");
   const [description, setDescription] = useState(decision?.description ?? "");
   const [notes, setNotes] = useState(decision?.notes ?? "");
   const [finalRationale, setFinalRationale] = useState(decision?.finalRationale ?? "");
-  const [openConcerns, setOpenConcerns] = useState(decision?.openConcerns ?? "");
-  const [nextSteps, setNextSteps] = useState(decision?.nextSteps ?? "");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   if (!decision) return null;
@@ -54,16 +53,17 @@ export default function DecisionNotesPanel({ decisionId }: Props) {
 
   return (
     <>
-      <div className="flex flex-col gap-4 p-4 overflow-y-auto flex-1 min-h-0">
+      <div className="flex flex-col gap-4 p-4 overflow-y-auto">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">
+          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
             Decision
           </span>
           <DecisionStatusBadge status={decision.status} />
         </div>
 
+        {/* Title */}
         <label className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-text-muted">Comparison title</span>
+          <span className="text-xs font-medium text-gray-500">Title</span>
           <TextInput
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -71,11 +71,11 @@ export default function DecisionNotesPanel({ decisionId }: Props) {
           />
         </label>
 
+        {/* Description */}
         <label className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-text-muted">Decision prompt</span>
+          <span className="text-xs font-medium text-gray-500">Description</span>
           <Textarea
             rows={2}
-            placeholder="What decision needs to be made?"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             onBlur={() => {
@@ -86,51 +86,53 @@ export default function DecisionNotesPanel({ decisionId }: Props) {
           />
         </label>
 
+        {/* Screenshots uploader */}
         <div className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-text-muted">Screenshots</span>
+          <span className="text-xs font-medium text-gray-500">Screenshots</span>
           <div className="-mx-4">
             <OptionUploader decisionId={decisionId} panel />
           </div>
         </div>
 
-        <Divider />
-
+        {/* Notes */}
         <label className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-text-muted">
-            Facilitator Notes
-            <span className="text-text-soft font-normal ml-1">(private)</span>
-          </span>
+          <span className="text-xs font-medium text-gray-500">Notes</span>
           <Textarea
-            rows={3}
-            placeholder="Working notes — not shown in presentation mode…"
+            rows={4}
+            placeholder="Working notes for this decision…"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             onBlur={() => {
-              if (notes !== decision.notes) updateDecision(decisionId, { notes });
+              if (notes !== decision.notes)
+                updateDecision(decisionId, { notes });
             }}
           />
         </label>
 
+        {/* Chosen option (when finalized) */}
         {selectedOption && (
           <div className="flex flex-col gap-1">
-            <span className="text-xs font-medium text-text-muted">Recommendation</span>
-            <div className="flex items-center gap-2 border border-success/30 bg-success-soft rounded-lg px-2 py-1.5">
+            <span className="text-xs font-medium text-gray-500">Chosen option</span>
+            <div className="flex items-center gap-2 border border-green-200 bg-green-50 rounded-lg px-2 py-1.5">
               <img
                 src={selectedOption.imageDataUrl}
                 alt={selectedOption.name}
                 className="w-8 h-8 object-cover rounded"
                 draggable={false}
               />
-              <span className="text-sm text-text truncate">{selectedOption.name}</span>
+              <span className="text-sm text-gray-800 truncate">
+                {selectedOption.name}
+              </span>
             </div>
           </div>
         )}
 
+        {/* Final rationale */}
         <label className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-text-muted">Rationale</span>
+          <span className="text-xs font-medium text-gray-500">Final rationale</span>
           <Textarea
-            rows={2}
-            placeholder="Why was this direction chosen?"
+            rows={3}
+            placeholder="Why was the final option chosen?"
             value={finalRationale}
             onChange={(e) => setFinalRationale(e.target.value)}
             onBlur={() => {
@@ -139,41 +141,15 @@ export default function DecisionNotesPanel({ decisionId }: Props) {
             }}
           />
           {rationaleMissing && (
-            <span className="text-xs text-warning bg-warning-soft rounded px-2 py-1">
-              Decision captured but rationale is missing.
+            <span className="text-xs text-yellow-700 bg-yellow-50 rounded px-2 py-1">
+              This decision is finalized but has no rationale. Add one to fully
+              complete it.
             </span>
           )}
         </label>
 
-        <label className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-text-muted">Open concerns</span>
-          <Textarea
-            rows={2}
-            placeholder="Unresolved questions or risks…"
-            value={openConcerns}
-            onChange={(e) => setOpenConcerns(e.target.value)}
-            onBlur={() => {
-              if (openConcerns !== decision.openConcerns)
-                updateDecision(decisionId, { openConcerns });
-            }}
-          />
-        </label>
-
-        <label className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-text-muted">Next step</span>
-          <Textarea
-            rows={2}
-            placeholder="What happens after this decision?"
-            value={nextSteps}
-            onChange={(e) => setNextSteps(e.target.value)}
-            onBlur={() => {
-              if (nextSteps !== decision.nextSteps)
-                updateDecision(decisionId, { nextSteps });
-            }}
-          />
-        </label>
-
-        <div className="flex flex-col gap-2 pt-1 border-t border-border">
+        {/* Action buttons — secondary only, no primary */}
+        <div className="flex flex-col gap-2 pt-1 border-t border-gray-100">
           {canReactivate && (
             <Button variant="secondary" onClick={() => reactivateDecision(decisionId)}>
               Reactivate
@@ -184,23 +160,23 @@ export default function DecisionNotesPanel({ decisionId }: Props) {
               Postpone
             </Button>
           )}
-          <Button variant="destructive" onClick={() => setShowDeleteModal(true)}>
-            Delete comparison
+          <Button variant="danger" onClick={() => setShowDeleteModal(true)}>
+            Delete decision
           </Button>
         </div>
       </div>
 
       {showDeleteModal && (
         <Modal
-          title="Delete comparison?"
+          title="Delete decision?"
           onConfirm={handleDelete}
           onCancel={() => setShowDeleteModal(false)}
           confirmLabel="Delete"
-          confirmVariant="destructive"
+          confirmVariant="danger"
         >
           <p>
-            <strong>{decision.title}</strong> and all its options will be permanently
-            deleted. This cannot be undone.
+            <strong>{decision.title}</strong> and all its options will be
+            permanently deleted. This cannot be undone.
           </p>
         </Modal>
       )}

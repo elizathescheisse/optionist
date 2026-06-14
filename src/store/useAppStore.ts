@@ -19,7 +19,7 @@ type AppStore = AppState & {
   setCurrentProject: (projectId: ID | null) => void;
 
   createDecision: (projectId: ID, input: { title: string; description?: string }) => ID;
-  updateDecision: (decisionId: ID, patch: Partial<Pick<Decision, "title" | "description" | "notes" | "finalRationale" | "openConcerns" | "nextSteps">>) => void;
+  updateDecision: (decisionId: ID, patch: Partial<Pick<Decision, "title" | "description" | "notes" | "finalRationale">>) => void;
   deleteDecision: (decisionId: ID) => void;
   archiveDecision: (decisionId: ID) => void;
   postponeDecision: (decisionId: ID) => void;
@@ -133,8 +133,6 @@ export const useAppStore = create<AppStore>((set, get) => ({
       selectedOptionId: null,
       notes: "",
       finalRationale: "",
-      openConcerns: "",
-      nextSteps: "",
       decidedAt: null,
       archivedAt: null,
       createdAt: ts,

@@ -16,18 +16,14 @@ export default function FinalizeDecisionModal({ decisionId, optionId, onClose }:
   const updateDecision = useAppStore((s) => s.updateDecision);
 
   const [rationale, setRationale] = useState(decision?.finalRationale ?? "");
-  const [openConcerns, setOpenConcerns] = useState(decision?.openConcerns ?? "");
-  const [nextSteps, setNextSteps] = useState(decision?.nextSteps ?? "");
 
   if (!decision || !option) return null;
 
   function handleFinalize() {
     markOptionFinal(optionId);
-    updateDecision(decisionId, {
-      finalRationale: rationale.trim(),
-      openConcerns: openConcerns.trim(),
-      nextSteps: nextSteps.trim(),
-    });
+    if (rationale.trim()) {
+      updateDecision(decisionId, { finalRationale: rationale.trim() });
+    }
     onClose();
   }
 
@@ -37,13 +33,14 @@ export default function FinalizeDecisionModal({ decisionId, optionId, onClose }:
   }
 
   return (
-    <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/30 backdrop-blur-sm">
-      <div className="bg-surface rounded-xl shadow-lg w-full max-w-md mx-4 flex flex-col overflow-hidden border border-border">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 flex flex-col overflow-hidden">
+        {/* Header */}
         <div className="flex items-center justify-between px-6 pt-6 pb-4">
-          <h2 className="font-semibold text-text text-md">Capture decision</h2>
+          <h2 className="font-semibold text-gray-900 text-base">Finalize decision</h2>
           <button
             onClick={onClose}
-            className="text-text-soft hover:text-text transition-colors text-lg leading-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
+            className="text-gray-400 hover:text-gray-600 transition-colors text-lg leading-none"
             aria-label="Close"
           >
             ×
@@ -51,7 +48,8 @@ export default function FinalizeDecisionModal({ decisionId, optionId, onClose }:
         </div>
 
         <div className="px-6 pb-6 flex flex-col gap-4">
-          <div className="flex items-center gap-3 bg-surface-muted rounded-lg p-3">
+          {/* Chosen option preview */}
+          <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3">
             <img
               src={option.imageDataUrl}
               alt={option.name}
@@ -59,48 +57,36 @@ export default function FinalizeDecisionModal({ decisionId, optionId, onClose }:
               className="w-12 h-12 object-cover rounded-lg shrink-0"
             />
             <div className="flex flex-col min-w-0">
-              <span className="text-xs text-text-soft font-medium uppercase tracking-wider">
-                Selected option
-              </span>
-              <span className="text-sm font-medium text-text truncate">{option.name}</span>
+              <span className="text-xs text-gray-400 font-medium uppercase tracking-wider">Chosen option</span>
+              <span className="text-sm font-medium text-gray-900 truncate">{option.name}</span>
             </div>
           </div>
 
-          <Textarea
-            label="Rationale"
-            rows={3}
-            placeholder="Why did you choose this direction?"
-            value={rationale}
-            onChange={(e) => setRationale(e.target.value)}
-            autoFocus
-          />
+          {/* Rationale */}
+          <label className="flex flex-col gap-1.5">
+            <span className="text-sm font-medium text-gray-700">
+              Why did you choose this?
+              <span className="text-gray-400 font-normal ml-1">(optional)</span>
+            </span>
+            <Textarea
+              rows={4}
+              placeholder="Add your rationale — this helps future you and your team understand the decision…"
+              value={rationale}
+              onChange={(e) => setRationale(e.target.value)}
+              autoFocus
+            />
+          </label>
 
-          <Textarea
-            label="Open concerns"
-            rows={2}
-            placeholder="Unresolved questions or risks…"
-            value={openConcerns}
-            onChange={(e) => setOpenConcerns(e.target.value)}
-          />
-
-          <Textarea
-            label="Next step"
-            rows={2}
-            placeholder="What happens after this decision?"
-            value={nextSteps}
-            onChange={(e) => setNextSteps(e.target.value)}
-          />
-
+          {/* Actions */}
           <div className="flex items-center justify-between pt-1">
             <button
-              type="button"
               onClick={handleSkip}
-              className="text-sm text-text-soft hover:text-text transition-colors"
+              className="text-sm text-gray-400 hover:text-gray-600 transition-colors"
             >
               Skip for now →
             </button>
             <Button variant="primary" onClick={handleFinalize}>
-              Capture decision
+              Finalize decision
             </Button>
           </div>
         </div>

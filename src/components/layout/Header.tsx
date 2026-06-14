@@ -4,48 +4,40 @@ import Button from "../shared/Button";
 
 export default function Header() {
   const navigate = useNavigate();
-  const projectMatch = useMatch("/app/projects/:projectId");
-  const reviewMatch = useMatch("/app/projects/:projectId/review/:decisionId");
-  const comparisonMatch = useMatch("/app/comparisons/:comparisonId");
+  const projectMatch = useMatch("/projects/:projectId");
+  const reviewMatch = useMatch("/projects/:projectId/review/:decisionId");
   const projectId =
     projectMatch?.params.projectId ?? reviewMatch?.params.projectId;
-
-  const comparisonId = comparisonMatch?.params.comparisonId;
-  const comparisonDecision = useAppStore((s) =>
-    comparisonId ? s.decisions[comparisonId] : undefined,
-  );
-  const resolvedProjectId = projectId ?? comparisonDecision?.projectId;
-
   const project = useAppStore((s) =>
-    resolvedProjectId ? s.projects[resolvedProjectId] : undefined,
+    projectId ? s.projects[projectId] : undefined
   );
 
   return (
-    <header className="bg-surface border-b border-border px-5 h-[var(--spacing-topbar)] flex items-center gap-3 shrink-0">
+    <header className="bg-white border-b border-gray-100 px-5 h-12 flex items-center gap-3 shrink-0">
       <Link
-        to="/app"
+        to="/"
         className="flex items-center gap-2 hover:opacity-75 transition-opacity motion-reduce:transition-none"
       >
-        <span className="w-6 h-6 rounded-md bg-primary flex items-center justify-center text-white text-xs font-bold select-none">
+        <span className="w-6 h-6 rounded-md bg-gray-900 flex items-center justify-center text-white text-xs font-bold select-none">
           O
         </span>
-        <span className="font-semibold text-text tracking-tight text-sm">
+        <span className="font-semibold text-gray-900 tracking-tight text-sm">
           Optionist
         </span>
       </Link>
       {project && (
         <>
-          <span className="text-border select-none text-sm">/</span>
-          <span className="text-sm text-text-muted truncate max-w-xs">
+          <span className="text-gray-200 select-none text-sm">/</span>
+          <span className="text-sm text-gray-500 truncate max-w-xs">
             {project.name}
           </span>
         </>
       )}
-      <div className="ml-auto flex items-center gap-2">
+      <div className="ml-auto">
         <Button
           variant="secondary"
           className="text-xs"
-          onClick={() => navigate("/app/history")}
+          onClick={() => navigate("/history")}
         >
           View History
         </Button>
