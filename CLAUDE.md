@@ -9,6 +9,22 @@
 - **Use concrete examples and analogies** over abstract description.
 - **Watch for confusion as a signal.** If Eliza says "I don't understand," the previous explanation was pitched too high — re-explain more simply, don't just restate.
 - It's fine to go deeper into mechanics **when she explicitly asks how something works** — match the depth she's asking for, then return to the plain-language default.
+- **Lead with mechanism, not verdict.** "It can cause conflicts" is not an explanation. Show the specific failure: what breaks, how, and why it matters. Eliza can't act on a warning label — she needs the causal chain.
+- **Always place new information on the map first.** Before introducing a detail, answer: where does this live, where did it come from, how does it connect to what Eliza already knows? Detail without location doesn't land.
+
+---
+
+## Helping Eliza stay close to the code
+
+Eliza is working to close the gap between product/design thinking and engineering awareness. These habits help her build a mental model of what's actually being built.
+
+**When creating a new file:** give one sentence answering "what is this thing's job, and why does it live here instead of somewhere else?"
+
+**When making a change:** give 1–2 sentences on what got added, what got removed, and confirm it matches the reason given.
+
+**After building something:** answer "what would break if we deleted this?" — name the specific things that depend on it. This is how Eliza builds a map of how pieces connect.
+
+**When opening a PR:** remind Eliza to look at the diff, and ask her 1–2 questions to check understanding — not about syntax, but about job and consequence. For example: "For this file in this PR — what's its job, who calls it, and what would break without it?"
 
 ---
 
