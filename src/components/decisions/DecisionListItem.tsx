@@ -41,11 +41,6 @@ export default function DecisionListItem({ decision, isSelected, onSelect }: Pro
       }`}
       onClick={onSelect}
     >
-      {/* Finalized accent stripe */}
-      {isFinalized && (
-        <div className="absolute left-0 top-2 bottom-2 w-0.5 bg-green-400 rounded-full" />
-      )}
-
       <div className="px-3 py-3">
         <div className="flex items-start justify-between gap-2">
           <span
@@ -57,13 +52,11 @@ export default function DecisionListItem({ decision, isSelected, onSelect }: Pro
                 : "text-gray-800"
             }`}
           >
+            {isFinalized && (
+              <span className="mr-1 text-green-400 text-xs font-semibold">✓</span>
+            )}
             {decision.title}
           </span>
-
-          {/* Finalized check badge */}
-          {isFinalized && (
-            <span className="shrink-0 mt-0.5 text-green-400 text-xs font-semibold">✓</span>
-          )}
 
           {/* Hover actions */}
           {!isSelected && !isFinalized && (
