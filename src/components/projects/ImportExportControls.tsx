@@ -89,7 +89,7 @@ export default function ImportExportControls() {
           onConfirm={confirmImport}
           onCancel={() => setPendingData(null)}
           confirmLabel="Replace"
-          confirmVariant="destructive"
+          confirmVariant="danger"
         >
           <p>
             This will replace all your projects, decisions, and options with the
