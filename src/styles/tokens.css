@@ -1,0 +1,30 @@
+/*
+ * Optionist design tokens — minimal seed.
+ *
+ * Two layers, mirroring the structure we'll grow into:
+ *   1. :root          — the raw named color values
+ *   2. @theme inline  — the bridge that turns each token into Tailwind
+ *                       utilities (e.g. --color-error makes `bg-error`,
+ *                       `text-error`, `border-error` exist).
+ *
+ * Currently only the tokens the toast system needs. Adding more of the
+ * design system later = adding rows to these two blocks.
+ */
+
+:root {
+  --token-surface: #ffffff;
+  --token-border: #e3e8f2;
+  --token-text: #151827;
+  --token-success: #059669;
+  --token-error: #dc2626;
+}
+
+@theme inline {
+  --color-surface: var(--token-surface);
+  --color-border: var(--token-border);
+  --color-text: var(--token-text);
+  --color-success: var(--token-success);
+  --color-error: var(--token-error);
+
+  --z-toast: 200;
+}

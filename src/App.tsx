@@ -5,19 +5,24 @@ import ProjectRoute from "./routes/ProjectRoute";
 import ReviewRoute from "./routes/ReviewRoute";
 import HistoryRoute from "./routes/HistoryRoute";
 import NotFoundRoute from "./routes/NotFoundRoute";
+import { ToastProvider } from "./context/ToastContext";
+import StorageQuotaWatcher from "./components/shared/StorageQuotaWatcher";
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <AppShell>
-        <Routes>
-          <Route path="/" element={<ProjectsRoute />} />
-          <Route path="/projects/:projectId" element={<ProjectRoute />} />
-          <Route path="/projects/:projectId/review/:decisionId" element={<ReviewRoute />} />
-          <Route path="/history" element={<HistoryRoute />} />
-          <Route path="*" element={<NotFoundRoute />} />
-        </Routes>
-      </AppShell>
-    </BrowserRouter>
+    <ToastProvider>
+      <StorageQuotaWatcher />
+      <BrowserRouter>
+        <AppShell>
+          <Routes>
+            <Route path="/" element={<ProjectsRoute />} />
+            <Route path="/projects/:projectId" element={<ProjectRoute />} />
+            <Route path="/projects/:projectId/review/:decisionId" element={<ReviewRoute />} />
+            <Route path="/history" element={<HistoryRoute />} />
+            <Route path="*" element={<NotFoundRoute />} />
+          </Routes>
+        </AppShell>
+      </BrowserRouter>
+    </ToastProvider>
   );
 }
