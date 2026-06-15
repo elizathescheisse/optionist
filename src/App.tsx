@@ -7,11 +7,13 @@ import HistoryRoute from "./routes/HistoryRoute";
 import NotFoundRoute from "./routes/NotFoundRoute";
 import { ToastProvider } from "./context/ToastContext";
 import StorageQuotaWatcher from "./components/shared/StorageQuotaWatcher";
+import DesignSystemModal from "./components/shared/DesignSystemModal";
 
 export default function App() {
   return (
     <ToastProvider>
       <StorageQuotaWatcher />
+      <DesignSystemModal />
       <BrowserRouter>
         <AppShell>
           <Routes>
