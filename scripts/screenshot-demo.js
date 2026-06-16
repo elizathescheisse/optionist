@@ -37,7 +37,16 @@ await page.setViewportSize({ width: 1280, height: 800 });
 
 // Clear localStorage and load the app — seed.json will auto-load
 await page.goto("http://localhost:5173");
-await page.evaluate(() => localStorage.clear());
+await page.evaluate(() => {
+  localStorage.clear();
+  // The app now gates on auth; seed a demo session so the screenshot reaches
+  // the workspace instead of the login screen. Auth lives in its own key, so
+  // this does not affect the seed-data load (which keys off the store key).
+  localStorage.setItem(
+    "optionist.auth",
+    JSON.stringify({ email: "test@test.com", name: "Demo User" }),
+  );
+});
 await page.reload({ waitUntil: "networkidle" });
 
 // Wait for the demo project card to appear
