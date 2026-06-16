@@ -150,12 +150,12 @@ const HIS_SIZES = [
 
 function TokenTable({ rows, usedIn }: { rows: TokenRow[]; usedIn?: string[] }) {
   return (
-    <table className="text-xs w-full mt-2 border-collapse">
+    <table className="text-xs w-full mt-2 border-collapse table-fixed">
       <thead>
         <tr className="text-gray-400 text-left">
           <th className="font-medium pb-1 pr-4 w-24">piece</th>
           <th className="font-medium pb-1 pr-4 w-40">token</th>
-          <th className="font-medium pb-1 pr-4">value</th>
+          <th className="font-medium pb-1 pr-4 w-44">value</th>
           {usedIn && <th className="font-medium pb-1">used in</th>}
         </tr>
       </thead>
