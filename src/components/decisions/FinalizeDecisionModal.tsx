@@ -33,14 +33,14 @@ export default function FinalizeDecisionModal({ decisionId, optionId, onClose }:
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay backdrop-blur-sm">
+      <div className="bg-surface rounded-2xl shadow-2xl w-full max-w-md mx-4 flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-6 pb-4">
-          <h2 className="font-semibold text-gray-900 text-base">Finalize decision</h2>
+          <h2 className="font-semibold text-text text-base">Finalize decision</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors text-lg leading-none"
+            className="text-muted hover:text-gray-600 transition-colors text-lg leading-none"
             aria-label="Close"
           >
             ×
@@ -49,7 +49,7 @@ export default function FinalizeDecisionModal({ decisionId, optionId, onClose }:
 
         <div className="px-6 pb-6 flex flex-col gap-4">
           {/* Chosen option preview */}
-          <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3">
+          <div className="flex items-center gap-3 bg-subtle rounded-xl p-3">
             <img
               src={option.imageDataUrl}
               alt={option.name}
@@ -57,8 +57,8 @@ export default function FinalizeDecisionModal({ decisionId, optionId, onClose }:
               className="w-12 h-12 object-cover rounded-lg shrink-0"
             />
             <div className="flex flex-col min-w-0">
-              <span className="text-xs text-gray-400 font-medium uppercase tracking-wider">Chosen option</span>
-              <span className="text-sm font-medium text-gray-900 truncate">{option.name}</span>
+              <span className="text-xs text-muted font-medium uppercase tracking-wider">Chosen option</span>
+              <span className="text-sm font-medium text-text truncate">{option.name}</span>
             </div>
           </div>
 
@@ -66,7 +66,7 @@ export default function FinalizeDecisionModal({ decisionId, optionId, onClose }:
           <label className="flex flex-col gap-1.5">
             <span className="text-sm font-medium text-gray-700">
               Why did you choose this?
-              <span className="text-gray-400 font-normal ml-1">(optional)</span>
+              <span className="text-muted font-normal ml-1">(optional)</span>
             </span>
             <Textarea
               rows={4}
@@ -87,7 +87,7 @@ export default function FinalizeDecisionModal({ decisionId, optionId, onClose }:
           <div className="flex items-center justify-between pt-1">
             <button
               onClick={handleSkip}
-              className="text-sm text-gray-400 hover:text-gray-600 transition-colors"
+              className="text-sm text-muted hover:text-gray-600 transition-colors"
             >
               Skip for now →
             </button>

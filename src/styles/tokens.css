@@ -19,6 +19,9 @@
   --token-error: #dc2626;
   --token-warning: #a16207;
   --token-warning-soft: #fefce8;
+  --token-muted: #9ca3af;
+  --token-subtle: #f9fafb;
+  --token-overlay: rgba(0, 0, 0, 0.3);
 }
 
 @theme inline {
@@ -29,6 +32,9 @@
   --color-error: var(--token-error);
   --color-warning: var(--token-warning);
   --color-warning-soft: var(--token-warning-soft);
+  --color-muted: var(--token-muted);
+  --color-subtle: var(--token-subtle);
+  --color-overlay: var(--token-overlay);
 
   /* Typography: also sets Tailwind's default `font-sans`. */
   --font-sans: "Geist Sans", system-ui, -apple-system, BlinkMacSystemFont,
