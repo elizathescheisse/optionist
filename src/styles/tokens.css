@@ -47,10 +47,6 @@
   --token-error-soft: #fef2f2;
   --token-info: #2563eb;
   --token-info-soft: #eff6ff;
-
-  --token-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
-  --token-shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
-  --token-shadow-lg: 0 18px 48px rgba(15, 23, 42, 0.12);
 }
 
 [data-theme="dark"] {
@@ -73,10 +69,6 @@
   /* keep migrated modals readable in dark */
   --token-subtle: #202740;
   --token-muted: #7f8aa8;
-
-  --token-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
-  --token-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.3);
-  --token-shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.4);
 }
 
 @theme inline {
@@ -109,47 +101,29 @@
   --color-info: var(--token-info);
   --color-info-soft: var(--token-info-soft);
 
-  --shadow-sm: var(--token-shadow-sm);
-  --shadow-md: var(--token-shadow-md);
-  --shadow-lg: var(--token-shadow-lg);
-
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 22px;
-  --radius-xl: 28px;
+  /*
+   * NOTE: we deliberately do NOT redefine Tailwind's built-in scales here
+   * (--radius-*, --shadow-*, --text-xs/sm/lg/xl/2xl/3xl, --leading-*,
+   * --font-weight-*). Those token names ARE Tailwind's default utilities, so
+   * overriding them changes every existing component that uses rounded-md,
+   * shadow-sm, text-xl, etc. The reintroduced components use the same default
+   * scale as the rest of the app instead.
+   *
+   * Only genuinely additive names live below: a `text-md` step Tailwind lacks,
+   * the sidebar/topbar layout sizes used via var(), one easing curve used by
+   * the login form, plus font + z-index.
+   */
+  --text-md: 16px;
 
   --spacing-sidebar: 260px;
   --spacing-topbar: 72px;
   --spacing-layout-max: 1440px;
 
-  --text-xs: 12px;
-  --text-sm: 14px;
-  --text-md: 16px;
-  --text-lg: 18px;
-  --text-xl: 22px;
-  --text-2xl: 28px;
-  --text-3xl: 36px;
-
-  --leading-tight: 1.15;
-  --leading-normal: 1.45;
-  --leading-relaxed: 1.65;
-
-  --font-weight-regular: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
-
   /* Typography: also sets Tailwind's default `font-sans`. */
   --font-sans: "Geist Sans", system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
 
-  --z-dropdown: 50;
-  --z-modal: 100;
   --z-toast: 200;
 
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
-  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
-  --duration-fast: 120ms;
-  --duration-normal: 200ms;
-  --duration-slow: 320ms;
 }
