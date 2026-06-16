@@ -11,6 +11,7 @@ type TokenRow = {
 type VariantSpec = {
   label: string;
   tokenRows: TokenRow[];
+  usedIn?: string[];
 };
 
 // ─── Your current Button ─────────────────────────────────────────────────────
@@ -18,6 +19,7 @@ type VariantSpec = {
 const YOUR_VARIANTS: VariantSpec[] = [
   {
     label: "primary",
+    usedIn: ["Create project", "Review decisions", "Mark final", "Reject", "Finalize", "Add decision"],
     tokenRows: [
       { piece: "background", token: "—", value: "gray-900 (#111827)" },
       { piece: "text", token: "—", value: "white (#ffffff)" },
@@ -27,6 +29,7 @@ const YOUR_VARIANTS: VariantSpec[] = [
   },
   {
     label: "secondary",
+    usedIn: ["Export JSON", "Import JSON", "View History", "Choose files", "Cancel", "Postpone", "Restore"],
     tokenRows: [
       { piece: "background", token: "—", value: "white (#ffffff)" },
       { piece: "border", token: "—", value: "gray-200 (#e5e7eb)" },
@@ -36,6 +39,7 @@ const YOUR_VARIANTS: VariantSpec[] = [
   },
   {
     label: "danger",
+    usedIn: ["Delete decision"],
     tokenRows: [
       { piece: "background", token: "—", value: "white (#ffffff)" },
       { piece: "border", token: "—", value: "red-200 (#fecaca)" },
@@ -144,22 +148,28 @@ const HIS_SIZES = [
 
 // ─── Token table ─────────────────────────────────────────────────────────────
 
-function TokenTable({ rows }: { rows: TokenRow[] }) {
+function TokenTable({ rows, usedIn }: { rows: TokenRow[]; usedIn?: string[] }) {
   return (
-    <table className="text-xs w-full mt-2 border-collapse">
+    <table className="text-xs w-full mt-2 border-collapse table-fixed">
       <thead>
         <tr className="text-gray-400 text-left">
           <th className="font-medium pb-1 pr-4 w-24">piece</th>
           <th className="font-medium pb-1 pr-4 w-40">token</th>
-          <th className="font-medium pb-1">value</th>
+          <th className="font-medium pb-1 pr-4 w-44">value</th>
+          {usedIn && <th className="font-medium pb-1">used in</th>}
         </tr>
       </thead>
       <tbody>
-        {rows.map((r) => (
+        {rows.map((r, i) => (
           <tr key={r.piece} className="border-t border-gray-100">
             <td className="py-1 pr-4 text-gray-500">{r.piece}</td>
             <td className="py-1 pr-4 font-mono text-indigo-500">{r.token}</td>
-            <td className="py-1 text-gray-600">{r.value}</td>
+            <td className="py-1 pr-4 text-gray-600">{r.value}</td>
+            {usedIn && i === 0 && (
+              <td rowSpan={rows.length} className="py-1 text-gray-500 align-top leading-relaxed">
+                {usedIn.join(", ")}
+              </td>
+            )}
           </tr>
         ))}
       </tbody>
@@ -259,7 +269,7 @@ export default function DesignSystemModal() {
                       <Button variant={v.label as "primary" | "secondary" | "danger"} disabled>Disabled</Button>
                     </div>
                   </div>
-                  <TokenTable rows={v.tokenRows} />
+                  <TokenTable rows={v.tokenRows} usedIn={v.usedIn} />
                 </div>
               ))}
             </div>
