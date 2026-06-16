@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { isTypingTarget } from "../../utils/keyboard";
 import Button from "./Button";
+import TextInput from "./TextInput";
 
 type TokenRow = {
   piece: string;
@@ -140,6 +141,18 @@ const HIS_VARIANTS: HisVariantSpec[] = [
   },
 ];
 
+const TEXTINPUT_USED_IN = ["New project name", "New decision title (sidebar + create form)", "Title (decision panel)"];
+
+const TEXTINPUT_TOKEN_ROWS: TokenRow[] = [
+  { piece: "background", token: "—", value: "white (#ffffff)" },
+  { piece: "border", token: "—", value: "gray-200 (#e5e7eb)" },
+  { piece: "text", token: "—", value: "gray-900 (#111827)" },
+  { piece: "placeholder", token: "—", value: "gray-400 (#9ca3af)" },
+  { piece: "focus ring", token: "—", value: "gray-900 (#111827)" },
+  { piece: "label text", token: "—", value: "gray-500 (#6b7280)" },
+  { piece: "error text", token: "—", value: "red-500 (#ef4444)" },
+];
+
 const HIS_SIZES = [
   { label: "sm", style: { height: "32px", padding: "0 12px", fontSize: "12px" } },
   { label: "md", style: { height: "40px", padding: "0 16px", fontSize: "14px" } },
@@ -276,6 +289,28 @@ export default function DesignSystemModal() {
                   <TokenTable rows={v.tokenRows} usedIn={v.usedIn} />
                 </div>
               ))}
+            </div>
+          </section>
+
+          <div className="border-t border-gray-100" />
+
+          {/* ── Your TextInput ──────────────────────────────────────────── */}
+          <section>
+            <div className="mb-4">
+              <h2 className="text-sm font-semibold text-gray-900">Your TextInput</h2>
+              <p className="text-xs text-gray-400 mt-0.5">
+                src/components/shared/TextInput.tsx · label + error props · hardcoded values
+              </p>
+            </div>
+
+            <div className="grid grid-cols-[220px_1fr] gap-6 items-start">
+              <div className="space-y-4">
+                <TextInput placeholder="New project name" />
+                <TextInput label="Title" defaultValue="font" />
+                <TextInput label="Decision title" error="Title is required." />
+                <TextInput placeholder="Disabled" disabled />
+              </div>
+              <TokenTable rows={TEXTINPUT_TOKEN_ROWS} usedIn={TEXTINPUT_USED_IN} />
             </div>
           </section>
 

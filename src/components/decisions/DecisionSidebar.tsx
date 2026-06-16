@@ -79,7 +79,7 @@ export default function DecisionSidebar({ projectId }: Props) {
         {/* Inline add form */}
         {showAddForm && (
           <form onSubmit={handleAdd} className="flex flex-col gap-1 px-3 pb-2 shrink-0">
-            <div className="flex gap-1.5">
+            <div className="flex gap-1.5 items-start">
               <TextInput
                 autoFocus
                 placeholder="Decision title"
@@ -90,6 +90,7 @@ export default function DecisionSidebar({ projectId }: Props) {
                 }}
                 className="text-xs py-1"
                 aria-label="New decision title"
+                error={addError}
                 onKeyDown={(e) => {
                   if (e.key === "Escape") {
                     setShowAddForm(false);
@@ -101,7 +102,6 @@ export default function DecisionSidebar({ projectId }: Props) {
                 Add
               </Button>
             </div>
-            {addError && <p className="text-xs text-red-500">{addError}</p>}
           </form>
         )}
 
