@@ -75,6 +75,12 @@ export default function FinalizeDecisionModal({ decisionId, optionId, onClose }:
               onChange={(e) => setRationale(e.target.value)}
               autoFocus
             />
+            {!rationale.trim() && (
+              <span className="text-xs text-warning bg-warning-soft rounded px-2 py-1">
+                This decision will be finalized without a rationale. Add one
+                now to fully complete it.
+              </span>
+            )}
           </label>
 
           {/* Actions */}

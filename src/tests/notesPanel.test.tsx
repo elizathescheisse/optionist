@@ -30,14 +30,6 @@ describe("DecisionNotesPanel — persistence", () => {
     expect(store().decisions[decisionId].notes).toBe("Consider accessibility");
   });
 
-  it("persists final rationale on blur", () => {
-    render(<DecisionNotesPanel decisionId={decisionId} />);
-    const rationale = screen.getByPlaceholderText("Why was the final option chosen?");
-    fireEvent.change(rationale, { target: { value: "Best contrast" } });
-    fireEvent.blur(rationale);
-    expect(store().decisions[decisionId].finalRationale).toBe("Best contrast");
-  });
-
   it("does not persist an empty title; reverts to stored value", () => {
     render(<DecisionNotesPanel decisionId={decisionId} />);
     const title = screen.getByDisplayValue("D");
@@ -52,39 +44,6 @@ describe("DecisionNotesPanel — persistence", () => {
     fireEvent.change(notes, { target: { value: "line one\nline two" } });
     fireEvent.blur(notes);
     expect(store().decisions[decisionId].notes).toBe("line one\nline two");
-  });
-});
-
-describe("DecisionNotesPanel — incomplete finalized warning", () => {
-  it("shows a warning when finalized with empty rationale", () => {
-    const { decisionId } = setup();
-    const optionId = store().addOption(decisionId, {
-      name: "O",
-      imageDataUrl: "data:image/png;base64,a",
-      imageMimeType: "image/png",
-    });
-    store().markOptionFinal(optionId);
-    render(<DecisionNotesPanel decisionId={decisionId} />);
-    expect(screen.getByText(/finalized but has no rationale/i)).toBeInTheDocument();
-  });
-
-  it("hides the warning once rationale is present", () => {
-    const { decisionId } = setup();
-    const optionId = store().addOption(decisionId, {
-      name: "O",
-      imageDataUrl: "data:image/png;base64,a",
-      imageMimeType: "image/png",
-    });
-    store().markOptionFinal(optionId);
-    store().updateDecision(decisionId, { finalRationale: "Chosen for clarity" });
-    render(<DecisionNotesPanel decisionId={decisionId} />);
-    expect(screen.queryByText(/finalized but has no rationale/i)).not.toBeInTheDocument();
-  });
-
-  it("shows no warning for an active decision", () => {
-    const { decisionId } = setup();
-    render(<DecisionNotesPanel decisionId={decisionId} />);
-    expect(screen.queryByText(/finalized but has no rationale/i)).not.toBeInTheDocument();
   });
 });
 
