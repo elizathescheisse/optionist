@@ -255,7 +255,7 @@ export default function DesignSystemModal() {
             <div className="mb-4">
               <h2 className="text-sm font-semibold text-gray-900">Your Button</h2>
               <p className="text-xs text-gray-400 mt-0.5">
-                src/components/shared/Button.tsx · 3 variants · 1 size · hardcoded values
+                src/components/shared/Button.tsx · 3 variants · 2 sizes (lg / sm) · hardcoded values
               </p>
             </div>
 
@@ -264,9 +264,13 @@ export default function DesignSystemModal() {
                 <div key={v.label} className="grid grid-cols-[220px_1fr] gap-6 items-start">
                   <div className="space-y-2">
                     <p className="text-xs text-gray-400 font-mono mb-2">{v.label}</p>
-                    <div className="flex gap-2 flex-wrap">
-                      <Button variant={v.label as "primary" | "secondary" | "danger"}>Button</Button>
-                      <Button variant={v.label as "primary" | "secondary" | "danger"} disabled>Disabled</Button>
+                    <div className="flex gap-2 flex-wrap items-center">
+                      <Button size="lg" variant={v.label as "primary" | "secondary" | "danger"}>Button</Button>
+                      <Button size="sm" variant={v.label as "primary" | "secondary" | "danger"}>Button</Button>
+                    </div>
+                    <div className="flex gap-2 flex-wrap items-center">
+                      <Button size="lg" variant={v.label as "primary" | "secondary" | "danger"} disabled>Disabled</Button>
+                      <Button size="sm" variant={v.label as "primary" | "secondary" | "danger"} disabled>Disabled</Button>
                     </div>
                   </div>
                   <TokenTable rows={v.tokenRows} usedIn={v.usedIn} />

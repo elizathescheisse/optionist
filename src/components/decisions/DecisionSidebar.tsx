@@ -97,7 +97,7 @@ export default function DecisionSidebar({ projectId }: Props) {
                   }
                 }}
               />
-              <Button type="submit" variant="primary" className="text-xs py-1 px-2 shrink-0">
+              <Button type="submit" variant="primary" size="sm" className="shrink-0">
                 Add
               </Button>
             </div>
