@@ -26,13 +26,9 @@ export default function DecisionNotesPanel({ decisionId }: Props) {
   const [title, setTitle] = useState(decision?.title ?? "");
   const [description, setDescription] = useState(decision?.description ?? "");
   const [notes, setNotes] = useState(decision?.notes ?? "");
-  const [finalRationale, setFinalRationale] = useState(decision?.finalRationale ?? "");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   if (!decision) return null;
-
-  const isFinalized = decision.status === "finalized";
-  const rationaleMissing = isFinalized && !finalRationale.trim();
 
   function commitTitle() {
     const trimmed = title.trim();
@@ -120,27 +116,6 @@ export default function DecisionNotesPanel({ decisionId }: Props) {
             </div>
           </div>
         )}
-
-        {/* Final rationale */}
-        <div className="flex flex-col gap-1">
-          <Textarea
-            label="Final rationale"
-            rows={3}
-            placeholder="Why was the final option chosen?"
-            value={finalRationale}
-            onChange={(e) => setFinalRationale(e.target.value)}
-            onBlur={() => {
-              if (finalRationale !== decision.finalRationale)
-                updateDecision(decisionId, { finalRationale });
-            }}
-          />
-          {rationaleMissing && (
-            <span className="text-xs text-warning bg-warning-soft rounded px-2 py-1">
-              This decision is finalized but has no rationale. Add one to fully
-              complete it.
-            </span>
-          )}
-        </div>
 
         {/* Action buttons — secondary only, no primary */}
         <div className="flex flex-col gap-2 pt-1 border-t border-gray-100">
