@@ -3,6 +3,16 @@ import { isTypingTarget } from "../../utils/keyboard";
 import Button from "./Button";
 import TextInput from "./TextInput";
 import Textarea from "./Textarea";
+import Badge from "../ui/Badge";
+import Card from "../ui/Card";
+import Divider from "../ui/Divider";
+import EmptyState from "../ui/EmptyState";
+import IconButton from "../ui/IconButton";
+import LoadingState from "../ui/LoadingState";
+import PageHeader from "../ui/PageHeader";
+import Pill from "../ui/Pill";
+import SectionHeader from "../ui/SectionHeader";
+import Tabs from "../ui/Tabs";
 
 type TokenRow = {
   piece: string;
@@ -303,10 +313,33 @@ function HisButton({
   );
 }
 
+// ─── New ui/ library row (name + path on the left, live examples on the right) ─
+
+function UiRow({
+  name,
+  path,
+  children,
+}: {
+  name: string;
+  path: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="grid grid-cols-[220px_1fr] gap-6 items-start">
+      <div>
+        <p className="text-xs text-gray-400 font-mono">{name}</p>
+        <p className="text-[10px] text-gray-300 font-mono mt-0.5">{path}</p>
+      </div>
+      <div className="flex gap-3 flex-wrap items-center">{children}</div>
+    </div>
+  );
+}
+
 // ─── Main modal ───────────────────────────────────────────────────────────────
 
 export default function DesignSystemModal() {
   const [open, setOpen] = useState(false);
+  const [demoTab, setDemoTab] = useState("overview");
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -539,6 +572,107 @@ export default function DesignSystemModal() {
                   <TokenTable rows={v.tokenRows} />
                 </div>
               ))}
+            </div>
+          </section>
+
+          <div className="border-t border-gray-100" />
+
+          {/* ── New ui/ component library ────────────────────────────────── */}
+          <section>
+            <div className="mb-4">
+              <h2 className="text-sm font-semibold text-gray-900">UI component library</h2>
+              <p className="text-xs text-gray-400 mt-0.5">
+                src/components/ui/ · reintroduced from PR #35 · rendered live with the merged tokens
+              </p>
+            </div>
+
+            <div className="space-y-8">
+              <UiRow name="Badge" path="ui/Badge.tsx">
+                <Badge>Default</Badge>
+                <Badge variant="primary">Primary</Badge>
+                <Badge variant="success">Success</Badge>
+                <Badge variant="warning">Warning</Badge>
+                <Badge variant="error">Error</Badge>
+                <Badge variant="info">Info</Badge>
+              </UiRow>
+
+              <UiRow name="Pill" path="ui/Pill.tsx">
+                <Pill active>Active</Pill>
+                <Pill>Inactive</Pill>
+                <Pill onClick={() => {}}>Clickable</Pill>
+              </UiRow>
+
+              <UiRow name="IconButton" path="ui/IconButton.tsx">
+                <IconButton label="Add" size="sm">
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path stroke="currentColor" strokeWidth="2" strokeLinecap="round" d="M12 5v14M5 12h14" />
+                  </svg>
+                </IconButton>
+                <IconButton label="Add" size="md">
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path stroke="currentColor" strokeWidth="2" strokeLinecap="round" d="M12 5v14M5 12h14" />
+                  </svg>
+                </IconButton>
+              </UiRow>
+
+              <UiRow name="Card" path="ui/Card.tsx">
+                <Card padding="sm" className="w-40 text-sm text-text">Default</Card>
+                <Card padding="sm" hover className="w-40 text-sm text-text">Hover</Card>
+                <Card padding="sm" selected className="w-40 text-sm text-text">Selected</Card>
+              </UiRow>
+
+              <UiRow name="Divider" path="ui/Divider.tsx">
+                <div className="w-full space-y-4">
+                  <Divider />
+                  <Divider label="OR" />
+                </div>
+              </UiRow>
+
+              <UiRow name="Tabs" path="ui/Tabs.tsx">
+                <div className="w-full">
+                  <Tabs
+                    tabs={[
+                      { id: "overview", label: "Overview" },
+                      { id: "details", label: "Details" },
+                      { id: "history", label: "History" },
+                    ]}
+                    activeId={demoTab}
+                    onChange={setDemoTab}
+                  />
+                </div>
+              </UiRow>
+
+              <UiRow name="PageHeader" path="ui/PageHeader.tsx">
+                <div className="w-full">
+                  <PageHeader
+                    title="Page title"
+                    subtitle="A short supporting subtitle."
+                    action={<Button variant="primary" size="sm">Action</Button>}
+                  />
+                </div>
+              </UiRow>
+
+              <UiRow name="SectionHeader" path="ui/SectionHeader.tsx">
+                <div className="w-full">
+                  <SectionHeader title="Section title" description="With a description." />
+                </div>
+              </UiRow>
+
+              <UiRow name="EmptyState" path="ui/EmptyState.tsx">
+                <div className="w-full border border-gray-100 rounded-lg">
+                  <EmptyState
+                    message="Nothing here yet"
+                    detail="Empty states explain what's missing and offer a next step."
+                    action={<Button variant="primary" size="sm">Create</Button>}
+                  />
+                </div>
+              </UiRow>
+
+              <UiRow name="LoadingState" path="ui/LoadingState.tsx">
+                <div className="w-full border border-gray-100 rounded-lg">
+                  <LoadingState />
+                </div>
+              </UiRow>
             </div>
           </section>
 
