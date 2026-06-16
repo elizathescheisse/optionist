@@ -70,19 +70,17 @@ export default function DecisionNotesPanel({ decisionId }: Props) {
         />
 
         {/* Description */}
-        <label className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-gray-500">Description</span>
-          <Textarea
-            rows={2}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            onBlur={() => {
-              const trimmed = description.trim();
-              if (trimmed !== decision.description)
-                updateDecision(decisionId, { description: trimmed });
-            }}
-          />
-        </label>
+        <Textarea
+          label="Description"
+          rows={2}
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          onBlur={() => {
+            const trimmed = description.trim();
+            if (trimmed !== decision.description)
+              updateDecision(decisionId, { description: trimmed });
+          }}
+        />
 
         {/* Screenshots uploader */}
         <div className="flex flex-col gap-1">
@@ -93,19 +91,17 @@ export default function DecisionNotesPanel({ decisionId }: Props) {
         </div>
 
         {/* Notes */}
-        <label className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-gray-500">Notes</span>
-          <Textarea
-            rows={4}
-            placeholder="Working notes for this decision…"
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            onBlur={() => {
-              if (notes !== decision.notes)
-                updateDecision(decisionId, { notes });
-            }}
-          />
-        </label>
+        <Textarea
+          label="Notes"
+          rows={4}
+          placeholder="Working notes for this decision…"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          onBlur={() => {
+            if (notes !== decision.notes)
+              updateDecision(decisionId, { notes });
+          }}
+        />
 
         {/* Chosen option (when finalized) */}
         {selectedOption && (
@@ -126,9 +122,9 @@ export default function DecisionNotesPanel({ decisionId }: Props) {
         )}
 
         {/* Final rationale */}
-        <label className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-gray-500">Final rationale</span>
+        <div className="flex flex-col gap-1">
           <Textarea
+            label="Final rationale"
             rows={3}
             placeholder="Why was the final option chosen?"
             value={finalRationale}
@@ -144,7 +140,7 @@ export default function DecisionNotesPanel({ decisionId }: Props) {
               complete it.
             </span>
           )}
-        </label>
+        </div>
 
         {/* Action buttons — secondary only, no primary */}
         <div className="flex flex-col gap-2 pt-1 border-t border-gray-100">
