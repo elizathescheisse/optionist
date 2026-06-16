@@ -165,6 +165,61 @@ const TEXTAREA_TOKEN_ROWS: TokenRow[] = [
   { piece: "label text", token: "—", value: "gray-500 (#6b7280)" },
 ];
 
+type ColorToken = { name: string; value: string };
+
+const YOUR_COLOR_TOKENS: ColorToken[] = [
+  { name: "surface", value: "#ffffff" },
+  { name: "border", value: "#e3e8f2" },
+  { name: "text", value: "#151827" },
+  { name: "success", value: "#059669" },
+  { name: "error", value: "#dc2626" },
+  { name: "warning", value: "#a16207" },
+  { name: "warning-soft", value: "#fefce8" },
+];
+
+const HIS_COLOR_GROUPS: { label: string; tokens: ColorToken[] }[] = [
+  {
+    label: "app surface",
+    tokens: [
+      { name: "app-bg", value: "#f4f6fb" },
+      { name: "app-surface", value: "#ffffff" },
+      { name: "app-surface-soft", value: "#f8fafd" },
+      { name: "app-panel", value: "#ffffff" },
+      { name: "app-panel-muted", value: "#f6f8fc" },
+      { name: "app-border", value: "#e3e8f2" },
+      { name: "app-border-strong", value: "#d5dbeb" },
+      { name: "app-sidebar", value: "#ffffff" },
+    ],
+  },
+  {
+    label: "text",
+    tokens: [
+      { name: "text", value: "#151827" },
+      { name: "text-muted", value: "#677085" },
+      { name: "text-soft", value: "#98a1b3" },
+    ],
+  },
+  {
+    label: "semantic",
+    tokens: [
+      { name: "success", value: "#059669" },
+      { name: "warning", value: "#d97706" },
+      { name: "error", value: "#dc2626" },
+      { name: "info", value: "#2563eb" },
+    ],
+  },
+  {
+    label: "accent",
+    tokens: [
+      { name: "primary", value: "#4d61a3" },
+      { name: "accent-orange", value: "#eba03f" },
+      { name: "accent-yellow", value: "#fdd86a" },
+      { name: "accent-pink", value: "#ff6e99" },
+      { name: "accent-rose", value: "#d1416c" },
+    ],
+  },
+];
+
 const HIS_SIZES = [
   { label: "sm", style: { height: "32px", padding: "0 12px", fontSize: "12px" } },
   { label: "md", style: { height: "40px", padding: "0 16px", fontSize: "14px" } },
@@ -199,6 +254,18 @@ function TokenTable({ rows, usedIn }: { rows: TokenRow[]; usedIn?: string[] }) {
         ))}
       </tbody>
     </table>
+  );
+}
+
+function ColorSwatch({ name, value }: ColorToken) {
+  return (
+    <div className="flex flex-col items-center gap-1 w-16">
+      <div
+        className="w-10 h-10 rounded-md border border-gray-200"
+        style={{ backgroundColor: value }}
+      />
+      <span className="text-[10px] font-mono text-gray-500 text-center leading-tight">{name}</span>
+    </div>
   );
 }
 
@@ -274,6 +341,86 @@ export default function DesignSystemModal() {
         </div>
 
         <div className="px-8 py-6 space-y-12">
+
+          {/* ── Your tokens.css ─────────────────────────────────────────── */}
+          <section>
+            <div className="mb-4">
+              <h2 className="text-sm font-semibold text-gray-900">Your tokens.css</h2>
+              <p className="text-xs text-gray-400 mt-0.5">
+                src/styles/tokens.css · 7 colors + 1 font + 1 z-index · a seed, not a system
+              </p>
+            </div>
+
+            <div className="flex gap-4 flex-wrap mb-4">
+              {YOUR_COLOR_TOKENS.map((t) => (
+                <ColorSwatch key={t.name} {...t} />
+              ))}
+            </div>
+
+            <div className="text-xs text-gray-500 space-y-1">
+              <p><span className="font-mono text-indigo-500">font-sans</span> → Geist Sans</p>
+              <p><span className="font-mono text-indigo-500">z-toast</span> → 200</p>
+            </div>
+
+            <p className="text-xs text-gray-400 mt-3 italic">
+              Consumed by ToastContext.tsx and the rationale-missing warning in
+              DecisionNotesPanel — everything else in the app still uses Tailwind's
+              default scale, not one of these tokens.
+            </p>
+          </section>
+
+          <div className="border-t border-gray-100" />
+
+          {/* ── Friend's tokens.css ─────────────────────────────────────── */}
+          <section>
+            <div className="mb-4">
+              <h2 className="text-sm font-semibold text-gray-900">Friend's tokens.css</h2>
+              <p className="text-xs text-gray-400 mt-0.5">
+                origin/UX · full system — colors, spacing, typography, shadows, radius, motion, z-index
+              </p>
+            </div>
+
+            <div className="space-y-4 mb-4">
+              {HIS_COLOR_GROUPS.map((g) => (
+                <div key={g.label}>
+                  <p className="text-xs text-gray-400 font-mono mb-2">{g.label}</p>
+                  <div className="flex gap-4 flex-wrap">
+                    {g.tokens.map((t) => (
+                      <ColorSwatch key={t.name} {...t} />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-2 gap-6 text-xs text-gray-500">
+              <div>
+                <p className="font-semibold text-gray-700 mb-1">Typography</p>
+                <p>text-xs (12px) → text-3xl (36px), 7 steps</p>
+                <p>leading: tight / normal / relaxed</p>
+              </div>
+              <div>
+                <p className="font-semibold text-gray-700 mb-1">Spacing</p>
+                <p>sidebar 240px · topbar 72px · layout-max 1440px</p>
+              </div>
+              <div>
+                <p className="font-semibold text-gray-700 mb-1">Shadows &amp; radius</p>
+                <p>shadow: card / modal / popover / sm / md / lg</p>
+                <p>radius: sm / md / lg / xl</p>
+              </div>
+              <div>
+                <p className="font-semibold text-gray-700 mb-1">Motion &amp; layers</p>
+                <p>duration: fast / normal / slow · 1 easing curve</p>
+                <p>z-index: dropdown / modal / toast</p>
+              </div>
+            </div>
+
+            <p className="text-xs text-gray-400 mt-3 italic">
+              Every color above also has a dark-mode override defined under [data-theme="dark"].
+            </p>
+          </section>
+
+          <div className="border-t border-gray-100" />
 
           {/* ── Your Button ─────────────────────────────────────────────── */}
           <section>

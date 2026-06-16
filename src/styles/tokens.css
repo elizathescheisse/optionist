@@ -17,6 +17,8 @@
   --token-text: #151827;
   --token-success: #059669;
   --token-error: #dc2626;
+  --token-warning: #a16207;
+  --token-warning-soft: #fefce8;
 }
 
 @theme inline {
@@ -25,6 +27,8 @@
   --color-text: var(--token-text);
   --color-success: var(--token-success);
   --color-error: var(--token-error);
+  --color-warning: var(--token-warning);
+  --color-warning-soft: var(--token-warning-soft);
 
   /* Typography: also sets Tailwind's default `font-sans`. */
   --font-sans: "Geist Sans", system-ui, -apple-system, BlinkMacSystemFont,
