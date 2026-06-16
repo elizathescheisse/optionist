@@ -19,7 +19,7 @@ export default function Modal({
   confirmVariant = "primary",
 }: Props) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-scrim backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay backdrop-blur-sm">
       <div className="bg-surface rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6 flex flex-col gap-4">
         <h2 className="font-semibold text-text text-base">{title}</h2>
         <div className="text-sm text-muted leading-relaxed">{children}</div>

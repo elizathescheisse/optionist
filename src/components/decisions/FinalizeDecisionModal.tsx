@@ -33,7 +33,7 @@ export default function FinalizeDecisionModal({ decisionId, optionId, onClose }:
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-scrim backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay backdrop-blur-sm">
       <div className="bg-surface rounded-2xl shadow-2xl w-full max-w-md mx-4 flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-6 pb-4">
