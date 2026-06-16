@@ -135,7 +135,7 @@ export default function DecisionNotesPanel({ decisionId }: Props) {
             }}
           />
           {rationaleMissing && (
-            <span className="text-xs text-yellow-700 bg-yellow-50 rounded px-2 py-1">
+            <span className="text-xs text-warning bg-warning-soft rounded px-2 py-1">
               This decision is finalized but has no rationale. Add one to fully
               complete it.
             </span>

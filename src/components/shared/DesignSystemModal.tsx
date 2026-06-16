@@ -173,6 +173,8 @@ const YOUR_COLOR_TOKENS: ColorToken[] = [
   { name: "text", value: "#151827" },
   { name: "success", value: "#059669" },
   { name: "error", value: "#dc2626" },
+  { name: "warning", value: "#a16207" },
+  { name: "warning-soft", value: "#fefce8" },
 ];
 
 const HIS_COLOR_GROUPS: { label: string; tokens: ColorToken[] }[] = [
@@ -345,7 +347,7 @@ export default function DesignSystemModal() {
             <div className="mb-4">
               <h2 className="text-sm font-semibold text-gray-900">Your tokens.css</h2>
               <p className="text-xs text-gray-400 mt-0.5">
-                src/styles/tokens.css · 5 colors + 1 font + 1 z-index · a seed, not a system
+                src/styles/tokens.css · 7 colors + 1 font + 1 z-index · a seed, not a system
               </p>
             </div>
 
@@ -361,8 +363,9 @@ export default function DesignSystemModal() {
             </div>
 
             <p className="text-xs text-gray-400 mt-3 italic">
-              Only consumed by ToastContext.tsx right now — every other color, spacing, and
-              text-size value in the app is Tailwind's default scale, not one of these tokens.
+              Consumed by ToastContext.tsx and the rationale-missing warning in
+              DecisionNotesPanel — everything else in the app still uses Tailwind's
+              default scale, not one of these tokens.
             </p>
           </section>
 
