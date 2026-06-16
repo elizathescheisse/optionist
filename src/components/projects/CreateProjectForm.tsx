@@ -26,18 +26,16 @@ export default function CreateProjectForm() {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2">
       <div className="flex gap-2 items-start">
-        <div className="flex flex-col gap-1 flex-1">
-          <TextInput
-            placeholder="New project name"
-            value={name}
-            onChange={(e) => {
-              setName(e.target.value);
-              if (error) setError("");
-            }}
-            aria-label="Project name"
-          />
-          {error && <p className="text-xs text-red-500">{error}</p>}
-        </div>
+        <TextInput
+          placeholder="New project name"
+          value={name}
+          onChange={(e) => {
+            setName(e.target.value);
+            if (error) setError("");
+          }}
+          aria-label="Project name"
+          error={error}
+        />
         <Button type="submit" variant="primary">
           Create project
         </Button>

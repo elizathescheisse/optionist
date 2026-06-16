@@ -1,12 +1,27 @@
-import type { InputHTMLAttributes } from "react";
+import { useId, type InputHTMLAttributes } from "react";
 
-type Props = InputHTMLAttributes<HTMLInputElement>;
+type Props = InputHTMLAttributes<HTMLInputElement> & {
+  label?: string;
+  error?: string;
+};
 
-export default function TextInput({ className = "", ...props }: Props) {
+export default function TextInput({ className = "", label, error, id, ...props }: Props) {
+  const generatedId = useId();
+  const inputId = id ?? generatedId;
+
   return (
-    <input
-      className={`w-full border border-gray-200 rounded-md px-3 py-1.5 text-sm bg-white text-gray-900 placeholder-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:border-transparent transition-shadow ${className}`}
-      {...props}
-    />
+    <div className="flex flex-col gap-1 w-full">
+      {label && (
+        <label htmlFor={inputId} className="text-xs font-medium text-gray-500">
+          {label}
+        </label>
+      )}
+      <input
+        id={inputId}
+        className={`w-full border border-gray-200 rounded-md px-3 py-1.5 text-sm bg-white text-gray-900 placeholder-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:border-transparent transition-shadow ${className}`}
+        {...props}
+      />
+      {error && <p className="text-xs text-red-500">{error}</p>}
+    </div>
   );
 }

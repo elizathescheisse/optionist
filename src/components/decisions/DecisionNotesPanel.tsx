@@ -62,14 +62,12 @@ export default function DecisionNotesPanel({ decisionId }: Props) {
         </div>
 
         {/* Title */}
-        <label className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-gray-500">Title</span>
-          <TextInput
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            onBlur={commitTitle}
-          />
-        </label>
+        <TextInput
+          label="Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          onBlur={commitTitle}
+        />
 
         {/* Description */}
         <label className="flex flex-col gap-1">

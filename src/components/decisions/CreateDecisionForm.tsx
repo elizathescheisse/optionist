@@ -25,7 +25,7 @@ export default function CreateDecisionForm({ projectId }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-1 px-3 pb-3">
-      <div className="flex gap-1.5">
+      <div className="flex gap-1.5 items-start">
         <TextInput
           placeholder="New decision title"
           value={title}
@@ -35,12 +35,12 @@ export default function CreateDecisionForm({ projectId }: Props) {
           }}
           className="text-xs py-1"
           aria-label="Decision title"
+          error={error}
         />
         <Button type="submit" variant="primary" size="sm" className="shrink-0">
           Add
         </Button>
       </div>
-      {error && <p className="text-xs text-red-500">{error}</p>}
     </form>
   );
 }
