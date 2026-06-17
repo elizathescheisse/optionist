@@ -7,7 +7,7 @@
  *   node scripts/screenshot-demo.js <pr-number>
  *
  * Requires:
- *   - Dev server running on http://localhost:5173
+ *   - Dev server running on http://localhost:5176
  *   - public/seed.json already written (run scripts/make-demo-seed.js first)
  */
 
@@ -36,7 +36,7 @@ const page = await browser.newPage();
 await page.setViewportSize({ width: 1280, height: 800 });
 
 // Clear localStorage and load the app — seed.json will auto-load
-await page.goto("http://localhost:5173");
+await page.goto("http://localhost:5176");
 await page.evaluate(() => localStorage.clear());
 await page.reload({ waitUntil: "networkidle" });
 
