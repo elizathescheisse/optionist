@@ -175,7 +175,7 @@ export default function OnboardingRoute() {
                   label="Workspace name"
                   value={workspaceName}
                   onChange={(e) => setWorkspaceName(e.target.value)}
-                  placeholder="Example: PINACLE Dashboard Direction"
+                  placeholder="Example: Financial Dashboard Direction"
                   required
                 />
                 <TextInput
