@@ -45,7 +45,7 @@ export default function App() {
       <DesignSystemModal />
       <BrowserRouter>
         <Routes>
-          {/* Public auth routes (full screen; GuestOnly handles redirects) */}
+          {/* Public auth routes (full screen; RedirectIfAuthed handles redirects) */}
           <Route path="/login" element={<LoginRoute />} />
           <Route path="/signup" element={<SignupRoute />} />
           <Route path="/onboarding" element={<OnboardingRoute />} />

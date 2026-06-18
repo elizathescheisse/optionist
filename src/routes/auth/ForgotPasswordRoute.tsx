@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import AuthLayout from "../../components/auth/AuthLayout";
-import GuestOnly from "../../components/auth/GuestOnly";
+import RedirectIfAuthed from "../../components/auth/RedirectIfAuthed";
 import Button from "../../components/shared/Button";
 import TextInput from "../../components/shared/TextInput";
 
@@ -15,7 +15,7 @@ export default function ForgotPasswordRoute() {
   }
 
   return (
-    <GuestOnly>
+    <RedirectIfAuthed>
       <AuthLayout>
         <div className="flex flex-col gap-6">
           <div>
@@ -53,6 +53,6 @@ export default function ForgotPasswordRoute() {
           </Link>
         </div>
       </AuthLayout>
-    </GuestOnly>
+    </RedirectIfAuthed>
   );
 }

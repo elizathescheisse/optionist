@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthLayout from "../../components/auth/AuthLayout";
-import GuestOnly from "../../components/auth/GuestOnly";
+import RedirectIfAuthed from "../../components/auth/RedirectIfAuthed";
 import Button from "../../components/shared/Button";
 import TextInput from "../../components/shared/TextInput";
 import { useAuthStore, type OnboardingAnswers } from "../../store/useAuthStore";
@@ -115,7 +115,7 @@ export default function OnboardingRoute() {
   const totalSteps = STEPS.length + 1;
 
   return (
-    <GuestOnly>
+    <RedirectIfAuthed>
       <AuthLayout>
         <div className="flex flex-col gap-6">
           {/* Step indicator */}
@@ -203,6 +203,6 @@ export default function OnboardingRoute() {
           </div>
         </div>
       </AuthLayout>
-    </GuestOnly>
+    </RedirectIfAuthed>
   );
 }

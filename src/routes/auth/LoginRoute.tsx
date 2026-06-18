@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "../../components/auth/AuthLayout";
-import GuestOnly from "../../components/auth/GuestOnly";
+import RedirectIfAuthed from "../../components/auth/RedirectIfAuthed";
 import SocialLoginButtons from "../../components/auth/SocialLoginButtons";
 import Button from "../../components/shared/Button";
 import TextInput from "../../components/shared/TextInput";
@@ -28,7 +28,7 @@ export default function LoginRoute() {
   }
 
   return (
-    <GuestOnly>
+    <RedirectIfAuthed>
       <AuthLayout>
         <div className="flex flex-col gap-6">
           <div>
@@ -102,6 +102,6 @@ export default function LoginRoute() {
           </div>
         </div>
       </AuthLayout>
-    </GuestOnly>
+    </RedirectIfAuthed>
   );
 }

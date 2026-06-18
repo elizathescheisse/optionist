@@ -1,13 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "../../components/auth/AuthLayout";
-import GuestOnly from "../../components/auth/GuestOnly";
+import RedirectIfAuthed from "../../components/auth/RedirectIfAuthed";
 import Button from "../../components/shared/Button";
 
 export default function SignupRoute() {
   const navigate = useNavigate();
 
   return (
-    <GuestOnly>
+    <RedirectIfAuthed>
       <AuthLayout>
         <div className="flex flex-col gap-6">
           <div>
@@ -38,6 +38,6 @@ export default function SignupRoute() {
           </p>
         </div>
       </AuthLayout>
-    </GuestOnly>
+    </RedirectIfAuthed>
   );
 }
