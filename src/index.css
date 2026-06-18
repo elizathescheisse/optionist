@@ -32,3 +32,15 @@
     transform: translateY(0);
   }
 }
+
+/* Auth form entrance (used by the login email form reveal). */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

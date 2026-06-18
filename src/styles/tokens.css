@@ -1,30 +1,78 @@
 /*
- * Optionist design tokens — minimal seed.
+ * Optionist design tokens.
  *
- * Two layers, mirroring the structure we'll grow into:
- *   1. :root          — the raw named color values
- *   2. @theme inline  — the bridge that turns each token into Tailwind
- *                       utilities (e.g. --color-error makes `bg-error`,
- *                       `text-error`, `border-error` exist).
+ * Two layers:
+ *   1. :root / [data-theme]  — the raw named color values (with dark overrides)
+ *   2. @theme inline         — the bridge that turns each token into Tailwind
+ *                              utilities (e.g. --color-error makes `bg-error`,
+ *                              `text-error`, `border-error` exist).
  *
- * Currently only the tokens the toast system needs. Adding more of the
- * design system later = adding rows to these two blocks.
+ * History: the block below the "minimal seed" marker was reintroduced from the
+ * reverted UX PR (#35), merged ADDITIVELY. Where a token already existed with a
+ * different value, the existing value was kept on purpose (border, warning,
+ * warning-soft) so current components don't shift. Dark mode only fully applies
+ * to token-based components (new routes + migrated modals); legacy views that
+ * still use raw Tailwind grays stay light.
  */
 
-:root {
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* --- minimal seed (existing — unchanged) --- */
   --token-surface: #ffffff;
-  --token-border: #e3e8f2;
+  --token-border: #e3e8f2; /* kept; PR #35 had #e5e9f2 */
   --token-text: #151827;
   --token-success: #059669;
   --token-error: #dc2626;
-  --token-warning: #a16207;
-  --token-warning-soft: #fefce8;
+  --token-warning: #a16207; /* kept; PR #35 had #d97706 */
+  --token-warning-soft: #fefce8; /* kept; PR #35 had #fffbeb */
   --token-muted: #9ca3af;
   --token-subtle: #f9fafb;
   --token-overlay: rgba(0, 0, 0, 0.3);
+
+  /* --- reintroduced from PR #35 (additive) --- */
+  --token-primary: #4d61a3;
+  --token-primary-soft: #eef1ff;
+  --token-auth-panel: #1e1848;
+  --token-accent-orange: #eba03f;
+  --token-accent-yellow: #fdd86a;
+  --token-accent-pink: #ff6e99;
+  --token-accent-rose: #d1416c;
+  --token-bg: #f5f7fb;
+  --token-surface-muted: #f8fafd;
+  --token-text-muted: #677085;
+  --token-text-soft: #98a1b3;
+  --token-success-soft: #ecfdf5;
+  --token-error-soft: #fef2f2;
+  --token-info: #2563eb;
+  --token-info-soft: #eff6ff;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --token-primary: #8ea0ff;
+  --token-primary-soft: #232b54;
+  --token-bg: #0f1424;
+  --token-surface: #171d31;
+  --token-surface-muted: #202740;
+  --token-border: #2d3654;
+  --token-text: #f6f7fb;
+  --token-text-muted: #b8c0d4;
+  --token-text-soft: #7f8aa8;
+  --token-success-soft: #064e3b;
+  --token-warning-soft: #451a03;
+  --token-error-soft: #450a0a;
+  --token-info-soft: #1e3a5f;
+
+  /* keep migrated modals readable in dark */
+  --token-subtle: #202740;
+  --token-muted: #7f8aa8;
 }
 
 @theme inline {
+  /* existing */
   --color-surface: var(--token-surface);
   --color-border: var(--token-border);
   --color-text: var(--token-text);
@@ -36,9 +84,46 @@
   --color-subtle: var(--token-subtle);
   --color-overlay: var(--token-overlay);
 
+  /* reintroduced from PR #35 */
+  --color-primary: var(--token-primary);
+  --color-primary-soft: var(--token-primary-soft);
+  --color-auth-panel: var(--token-auth-panel);
+  --color-accent-orange: var(--token-accent-orange);
+  --color-accent-yellow: var(--token-accent-yellow);
+  --color-accent-pink: var(--token-accent-pink);
+  --color-accent-rose: var(--token-accent-rose);
+  --color-bg: var(--token-bg);
+  --color-surface-muted: var(--token-surface-muted);
+  --color-text-muted: var(--token-text-muted);
+  --color-text-soft: var(--token-text-soft);
+  --color-success-soft: var(--token-success-soft);
+  --color-error-soft: var(--token-error-soft);
+  --color-info: var(--token-info);
+  --color-info-soft: var(--token-info-soft);
+
+  /*
+   * NOTE: we deliberately do NOT redefine Tailwind's built-in scales here
+   * (--radius-*, --shadow-*, --text-xs/sm/lg/xl/2xl/3xl, --leading-*,
+   * --font-weight-*). Those token names ARE Tailwind's default utilities, so
+   * overriding them changes every existing component that uses rounded-md,
+   * shadow-sm, text-xl, etc. The reintroduced components use the same default
+   * scale as the rest of the app instead.
+   *
+   * Only genuinely additive names live below: a `text-md` step Tailwind lacks,
+   * the sidebar/topbar layout sizes used via var(), one easing curve used by
+   * the login form, plus font + z-index.
+   */
+  --text-md: 16px;
+
+  --spacing-sidebar: 260px;
+  --spacing-topbar: 72px;
+  --spacing-layout-max: 1440px;
+
   /* Typography: also sets Tailwind's default `font-sans`. */
   --font-sans: "Geist Sans", system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
 
   --z-toast: 200;
+
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
 }

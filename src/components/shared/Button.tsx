@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes } from "react";
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: "primary" | "secondary" | "danger";
+  variant?: "primary" | "secondary" | "danger" | "ghost";
   size?: "lg" | "sm";
 };
 
@@ -17,6 +17,7 @@ export default function Button({ variant = "secondary", size = "lg", className =
     primary: "bg-gray-900 text-white hover:bg-gray-700 shadow-sm",
     secondary: "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 shadow-sm",
     danger: "bg-white border border-red-200 text-red-500 hover:bg-red-50 shadow-sm",
+    ghost: "bg-transparent text-gray-600 hover:bg-gray-50",
   };
   return <button className={`${base} ${sizes[size]} ${variants[variant]} ${className}`} {...props} />;
 }
