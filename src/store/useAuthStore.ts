@@ -16,6 +16,7 @@ import {
   updateGuestSession,
 } from "../services/guestStorage";
 import { trackGuestEvent } from "../services/guestAnalytics";
+import { applyAppTheme, applyThemeForCurrentPath } from "../lib/theme";
 
 export type AuthUser = {
   id?: string;
@@ -107,16 +108,6 @@ function setPendingGuestMigration(value: boolean): void {
   }
 }
 
-function applyTheme(theme: AppSettings["theme"]) {
-  const resolved =
-    theme === "system"
-      ? window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light"
-      : theme;
-  document.documentElement.setAttribute("data-theme", resolved);
-}
-
 function friendlyAuthError(message: string): string {
   const lower = message.toLowerCase();
   if (lower.includes("invalid login credentials")) {
@@ -201,7 +192,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
   hydrate: () => {
     const settings = loadSettings();
-    applyTheme(settings.theme);
+    applyThemeForCurrentPath(settings.theme);
     set({
       onboarding: loadOnboarding(),
       settings,
@@ -438,7 +429,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   updateSettings: (patch) => {
     const settings = { ...get().settings, ...patch };
     setItem(STORAGE_KEYS.settings, settings);
-    if (patch.theme) applyTheme(patch.theme);
+    if (patch.theme) applyAppTheme(patch.theme);
     set({ settings });
   },
 }));

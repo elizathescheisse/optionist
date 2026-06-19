@@ -15,6 +15,7 @@ import type {
 } from "../types/workspace";
 import { getItem, STORAGE_KEYS } from "../services/storage";
 import type { OnboardingAnswers } from "./useAuthStore";
+import { applyAppTheme, coalesceLegacyDefaultTheme } from "../lib/theme";
 
 type WorkspaceStatus = "idle" | "loading" | "ready" | "error";
 
@@ -41,16 +42,6 @@ type WorkspaceStore = {
   /** Demo/local fallback when Supabase is not configured. */
   hydrateDemo: () => void;
 };
-
-function applyTheme(theme: "light" | "dark" | "system") {
-  const resolved =
-    theme === "system"
-      ? window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light"
-      : theme;
-  document.documentElement.setAttribute("data-theme", resolved);
-}
 
 function demoOnboarding(): OnboardingData | null {
   const answers = getItem<OnboardingAnswers>(STORAGE_KEYS.onboarding);
@@ -121,12 +112,20 @@ export const useWorkspaceStore = create<WorkspaceStore>((set, get) => ({
         null;
       const current = organizations.find((o) => o.id === defaultOrgId) ?? organizations[0] ?? null;
 
-      if (settings?.theme) applyTheme(settings.theme);
+      const onboardingComplete = profile?.onboarding_status === "complete";
+      let resolvedSettings = settings;
+      const themePreference = coalesceLegacyDefaultTheme(settings?.theme, onboardingComplete);
+
+      if (settings && settings.theme === "system" && themePreference === "light") {
+        resolvedSettings = await updateUserSettings(userId, { theme: "light" });
+      }
+
+      applyAppTheme(themePreference);
 
       set({
         status: "ready",
         profile,
-        settings,
+        settings: resolvedSettings,
         organizations,
         currentOrganizationId: current?.id ?? null,
         currentRole: current?.role ?? null,
@@ -161,7 +160,7 @@ export const useWorkspaceStore = create<WorkspaceStore>((set, get) => ({
 
   saveSettings: async (userId, patch) => {
     const settings = await updateUserSettings(userId, patch);
-    if (patch.theme) applyTheme(patch.theme);
+    if (patch.theme) applyAppTheme(patch.theme);
     set({ settings });
   },
 }));

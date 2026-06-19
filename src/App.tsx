@@ -41,6 +41,15 @@ import StorageQuotaWatcher from "./components/shared/StorageQuotaWatcher";
 import GuestLimitWatcher from "./components/guest/GuestLimitWatcher";
 import GuestMigrationModal from "./components/guest/GuestMigrationModal";
 import DesignSystemModal from "./components/shared/DesignSystemModal";
+import AuthThemeBoundary from "./components/auth/AuthThemeBoundary";
+
+function AuthThemeLayout() {
+  return (
+    <AuthThemeBoundary>
+      <Outlet />
+    </AuthThemeBoundary>
+  );
+}
 
 function SidebarLayout() {
   return (
@@ -59,10 +68,19 @@ export default function App() {
       <BrowserRouter>
         <GuestMigrationModal />
         <Routes>
-          <Route path="/login" element={<LoginRoute />} />
-          <Route path="/signup" element={<SignupRoute />} />
-          <Route path="/forgot-password" element={<ForgotPasswordRoute />} />
-          <Route path="/auth/callback" element={<AuthCallbackRoute />} />
+          <Route element={<AuthThemeLayout />}>
+            <Route path="/login" element={<LoginRoute />} />
+            <Route path="/signup" element={<SignupRoute />} />
+            <Route path="/forgot-password" element={<ForgotPasswordRoute />} />
+          </Route>
+          <Route
+            path="/auth/callback"
+            element={
+              <AuthThemeBoundary>
+                <AuthCallbackRoute />
+              </AuthThemeBoundary>
+            }
+          />
 
           <Route
             path="/present/:decisionId"
@@ -84,7 +102,9 @@ export default function App() {
               path="/profile/setup"
               element={
                 <RequireAuthenticated>
-                  <ProfileSetupRoute />
+                  <AuthThemeBoundary>
+                    <ProfileSetupRoute />
+                  </AuthThemeBoundary>
                 </RequireAuthenticated>
               }
             />
@@ -92,7 +112,9 @@ export default function App() {
               path="/onboarding"
               element={
                 <RequireAuthenticated>
-                  <OnboardingRoute />
+                  <AuthThemeBoundary>
+                    <OnboardingRoute />
+                  </AuthThemeBoundary>
                 </RequireAuthenticated>
               }
             />
