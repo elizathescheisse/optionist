@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import type { ReactNode } from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { LayoutDashboard, FolderOpen, Clock, Settings, type LucideIcon } from "lucide-react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useWorkspaceStore, currentOrganization } from "../../store/useWorkspaceStore";
 import { isSupabaseConfigured } from "../../lib/supabase";
@@ -14,16 +15,17 @@ import { resolveThemePreference, useSystemThemeListener } from "../../lib/theme"
 type NavItem = {
   to: string;
   label: string;
+  icon: LucideIcon;
   matchPaths: string[];
   requiresOrgAdmin?: boolean;
   requiresAuth?: boolean;
 };
 
 const NAV_ITEMS: NavItem[] = [
-  { to: "/dashboard", label: "Dashboard", matchPaths: ["/dashboard"] },
-  { to: "/projects", label: "Projects", matchPaths: ["/projects"] },
-  { to: "/history", label: "History", matchPaths: ["/history"] },
-  { to: "/settings", label: "Settings", matchPaths: ["/settings"], requiresAuth: true },
+  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, matchPaths: ["/dashboard"] },
+  { to: "/projects", label: "Projects", icon: FolderOpen, matchPaths: ["/projects"] },
+  { to: "/history", label: "History", icon: Clock, matchPaths: ["/history"] },
+  { to: "/settings", label: "Settings", icon: Settings, matchPaths: ["/settings"], requiresAuth: true },
 ];
 
 export default function AppLayout({ children }: { children: ReactNode }) {
@@ -42,6 +44,16 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const wsTheme = useWorkspaceStore((s) => s.settings?.theme);
   const appThemePreference = resolveThemePreference(wsTheme ?? localTheme);
   useSystemThemeListener(appThemePreference);
+
+  const [collapsed, setCollapsed] = useState(
+    () => localStorage.getItem("sidebar-collapsed") !== "false"
+  );
+
+  function toggleCollapsed() {
+    const next = !collapsed;
+    setCollapsed(next);
+    localStorage.setItem("sidebar-collapsed", String(next));
+  }
 
   useEffect(() => {
     const state = location.state as { guestAccountOnly?: boolean } | null;
@@ -81,48 +93,85 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="h-full flex bg-bg">
-      <aside className="shrink-0 w-[var(--spacing-sidebar)] flex flex-col border-r border-border bg-surface">
-        <div className="h-[var(--spacing-topbar)] flex items-center px-4 border-b border-border shrink-0">
+      <aside
+        className={cn(
+          "shrink-0 flex flex-col border-r border-border bg-surface transition-[width] duration-200",
+          collapsed ? "w-12" : "w-[var(--spacing-sidebar)]",
+        )}
+      >
+        {/* Logo / wordmark */}
+        <div className="h-[var(--spacing-topbar)] flex items-center px-2.5 border-b border-border shrink-0 overflow-hidden">
           <Link to="/dashboard" className="flex items-center gap-2.5 min-w-0">
             <span className="w-7 h-7 rounded-md bg-primary flex items-center justify-center text-white text-xs font-bold shrink-0">
               O
             </span>
-            <span className="font-semibold text-text text-sm tracking-tight truncate">
-              Optionist
-            </span>
+            {!collapsed && (
+              <span className="font-semibold text-text text-sm tracking-tight truncate">
+                Optionist
+              </span>
+            )}
           </Link>
         </div>
 
-        <nav className="flex-1 p-3 flex flex-col gap-1">
+        {/* Nav */}
+        <nav className="flex-1 p-2 flex flex-col gap-1">
           {visibleNav.map((item) => (
             <Link
               key={item.to}
               to={item.to}
+              title={collapsed ? item.label : undefined}
               className={cn(
-                "flex items-center gap-2.5 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                "flex items-center gap-2.5 px-2 py-2 rounded-md text-sm font-medium transition-colors",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                collapsed ? "justify-center" : "",
                 isActive(item.matchPaths)
                   ? "bg-primary-soft text-primary"
                   : "text-text-muted hover:bg-surface-muted hover:text-text",
               )}
             >
-              {item.label}
+              <item.icon size={16} className="shrink-0" />
+              {!collapsed && item.label}
             </Link>
           ))}
         </nav>
 
-        {isGuest() ? (
-          <GuestMenuPanel />
-        ) : isSupabaseConfigured ? (
-          <OrganizationSwitcher />
-        ) : (
-          onboarding?.workspaceName && (
-            <div className="px-4 py-3 border-t border-border">
-              <p className="text-xs text-text-soft">Workspace</p>
-              <p className="text-sm text-text font-medium truncate">{workspaceLabel}</p>
-            </div>
+        {/* Workspace / org switcher */}
+        {!collapsed && (
+          isGuest() ? (
+            <GuestMenuPanel />
+          ) : isSupabaseConfigured ? (
+            <OrganizationSwitcher />
+          ) : (
+            onboarding?.workspaceName && (
+              <div className="px-4 py-3 border-t border-border">
+                <p className="text-xs text-text-soft">Workspace</p>
+                <p className="text-sm text-text font-medium truncate">{workspaceLabel}</p>
+              </div>
+            )
           )
         )}
+
+        {/* Collapse toggle */}
+        <button
+          type="button"
+          onClick={toggleCollapsed}
+          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          className="shrink-0 flex items-center justify-center h-9 border-t border-border text-text-soft hover:text-text hover:bg-surface-muted transition-colors"
+        >
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 14 14"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={cn("transition-transform duration-200", collapsed ? "rotate-180" : "")}
+          >
+            <path d="M9 2L4 7l5 5" />
+          </svg>
+        </button>
       </aside>
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
