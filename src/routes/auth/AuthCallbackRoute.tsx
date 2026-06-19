@@ -9,12 +9,15 @@ export default function AuthCallbackRoute() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const authError = useAuthStore((s) => s.authError);
 
+  const checkGuestDataAfterAuth = useAuthStore((s) => s.checkGuestDataAfterAuth);
+
   useEffect(() => {
     if (status === "loading") return;
     if (isAuthenticated()) {
+      checkGuestDataAfterAuth();
       navigate("/dashboard", { replace: true });
     }
-  }, [status, isAuthenticated, navigate]);
+  }, [status, isAuthenticated, checkGuestDataAfterAuth, navigate]);
 
   if (authError) {
     return (

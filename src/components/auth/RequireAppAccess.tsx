@@ -1,11 +1,11 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "../../store/useAuthStore";
 
-// Wraps the auth screens (login/signup/forgot-password). If the visitor is already
-// signed in or in guest mode, send them to the dashboard.
-export default function RedirectIfAuthed({ children }: { children: React.ReactNode }) {
+/** Allows signed-in users and guest-mode users into the app. */
+export default function RequireAppAccess({ children }: { children: React.ReactNode }) {
   const status = useAuthStore((s) => s.status);
   const canAccessApp = useAuthStore((s) => s.canAccessApp);
+  const location = useLocation();
 
   if (status === "loading") {
     return (
@@ -15,8 +15,8 @@ export default function RedirectIfAuthed({ children }: { children: React.ReactNo
     );
   }
 
-  if (canAccessApp()) {
-    return <Navigate to="/dashboard" replace />;
+  if (!canAccessApp()) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return children;

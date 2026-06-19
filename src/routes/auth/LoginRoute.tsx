@@ -7,8 +7,10 @@ import Button from "../../components/ui/Button";
 import TextInput from "../../components/ui/TextInput";
 import PasswordInput from "../../components/ui/PasswordInput";
 import Divider from "../../components/ui/Divider";
+import ContinueAsGuestButton from "../../components/auth/ContinueAsGuestButton";
 import { useAuthStore } from "../../store/useAuthStore";
 import { isSupabaseConfigured } from "../../lib/supabase";
+import { hasGuestAppData } from "../../services/guestStorage";
 import { cn } from "../../utils/cn";
 
 export default function LoginRoute() {
@@ -112,6 +114,16 @@ export default function LoginRoute() {
               </button>
             </form>
           )}
+
+          <Divider />
+
+          {hasGuestAppData() && (
+            <p className="text-sm text-text-muted text-center">
+              You have guest work saved on this device. Use Continue as Guest to resume it.
+            </p>
+          )}
+
+          <ContinueAsGuestButton />
 
           <Divider />
 

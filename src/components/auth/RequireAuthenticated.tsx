@@ -1,9 +1,11 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "../../store/useAuthStore";
 
-export default function RequireAuth({ children }: { children: React.ReactNode }) {
+/** Account-only routes — guests are redirected to dashboard with a signup hint. */
+export default function RequireAuthenticated({ children }: { children: React.ReactNode }) {
   const status = useAuthStore((s) => s.status);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const isGuest = useAuthStore((s) => s.isGuest);
   const location = useLocation();
 
   if (status === "loading") {
@@ -12,6 +14,10 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
         Loading…
       </div>
     );
+  }
+
+  if (isGuest()) {
+    return <Navigate to="/dashboard" state={{ guestAccountOnly: true, from: location }} replace />;
   }
 
   if (!isAuthenticated()) {
