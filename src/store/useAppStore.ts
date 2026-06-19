@@ -8,9 +8,49 @@ import type {
   ID,
 } from "../types/domain";
 import type { ExportedAppData } from "../types/importExport";
-import { loadState, saveState, EMPTY_STATE } from "./persistence";
+import { loadState, saveState, EMPTY_STATE, getStorageMode } from "./persistence";
 import { createId } from "../utils/ids";
 import { now } from "../utils/dates";
+import { GUEST_LIMITS } from "../config/guestLimits";
+
+export const GUEST_LIMIT_EVENT = "optionist:guest-limit";
+
+function emitGuestLimit(message: string): void {
+  window.dispatchEvent(new CustomEvent(GUEST_LIMIT_EVENT, { detail: message }));
+}
+
+function checkGuestProjectLimit(state: AppState): boolean {
+  if (getStorageMode() !== "guest") return true;
+  if (Object.keys(state.projects).length >= GUEST_LIMITS.maxProjects) {
+    emitGuestLimit(
+      `Guest mode allows up to ${GUEST_LIMITS.maxProjects} projects. Create an account to save more.`,
+    );
+    return false;
+  }
+  return true;
+}
+
+function checkGuestDecisionLimit(state: AppState): boolean {
+  if (getStorageMode() !== "guest") return true;
+  if (Object.keys(state.decisions).length >= GUEST_LIMITS.maxDecisions) {
+    emitGuestLimit(
+      `Guest mode allows up to ${GUEST_LIMITS.maxDecisions} decisions. Create an account to save more.`,
+    );
+    return false;
+  }
+  return true;
+}
+
+function checkGuestOptionLimit(state: AppState): boolean {
+  if (getStorageMode() !== "guest") return true;
+  if (Object.keys(state.options).length >= GUEST_LIMITS.maxOptions) {
+    emitGuestLimit(
+      `Guest mode allows up to ${GUEST_LIMITS.maxOptions} design options. Create an account to save more.`,
+    );
+    return false;
+  }
+  return true;
+}
 
 type AppStore = AppState & {
   createProject: (input: { name: string; description?: string }) => ID;
@@ -41,6 +81,8 @@ type AppStore = AppState & {
   exportData: () => ExportedAppData;
   importDataReplace: (data: ExportedAppData) => void;
   resetAllData: () => void;
+  reloadFromStorage: () => void;
+  resetToEmpty: () => void;
 };
 
 function persist<T>(state: AppState, extra: T): AppState & T {
@@ -53,6 +95,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
 
   // --- Projects ---
   createProject: ({ name, description = "" }) => {
+    const current = get();
+    if (!checkGuestProjectLimit(current)) return "";
     const id = createId();
     const ts = now();
     const project: Project = {
@@ -121,6 +165,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
 
   // --- Decisions ---
   createDecision: (projectId, { title, description = "" }) => {
+    const current = get();
+    if (!checkGuestDecisionLimit(current)) return "";
     const id = createId();
     const ts = now();
     const decision: Decision = {
@@ -248,6 +294,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
 
   // --- Options ---
   addOption: (decisionId, { name, imageDataUrl, imageMimeType }) => {
+    const current = get();
+    if (!checkGuestOptionLimit(current)) return "";
     const id = createId();
     const ts = now();
     const option: DesignOption = {
@@ -450,6 +498,17 @@ export const useAppStore = create<AppStore>((set, get) => ({
     set(() => {
       saveState(EMPTY_STATE);
       return EMPTY_STATE;
+    });
+  },
+
+  reloadFromStorage: () => {
+    set(loadState());
+  },
+
+  resetToEmpty: () => {
+    set(() => {
+      saveState(EMPTY_STATE);
+      return { ...EMPTY_STATE };
     });
   },
 }));

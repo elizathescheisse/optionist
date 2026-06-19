@@ -19,6 +19,7 @@ export default function CreateProjectForm() {
       return;
     }
     const id = createProject({ name: trimmed });
+    if (!id) return;
     setCurrentProject(id);
     navigate(`/projects/${id}`);
   }

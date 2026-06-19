@@ -7,6 +7,7 @@ import Button from "../../components/ui/Button";
 import TextInput from "../../components/ui/TextInput";
 import PasswordInput from "../../components/ui/PasswordInput";
 import Divider from "../../components/ui/Divider";
+import ContinueAsGuestButton from "../../components/auth/ContinueAsGuestButton";
 import { useAuthStore } from "../../store/useAuthStore";
 import { isSupabaseConfigured } from "../../lib/supabase";
 import { cn } from "../../utils/cn";
@@ -112,6 +113,10 @@ export default function LoginRoute() {
               </button>
             </form>
           )}
+
+          <Divider />
+
+          <ContinueAsGuestButton />
 
           <Divider />
 

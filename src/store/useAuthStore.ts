@@ -4,6 +4,17 @@ import { getItem, setItem, removeItem, STORAGE_KEYS } from "../services/storage"
 import { mapSupabaseUser } from "../lib/authUser";
 import { authRedirectUrl, getSupabase, isSupabaseConfigured } from "../lib/supabase";
 import { useWorkspaceStore } from "./useWorkspaceStore";
+import { useAppStore } from "./useAppStore";
+import { setStorageMode } from "./persistence";
+import {
+  clearGuestAppState,
+  clearGuestSession,
+  createGuestSession,
+  hasGuestAppData,
+  loadGuestSession,
+  touchGuestSession,
+  updateGuestSession,
+} from "../services/guestStorage";
 
 export type AuthUser = {
   id?: string;
@@ -27,7 +38,7 @@ export type AppSettings = {
   name?: string;
 };
 
-export type AuthStatus = "loading" | "authenticated" | "unauthenticated";
+export type AuthStatus = "loading" | "unauthenticated" | "guest" | "authenticated";
 
 type AuthStore = {
   status: AuthStatus;
@@ -36,15 +47,31 @@ type AuthStore = {
   onboarding: OnboardingAnswers | null;
   settings: AppSettings;
   authError: string | null;
+  guestSessionId: string | null;
+  pendingGuestMigration: boolean;
+  guestLimitMessage: string | null;
+  guestStorageError: string | null;
   isAuthenticated: () => boolean;
+  isGuest: () => boolean;
+  canAccessApp: () => boolean;
   /** Load session from Supabase (or localStorage demo when unconfigured). */
   initialize: () => Promise<void>;
+  enterGuestMode: () => void;
+  exitGuestMode: () => void;
+  clearGuestWorkspace: () => void;
+  dismissGuestNotice: () => void;
+  showGuestNoticeAgain: () => void;
+  dismissGuestMigration: () => void;
+  checkGuestDataAfterAuth: () => void;
   signInWithPassword: (email: string, password: string) => Promise<boolean>;
   signInWithOAuth: (provider: Provider) => Promise<void>;
   signUpWithPassword: (email: string, password: string) => Promise<boolean>;
   resetPasswordForEmail: (email: string) => Promise<boolean>;
   signOut: () => Promise<void>;
   clearAuthError: () => void;
+  clearGuestLimitMessage: () => void;
+  setGuestLimitMessage: (message: string) => void;
+  retryGuestStorage: () => void;
   /** Demo-only login when Supabase env vars are missing. */
   login: (email: string, password: string) => boolean;
   loginFromOnboarding: (answers: OnboardingAnswers) => void;
@@ -64,6 +91,18 @@ function loadSettings(): AppSettings {
 
 function loadDemoAuth(): AuthUser | null {
   return getItem<AuthUser>(STORAGE_KEYS.auth);
+}
+
+function loadPendingGuestMigration(): boolean {
+  return getItem<boolean>(STORAGE_KEYS.pendingGuestMigration) ?? false;
+}
+
+function setPendingGuestMigration(value: boolean): void {
+  if (value) {
+    setItem(STORAGE_KEYS.pendingGuestMigration, true);
+  } else {
+    removeItem(STORAGE_KEYS.pendingGuestMigration);
+  }
 }
 
 function applyTheme(theme: AppSettings["theme"]) {
@@ -90,6 +129,46 @@ function friendlyAuthError(message: string): string {
   return message;
 }
 
+function activateGuestMode(
+  set: (partial: Partial<AuthStore> | ((state: AuthStore) => Partial<AuthStore>)) => void,
+  sessionId: string,
+): void {
+  setStorageMode("guest");
+  useAppStore.getState().reloadFromStorage();
+  set({
+    status: "guest",
+    user: null,
+    session: null,
+    guestSessionId: sessionId,
+    authError: null,
+  });
+}
+
+function activateAuthenticatedMode(
+  set: (partial: Partial<AuthStore> | ((state: AuthStore) => Partial<AuthStore>)) => void,
+  user: AuthUser | null,
+  session: Session | null,
+): void {
+  setStorageMode("authenticated");
+  useAppStore.getState().reloadFromStorage();
+  set({
+    status: user ? "authenticated" : "unauthenticated",
+    user,
+    session,
+    guestSessionId: null,
+  });
+}
+
+function restoreGuestSessionIfPresent(
+  set: (partial: Partial<AuthStore> | ((state: AuthStore) => Partial<AuthStore>)) => void,
+): boolean {
+  const session = loadGuestSession();
+  if (!session) return false;
+  touchGuestSession();
+  activateGuestMode(set, session.guestSessionId);
+  return true;
+}
+
 export const useAuthStore = create<AuthStore>((set, get) => ({
   status: "loading",
   session: null,
@@ -97,10 +176,22 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   onboarding: null,
   settings: { theme: "light" },
   authError: null,
+  guestSessionId: null,
+  pendingGuestMigration: false,
+  guestLimitMessage: null,
+  guestStorageError: null,
 
   isAuthenticated: () => get().status === "authenticated" && get().user !== null,
 
+  isGuest: () => get().status === "guest",
+
+  canAccessApp: () => get().isAuthenticated() || get().isGuest(),
+
   clearAuthError: () => set({ authError: null }),
+
+  clearGuestLimitMessage: () => set({ guestLimitMessage: null }),
+
+  setGuestLimitMessage: (message) => set({ guestLimitMessage: message }),
 
   hydrate: () => {
     const settings = loadSettings();
@@ -108,6 +199,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     set({
       onboarding: loadOnboarding(),
       settings,
+      pendingGuestMigration: loadPendingGuestMigration(),
     });
   },
 
@@ -116,11 +208,13 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
     if (!isSupabaseConfigured) {
       const demoUser = loadDemoAuth();
-      set({
-        status: demoUser ? "authenticated" : "unauthenticated",
-        user: demoUser,
-        session: null,
-      });
+      if (demoUser) {
+        activateAuthenticatedMode(set, demoUser, null);
+        return;
+      }
+      if (restoreGuestSessionIfPresent(set)) return;
+      setStorageMode("authenticated");
+      set({ status: "unauthenticated", user: null, session: null, guestSessionId: null });
       return;
     }
 
@@ -129,25 +223,92 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       data: { session },
     } = await supabase.auth.getSession();
 
-    set({
-      session,
-      user: session?.user ? mapSupabaseUser(session.user) : null,
-      status: session?.user ? "authenticated" : "unauthenticated",
-    });
+    if (session?.user) {
+      activateAuthenticatedMode(set, mapSupabaseUser(session.user), session);
+      get().checkGuestDataAfterAuth();
+    } else if (restoreGuestSessionIfPresent(set)) {
+      // guest restored
+    } else {
+      setStorageMode("authenticated");
+      set({ status: "unauthenticated", user: null, session: null, guestSessionId: null });
+    }
 
     supabase.auth.onAuthStateChange((_event, nextSession) => {
-      set({
-        session: nextSession,
-        user: nextSession?.user ? mapSupabaseUser(nextSession.user) : null,
-        status: nextSession?.user ? "authenticated" : "unauthenticated",
-      });
+      const wasGuest = get().isGuest();
+      if (nextSession?.user) {
+        activateAuthenticatedMode(set, mapSupabaseUser(nextSession.user), nextSession);
+        if (wasGuest || hasGuestAppData()) {
+          get().checkGuestDataAfterAuth();
+        }
+      } else if (!get().isGuest()) {
+        activateAuthenticatedMode(set, null, null);
+      }
     });
+  },
+
+  enterGuestMode: () => {
+    const session = loadGuestSession() ?? createGuestSession();
+    touchGuestSession();
+    activateGuestMode(set, session.guestSessionId);
+  },
+
+  exitGuestMode: () => {
+    setStorageMode("authenticated");
+    useAppStore.getState().reloadFromStorage();
+    set({ status: "unauthenticated", guestSessionId: null });
+  },
+
+  clearGuestWorkspace: () => {
+    clearGuestAppState();
+    clearGuestSession();
+    if (get().isGuest()) {
+      useAppStore.getState().resetToEmpty();
+      const session = createGuestSession();
+      set({ guestSessionId: session.guestSessionId, guestStorageError: null });
+    }
+  },
+
+  dismissGuestNotice: () => {
+    updateGuestSession({ hasSeenGuestNotice: true });
+  },
+
+  showGuestNoticeAgain: () => {
+    updateGuestSession({ hasSeenGuestNotice: false });
+  },
+
+  dismissGuestMigration: () => {
+    setPendingGuestMigration(false);
+    set({ pendingGuestMigration: false });
+  },
+
+  checkGuestDataAfterAuth: () => {
+    if (hasGuestAppData()) {
+      setPendingGuestMigration(true);
+      set({ pendingGuestMigration: true });
+    }
+  },
+
+  retryGuestStorage: () => {
+    try {
+      loadGuestSession();
+      set({ guestStorageError: null });
+      if (get().isGuest()) {
+        useAppStore.getState().reloadFromStorage();
+      }
+    } catch {
+      set({
+        guestStorageError:
+          "Guest workspace data could not be read. You can retry or clear local guest data.",
+      });
+    }
   },
 
   signInWithPassword: async (email, password) => {
     set({ authError: null });
     if (!isSupabaseConfigured) {
-      return get().login(email, password);
+      const ok = get().login(email, password);
+      if (ok) get().checkGuestDataAfterAuth();
+      return ok;
     }
     const { error } = await getSupabase().auth.signInWithPassword({
       email: email.trim(),
@@ -157,6 +318,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       set({ authError: friendlyAuthError(error.message) });
       return false;
     }
+    get().checkGuestDataAfterAuth();
     return true;
   },
 
@@ -196,7 +358,6 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   resetPasswordForEmail: async (email) => {
     set({ authError: null });
     if (!isSupabaseConfigured) {
-      // Demo: pretend success without revealing whether email exists
       return true;
     }
     const { error } = await getSupabase().auth.resetPasswordForEmail(email.trim(), {
@@ -215,7 +376,15 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     }
     removeItem(STORAGE_KEYS.auth);
     useWorkspaceStore.getState().reset();
-    set({ user: null, session: null, status: "unauthenticated", authError: null });
+    setStorageMode("authenticated");
+    useAppStore.getState().reloadFromStorage();
+    set({
+      user: null,
+      session: null,
+      status: "unauthenticated",
+      authError: null,
+      guestSessionId: null,
+    });
   },
 
   login: (email, password) => {
@@ -224,7 +393,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     if (!valid) return false;
     const user: AuthUser = { email: "test@test.com", name: "Demo User" };
     setItem(STORAGE_KEYS.auth, user);
-    set({ user, status: "authenticated" });
+    activateAuthenticatedMode(set, user, null);
     return true;
   },
 
@@ -235,7 +404,8 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     };
     setItem(STORAGE_KEYS.auth, user);
     setItem(STORAGE_KEYS.onboarding, answers);
-    set({ user, onboarding: answers, status: "authenticated" });
+    activateAuthenticatedMode(set, user, null);
+    set({ onboarding: answers });
   },
 
   logout: () => {

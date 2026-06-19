@@ -13,13 +13,29 @@ export const EMPTY_STATE: AppState = {
   dataVersion: 1,
 };
 
-export function loadState(): AppState {
+export type StorageMode = "authenticated" | "guest";
+
+let activeStorageMode: StorageMode = "authenticated";
+
+export function getStorageMode(): StorageMode {
+  return activeStorageMode;
+}
+
+export function setStorageMode(mode: StorageMode): void {
+  activeStorageMode = mode;
+}
+
+function storageKeyForMode(mode: StorageMode): string {
+  return mode === "guest" ? "optionist:guest-app:v1" : STORAGE_KEY;
+}
+
+export function loadState(mode: StorageMode = activeStorageMode): AppState {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return EMPTY_STATE;
+    const raw = localStorage.getItem(storageKeyForMode(mode));
+    if (!raw) return { ...EMPTY_STATE };
     return JSON.parse(raw) as AppState;
   } catch {
-    return EMPTY_STATE;
+    return { ...EMPTY_STATE };
   }
 }
 
@@ -37,9 +53,9 @@ function isQuotaError(err: unknown): boolean {
   );
 }
 
-export function saveState(state: AppState): void {
+export function saveState(state: AppState, mode: StorageMode = activeStorageMode): void {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    localStorage.setItem(storageKeyForMode(mode), JSON.stringify(state));
   } catch (err) {
     if (isQuotaError(err)) {
       window.dispatchEvent(new CustomEvent(STORAGE_FULL_EVENT));
@@ -48,6 +64,6 @@ export function saveState(state: AppState): void {
   }
 }
 
-export function clearState(): void {
-  localStorage.removeItem(STORAGE_KEY);
+export function clearState(mode: StorageMode = "authenticated"): void {
+  localStorage.removeItem(storageKeyForMode(mode));
 }
