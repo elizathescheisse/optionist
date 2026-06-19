@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Outlet, Navigate } from "react-router-dom";
 import AppLayout from "./components/layout/AppLayout";
 import RequireAppAccess from "./components/auth/RequireAppAccess";
 import RequireAuthenticated from "./components/auth/RequireAuthenticated";
@@ -16,7 +16,24 @@ import ProfileSetupRoute from "./routes/auth/ProfileSetupRoute";
 import ForgotPasswordRoute from "./routes/auth/ForgotPasswordRoute";
 import AuthCallbackRoute from "./routes/auth/AuthCallbackRoute";
 import AppDashboardRoute from "./routes/AppDashboardRoute";
-import SettingsRoute from "./routes/SettingsRoute";
+import SettingsLayout from "./components/settings/SettingsLayout";
+import ProfileSettingsRoute from "./routes/settings/ProfileSettingsRoute";
+import AccountSettingsRoute from "./routes/settings/AccountSettingsRoute";
+import PreferencesSettingsRoute from "./routes/settings/PreferencesSettingsRoute";
+import NotificationsSettingsRoute from "./routes/settings/NotificationsSettingsRoute";
+import WorkspaceSettingsRoute from "./routes/settings/WorkspaceSettingsRoute";
+import MembersSettingsRoute from "./routes/settings/MembersSettingsRoute";
+import RolesSettingsRoute from "./routes/settings/RolesSettingsRoute";
+import ProjectsSettingsRoute from "./routes/settings/ProjectsSettingsRoute";
+import ThemeSettingsRoute from "./routes/settings/ThemeSettingsRoute";
+import DesignDefaultsSettingsRoute from "./routes/settings/DesignDefaultsSettingsRoute";
+import ExportSettingsRoute from "./routes/settings/ExportSettingsRoute";
+import IntegrationsSettingsRoute from "./routes/settings/IntegrationsSettingsRoute";
+import OrganizationSettingsRoute from "./routes/settings/OrganizationSettingsRoute";
+import BillingSettingsRoute from "./routes/settings/BillingSettingsRoute";
+import SecuritySettingsRoute from "./routes/settings/SecuritySettingsRoute";
+import DataPrivacySettingsRoute from "./routes/settings/DataPrivacySettingsRoute";
+import DangerZoneSettingsRoute from "./routes/settings/DangerZoneSettingsRoute";
 import DesignSystemRoute from "./routes/DesignSystemRoute";
 import PresentRoute from "./routes/PresentRoute";
 import { ToastProvider } from "./context/ToastContext";
@@ -94,10 +111,29 @@ export default function App() {
                 path="/settings"
                 element={
                   <RequireAuthenticated>
-                    <SettingsRoute />
+                    <SettingsLayout />
                   </RequireAuthenticated>
                 }
-              />
+              >
+                <Route index element={<Navigate to="profile" replace />} />
+                <Route path="profile" element={<ProfileSettingsRoute />} />
+                <Route path="account" element={<AccountSettingsRoute />} />
+                <Route path="preferences" element={<PreferencesSettingsRoute />} />
+                <Route path="notifications" element={<NotificationsSettingsRoute />} />
+                <Route path="workspace" element={<WorkspaceSettingsRoute />} />
+                <Route path="members" element={<MembersSettingsRoute />} />
+                <Route path="roles" element={<RolesSettingsRoute />} />
+                <Route path="projects" element={<ProjectsSettingsRoute />} />
+                <Route path="theme" element={<ThemeSettingsRoute />} />
+                <Route path="design-defaults" element={<DesignDefaultsSettingsRoute />} />
+                <Route path="export" element={<ExportSettingsRoute />} />
+                <Route path="integrations" element={<IntegrationsSettingsRoute />} />
+                <Route path="organization" element={<OrganizationSettingsRoute />} />
+                <Route path="billing" element={<BillingSettingsRoute />} />
+                <Route path="security" element={<SecuritySettingsRoute />} />
+                <Route path="data-privacy" element={<DataPrivacySettingsRoute />} />
+                <Route path="danger-zone" element={<DangerZoneSettingsRoute />} />
+              </Route>
               <Route path="/design-system" element={<DesignSystemRoute />} />
               <Route path="*" element={<NotFoundRoute />} />
             </Route>
