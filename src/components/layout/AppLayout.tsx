@@ -1,19 +1,21 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, type ReactNode } from "react";
+import { LayoutDashboard, FolderOpen, Clock, Settings, type LucideIcon } from "lucide-react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { cn } from "../../utils/cn";
 
 type NavItem = {
   to: string;
   label: string;
+  icon: LucideIcon;
   matchPaths: string[];
 };
 
 const NAV_ITEMS: NavItem[] = [
-  { to: "/dashboard", label: "Dashboard", matchPaths: ["/dashboard"] },
-  { to: "/projects", label: "Projects", matchPaths: ["/projects"] },
-  { to: "/history", label: "History", matchPaths: ["/history"] },
-  { to: "/settings", label: "Settings", matchPaths: ["/settings"] },
+  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, matchPaths: ["/dashboard"] },
+  { to: "/projects", label: "Projects", icon: FolderOpen, matchPaths: ["/projects"] },
+  { to: "/history", label: "History", icon: Clock, matchPaths: ["/history"] },
+  { to: "/settings", label: "Settings", icon: Settings, matchPaths: ["/settings"] },
 ];
 
 export default function AppLayout({ children }: { children: ReactNode }) {
@@ -80,11 +82,8 @@ export default function AppLayout({ children }: { children: ReactNode }) {
                   : "text-text-muted hover:bg-surface-muted hover:text-text",
               )}
             >
-              {collapsed ? (
-                <span className="text-xs font-bold">{item.label[0]}</span>
-              ) : (
-                item.label
-              )}
+              <item.icon size={16} className="shrink-0" />
+              {!collapsed && item.label}
             </Link>
           ))}
         </nav>
