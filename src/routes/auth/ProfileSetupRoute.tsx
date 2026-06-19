@@ -22,7 +22,7 @@ export default function ProfileSetupRoute() {
     if (!user?.id) return;
     const name = fullName.trim();
     if (!name) {
-      setError("Please enter your name.");
+      setError("Please enter your full name.");
       return;
     }
     setSubmitting(true);
@@ -54,10 +54,10 @@ export default function ProfileSetupRoute() {
 
         <div className="flex flex-col gap-4">
           <TextInput
-            label="Your name"
+            label="Full name"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            placeholder="Joseph Dilascio"
+            placeholder="First Name Last Name"
             required
           />
           <TextInput

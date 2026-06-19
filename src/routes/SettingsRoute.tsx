@@ -50,8 +50,9 @@ export default function SettingsRoute() {
   async function handleTheme(theme: "light" | "dark" | "system") {
     if (isSupabaseConfigured && user?.id) {
       await saveWsSettings(user.id, { theme });
+      updateSettings({ theme });
     } else {
-      updateSettings({ theme: theme === "system" ? "light" : theme });
+      updateSettings({ theme });
     }
   }
 
