@@ -1,4 +1,4 @@
-import Button from "../shared/Button";
+import Button from "../ui/Button";
 import { useToast } from "../../context/ToastContext";
 
 type Props = {

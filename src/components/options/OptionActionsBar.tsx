@@ -1,6 +1,6 @@
 import { useAppStore } from "../../store/useAppStore";
 import OptionStatusBadge from "./OptionStatusBadge";
-import Button from "../shared/Button";
+import Button from "../ui/Button";
 
 type Props = {
   decisionId: string;
@@ -20,18 +20,18 @@ export default function OptionActionsBar({ decisionId, onMarkFinal, onReject }: 
   const isRejected = currentOption?.status === "rejected";
 
   return (
-    <div className="shrink-0 px-4 py-2.5 border-t border-gray-100 bg-white flex items-center justify-between gap-3">
+    <div className="shrink-0 px-4 py-2.5 border-t border-border bg-surface flex items-center justify-between gap-3">
       {/* Left: current option name + status */}
       <div className="flex items-center gap-2 min-w-0">
         {currentOption ? (
           <>
-            <span className="text-sm font-medium text-gray-700 truncate">
+            <span className="text-sm font-medium text-text truncate">
               {currentOption.name}
             </span>
             <OptionStatusBadge status={currentOption.status} />
           </>
         ) : (
-          <span className="text-sm text-gray-400">No option selected</span>
+          <span className="text-sm text-text-soft">No option selected</span>
         )}
       </div>
 
@@ -43,7 +43,7 @@ export default function OptionActionsBar({ decisionId, onMarkFinal, onReject }: 
           disabled={!currentOption || isDecisionFinalized}
         >
           {isRejected ? "Restore" : "Reject"}
-          <kbd className="ml-1 inline-flex items-center rounded bg-gray-100 px-1 py-0.5 text-xs font-mono text-gray-400 leading-none">R</kbd>
+          <kbd className="ml-1 inline-flex items-center rounded bg-surface-muted px-1 py-0.5 text-xs font-mono text-text-soft leading-none">R</kbd>
         </Button>
 
         {isDecisionFinalized ? (
@@ -53,7 +53,7 @@ export default function OptionActionsBar({ decisionId, onMarkFinal, onReject }: 
         ) : (
           <Button variant="primary" onClick={onMarkFinal} disabled={!currentOption}>
             Mark final
-            <kbd className="ml-1 inline-flex items-center rounded bg-white/20 px-1 py-0.5 text-xs font-mono text-white/60 leading-none">F</kbd>
+            <kbd className="ml-1 inline-flex items-center rounded bg-surface/20 px-1 py-0.5 text-xs font-mono text-white/60 leading-none">F</kbd>
           </Button>
         )}
       </div>

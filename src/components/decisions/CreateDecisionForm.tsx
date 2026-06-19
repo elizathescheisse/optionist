@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { useAppStore } from "../../store/useAppStore";
-import TextInput from "../shared/TextInput";
-import Button from "../shared/Button";
+import TextInput from "../ui/TextInput";
+import Button from "../ui/Button";
 
 type Props = { projectId: string };
 

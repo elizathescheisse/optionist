@@ -4,7 +4,7 @@ import { useAppStore } from "../../store/useAppStore";
 import { useReviewKeyboard } from "../../hooks/useReviewKeyboard";
 import OptionViewer from "../options/OptionViewer";
 import OptionFilmstrip from "../options/OptionFilmstrip";
-import Button from "../shared/Button";
+import Button from "../ui/Button";
 import ReviewToolbar from "./ReviewToolbar";
 import KeyboardShortcutHelp from "./KeyboardShortcutHelp";
 import FinalizeDecisionModal from "../decisions/FinalizeDecisionModal";
@@ -79,14 +79,14 @@ export default function ReviewWorkspace({ projectId, decisionId }: Props) {
       <OptionViewer optionId={currentOptionId} />
 
       {currentOption && (
-        <div className="shrink-0 px-4 py-2 border-t border-gray-200 bg-white flex items-center gap-2">
+        <div className="shrink-0 px-4 py-2 border-t border-border bg-surface flex items-center gap-2">
           <Button
             variant={currentOption.status === "rejected" ? "secondary" : "danger"}
             onClick={handleReject}
             disabled={currentOption.status === "final"}
           >
             {currentOption.status === "rejected" ? "Restore" : "Reject"}
-            <kbd className="ml-1 inline-flex items-center rounded bg-gray-100 px-1 py-0.5 text-xs font-mono text-gray-400 leading-none">R</kbd>
+            <kbd className="ml-1 inline-flex items-center rounded bg-surface-muted px-1 py-0.5 text-xs font-mono text-text-soft leading-none">R</kbd>
           </Button>
           <Button
             variant="primary"
@@ -94,7 +94,7 @@ export default function ReviewWorkspace({ projectId, decisionId }: Props) {
             disabled={currentOption.status === "final"}
           >
             {currentOption.status === "final" ? "Final ✓" : "Mark final"}
-            <kbd className="ml-1 inline-flex items-center rounded bg-white/20 px-1 py-0.5 text-xs font-mono text-white/60 leading-none">F</kbd>
+            <kbd className="ml-1 inline-flex items-center rounded bg-surface/20 px-1 py-0.5 text-xs font-mono text-white/60 leading-none">F</kbd>
           </Button>
         </div>
       )}

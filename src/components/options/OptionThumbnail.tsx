@@ -13,10 +13,10 @@ export default function OptionThumbnail({ option, isCurrent, index, onSelect }: 
       type="button"
       onClick={onSelect}
       title={option.name}
-      className={`relative shrink-0 w-24 h-20 rounded-lg overflow-hidden border-2 transition-all motion-reduce:transition-none bg-gray-100 ${
+      className={`relative shrink-0 w-24 h-20 rounded-lg overflow-hidden border-2 transition-all motion-reduce:transition-none bg-surface-muted ${
         isCurrent
-          ? "border-transparent ring-2 ring-gray-900 ring-offset-1"
-          : "border-transparent hover:border-gray-200"
+          ? "border-transparent ring-2 ring-primary ring-offset-1"
+          : "border-transparent hover:border-border"
       }`}
     >
       <img
@@ -36,7 +36,7 @@ export default function OptionThumbnail({ option, isCurrent, index, onSelect }: 
       {/* Rejected overlay */}
       {option.status === "rejected" && (
         <span className="absolute inset-0 flex items-center justify-center">
-          <span className="text-[10px] font-semibold uppercase tracking-wide text-red-500 bg-white/90 px-1.5 py-0.5 rounded-full">
+          <span className="text-[10px] font-semibold uppercase tracking-wide text-red-500 bg-surface/90 px-1.5 py-0.5 rounded-full">
             Rejected
           </span>
         </span>

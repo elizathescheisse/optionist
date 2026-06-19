@@ -27,15 +27,15 @@ export default function AuthLayout({ children }: Props) {
           </h1>
           <ul className="flex flex-col gap-3 text-sm text-white/80">
             <li className="flex items-start gap-2">
-              <span className="text-accent-yellow mt-0.5">●</span>
+              <span className="text-primary mt-0.5">●</span>
               Present multiple UI options side by side
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-accent-pink mt-0.5">●</span>
+              <span className="text-white/60 mt-0.5">●</span>
               Add rationale, notes, and stakeholder feedback
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-accent-orange mt-0.5">●</span>
+              <span className="text-white/40 mt-0.5">●</span>
               Capture decisions in one clean workspace
             </li>
           </ul>

@@ -2,8 +2,8 @@ import { useRef, useState } from "react";
 import { useAppStore } from "../../store/useAppStore";
 import { validateImportedData } from "../../utils/validation";
 import type { ExportedAppData } from "../../types/importExport";
-import Button from "../shared/Button";
-import Modal from "../shared/Modal";
+import Button from "../ui/Button";
+import Modal from "../ui/Modal";
 
 export default function ImportExportControls() {
   const exportData = useAppStore((s) => s.exportData);

@@ -1,8 +1,8 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppStore } from "../../store/useAppStore";
-import TextInput from "../shared/TextInput";
-import Button from "../shared/Button";
+import TextInput from "../ui/TextInput";
+import Button from "../ui/Button";
 
 export default function CreateProjectForm() {
   const [name, setName] = useState("");

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import Button from "../components/shared/Button";
-import TextInput from "../components/shared/TextInput";
-import Textarea from "../components/shared/Textarea";
+import Button from "../components/ui/Button";
+import TextInput from "../components/ui/TextInput";
+import Textarea from "../components/ui/Textarea";
 import Card from "../components/ui/Card";
 import Badge from "../components/ui/Badge";
 import Pill from "../components/ui/Pill";
@@ -10,23 +10,22 @@ import Tabs from "../components/ui/Tabs";
 import EmptyState from "../components/ui/EmptyState";
 import PageHeader from "../components/ui/PageHeader";
 import SectionHeader from "../components/ui/SectionHeader";
-import Modal from "../components/shared/Modal";
+import Modal from "../components/ui/Modal";
 
 const COLORS = [
-  { name: "Primary Blue", hex: "#4D61A3", token: "primary", usage: "Primary actions, selected states, active navigation, key highlights." },
-  { name: "Orange", hex: "#EBA03F", token: "accent-orange", usage: "Tags, empty states, option badges, onboarding accents." },
-  { name: "Yellow", hex: "#FDD86A", token: "accent-yellow", usage: "Decorative accents, illustrations, warm highlights." },
-  { name: "Pink", hex: "#FF6E99", token: "accent-pink", usage: "Decorative accents, onboarding moments." },
-  { name: "Rose", hex: "#D1416C", token: "accent-rose", usage: "Decision-status accents, decorative use." },
+  { name: "Primary", hex: "#4D61A3", token: "primary", usage: "Primary actions, selected states, active navigation." },
   { name: "Background", hex: "#F5F7FB", token: "bg", usage: "App canvas background." },
   { name: "Surface", hex: "#FFFFFF", token: "surface", usage: "Cards, panels, inputs." },
+  { name: "Surface muted", hex: "#F8FAFD", token: "surface-muted", usage: "Receded panels, sidebars." },
   { name: "Border", hex: "#E3E8F2", token: "border", usage: "Dividers, input borders, card outlines." },
   { name: "Text", hex: "#151827", token: "text", usage: "Primary body and heading text." },
-  { name: "Text Muted", hex: "#677085", token: "text-muted", usage: "Secondary text, descriptions." },
+  { name: "Text muted", hex: "#677085", token: "text-muted", usage: "Secondary text, descriptions." },
+  { name: "Text soft", hex: "#98A1B3", token: "text-soft", usage: "Helper text, metadata." },
   { name: "Success", hex: "#059669", token: "success", usage: "Confirmed states, positive feedback." },
   { name: "Warning", hex: "#A16207", token: "warning", usage: "Caution states, missing rationale." },
   { name: "Error", hex: "#DC2626", token: "error", usage: "Errors, destructive actions." },
   { name: "Info", hex: "#2563EB", token: "info", usage: "Informational badges and hints." },
+  { name: "Auth panel", hex: "#1E1848", token: "auth-panel", usage: "Login screen brand panel only." },
 ];
 
 const TYPE_SAMPLES = [
@@ -67,7 +66,7 @@ export default function DesignSystemRoute() {
 
         {tab === "colors" && (
           <section className="flex flex-col gap-4">
-            <SectionHeader title="Brand palette" description="Use accents sparingly — mostly on tags, badges, and empty states." />
+            <SectionHeader title="Semantic palette" description="All UI surfaces use these tokens — no raw Tailwind grays." />
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {COLORS.map((c) => (
                 <Card key={c.name} padding="sm">
@@ -76,7 +75,7 @@ export default function DesignSystemRoute() {
                     style={{ backgroundColor: c.hex }}
                   />
                   <p className="text-sm font-medium text-text">{c.name}</p>
-                  <p className="text-xs font-mono text-text-muted">{c.hex}</p>
+                  <p className="text-xs font-mono text-text-muted">{c.token}</p>
                   <p className="text-xs text-text-soft mt-1">{c.usage}</p>
                 </Card>
               ))}
@@ -190,8 +189,7 @@ export default function DesignSystemRoute() {
                 <li>Sidebar width: 260px</li>
                 <li>Topbar height: 72px</li>
                 <li>Max content width: 1440px</li>
-                <li>Radius sm/md/lg/xl: 8 / 14 / 22 / 28px</li>
-                <li>Canvas: soft gray bg · Content: white card surfaces</li>
+                <li>Canvas: bg · Content: surface · Panels: surface-muted</li>
               </ul>
             </Card>
           </section>

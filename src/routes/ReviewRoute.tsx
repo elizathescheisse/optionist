@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAppStore } from "../store/useAppStore";
 import ReviewWorkspace from "../components/review/ReviewWorkspace";
+import WorkspaceBar from "../components/layout/WorkspaceBar";
 
 export default function ReviewRoute() {
   const { projectId, decisionId } = useParams<{
@@ -16,7 +17,7 @@ export default function ReviewRoute() {
 
   useEffect(() => {
     if (!project) {
-      navigate("/");
+      navigate("/projects");
       return;
     }
     if (!decision) {
@@ -29,5 +30,10 @@ export default function ReviewRoute() {
 
   if (!project || !decision) return null;
 
-  return <ReviewWorkspace projectId={project.id} decisionId={decision.id} />;
+  return (
+    <div className="flex flex-col flex-1 overflow-hidden">
+      <WorkspaceBar />
+      <ReviewWorkspace projectId={project.id} decisionId={decision.id} />
+    </div>
+  );
 }
