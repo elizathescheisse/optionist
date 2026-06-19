@@ -61,6 +61,16 @@ export default function GuestMenuPanel() {
         </button>
         <button
           type="button"
+          onClick={() => {
+            exitGuestMode();
+            navigate("/login");
+          }}
+          className="text-sm text-text-soft hover:text-text text-left"
+        >
+          Log out
+        </button>
+        <button
+          type="button"
           onClick={() => setConfirmClear(true)}
           className="text-sm text-text-soft hover:text-error text-left"
         >
