@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { Plus } from "lucide-react";
 import { useAppStore } from "../../store/useAppStore";
 import type { DecisionStatus } from "../../types/domain";
 import DecisionListItem from "./DecisionListItem";
@@ -68,11 +69,11 @@ export default function DecisionSidebar({ projectId }: Props) {
               setShowAddForm((v) => !v);
               setAddError("");
             }}
-            className="w-5 h-5 flex items-center justify-center rounded text-text-soft hover:text-text hover:bg-surface-muted transition-colors text-base leading-none"
+            className="w-5 h-5 flex items-center justify-center rounded text-text-soft hover:text-text hover:bg-surface-muted transition-colors"
             aria-label="Add decision"
             title="Add decision"
           >
-            +
+            <Plus size={14} />
           </button>
         </div>
 
@@ -110,7 +111,7 @@ export default function DecisionSidebar({ projectId }: Props) {
           {/* Active decisions */}
           {activeDecisions.length === 0 && finalizedDecisions.length === 0 && secondaryGroups.length === 0 && (
             <p className="text-xs text-text-soft px-4 py-2">
-              No decisions yet. Click + to add one.
+              No decisions yet. Click the + above to add one.
             </p>
           )}
 
