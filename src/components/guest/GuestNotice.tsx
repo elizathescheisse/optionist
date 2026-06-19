@@ -1,13 +1,11 @@
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../../store/useAuthStore";
-import { loadGuestSession } from "../../services/guestStorage";
 
 export default function GuestNotice() {
   const dismissGuestNotice = useAuthStore((s) => s.dismissGuestNotice);
-  const session = loadGuestSession();
-  const visible = session && !session.hasSeenGuestNotice;
+  const showNotice = useAuthStore((s) => s.status === "guest" && !s.hasSeenGuestNotice);
 
-  if (!visible) return null;
+  if (!showNotice) return null;
 
   return (
     <div
