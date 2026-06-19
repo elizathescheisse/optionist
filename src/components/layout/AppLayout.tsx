@@ -30,6 +30,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const logout = useAuthStore((s) => s.logout);
+  const exitGuestMode = useAuthStore((s) => s.exitGuestMode);
   const isGuest = useAuthStore((s) => s.isGuest);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const onboarding = useAuthStore((s) => s.onboarding);
@@ -55,6 +56,11 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
   function handleLogout() {
     logout();
+    navigate("/login");
+  }
+
+  function handleGuestLogout() {
+    exitGuestMode();
     navigate("/login");
   }
 
@@ -125,12 +131,21 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             Design System
           </Link>
           {isGuest() ? (
-            <Link
-              to="/signup"
-              className="text-xs text-primary font-medium hover:underline"
-            >
-              Save my work
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link
+                to="/signup"
+                className="text-xs text-primary font-medium hover:underline"
+              >
+                Save my work
+              </Link>
+              <button
+                type="button"
+                onClick={handleGuestLogout}
+                className="text-xs text-text-soft hover:text-text transition-colors"
+              >
+                Log out
+              </button>
+            </div>
           ) : isAuthenticated() ? (
             <button
               type="button"

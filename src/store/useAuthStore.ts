@@ -256,6 +256,8 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   },
 
   exitGuestMode: () => {
+    // End the active guest session but keep guest app data on this device.
+    clearGuestSession();
     setStorageMode("authenticated");
     useAppStore.getState().reloadFromStorage();
     set({ status: "unauthenticated", guestSessionId: null });
