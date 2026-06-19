@@ -4,7 +4,7 @@ const STYLES: Record<DecisionStatus, string> = {
   active: "bg-blue-50 text-blue-500",
   finalized: "bg-emerald-50 text-emerald-600",
   postponed: "bg-amber-50 text-amber-600",
-  archived: "bg-gray-100 text-gray-400",
+  archived: "bg-surface-muted text-text-soft",
 };
 
 const LABELS: Record<DecisionStatus, string> = {

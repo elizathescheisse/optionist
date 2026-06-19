@@ -20,10 +20,6 @@ export default function Modal({
 }: Props) {
   const dialogRef = useRef<HTMLDivElement>(null);
 
-  // Keyboard + focus handling: Escape closes the modal, focus moves into the
-  // dialog on open, and returns to whatever was focused before when it closes.
-  // Without this, Escape does nothing and keyboard users get stranded behind
-  // the dialog.
   useEffect(() => {
     const previouslyFocused = document.activeElement as HTMLElement | null;
     dialogRef.current?.focus();
@@ -49,10 +45,14 @@ export default function Modal({
         className="bg-surface rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6 flex flex-col gap-4 focus:outline-none"
       >
         <h2 className="font-semibold text-text text-base">{title}</h2>
-        <div className="text-sm text-muted leading-relaxed">{children}</div>
+        <div className="text-sm text-text-muted leading-relaxed">{children}</div>
         <div className="flex justify-end gap-2 pt-1">
-          <Button variant="secondary" onClick={onCancel}>Cancel</Button>
-          <Button variant={confirmVariant} onClick={onConfirm}>{confirmLabel}</Button>
+          <Button variant="secondary" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button variant={confirmVariant} onClick={onConfirm}>
+            {confirmLabel}
+          </Button>
         </div>
       </div>
     </div>

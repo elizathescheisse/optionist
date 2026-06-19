@@ -1,5 +1,5 @@
 import { useAppStore } from "../../store/useAppStore";
-import Button from "../shared/Button";
+import Button from "../ui/Button";
 
 type Props = {
   projectId: string;
@@ -19,13 +19,13 @@ export default function SessionReviewModal({ projectId, onClose }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 flex flex-col overflow-hidden max-h-[80vh]">
+      <div className="bg-surface rounded-2xl shadow-2xl w-full max-w-lg mx-4 flex flex-col overflow-hidden max-h-[80vh]">
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-6 pb-4 shrink-0">
-          <h2 className="font-semibold text-gray-900 text-base">Decision review</h2>
+          <h2 className="font-semibold text-text text-base">Decision review</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors text-lg leading-none"
+            className="text-text-soft hover:text-text-muted transition-colors text-lg leading-none"
             aria-label="Close"
           >
             ×
@@ -35,7 +35,7 @@ export default function SessionReviewModal({ projectId, onClose }: Props) {
         {/* Decision list */}
         <div className="flex-1 overflow-y-auto px-6 pb-2 flex flex-col gap-4">
           {finalizedDecisions.length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-8">
+            <p className="text-sm text-text-soft text-center py-8">
               No finalized decisions yet.
             </p>
           ) : (
@@ -46,11 +46,11 @@ export default function SessionReviewModal({ projectId, onClose }: Props) {
               return (
                 <div
                   key={decision.id}
-                  className="flex flex-col gap-2 pb-4 border-b border-gray-100 last:border-0"
+                  className="flex flex-col gap-2 pb-4 border-b border-border last:border-0"
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-semibold text-green-600">✓</span>
-                    <span className="text-sm font-semibold text-gray-900">
+                    <span className="text-sm font-semibold text-text">
                       {decision.title}
                     </span>
                   </div>
@@ -63,18 +63,18 @@ export default function SessionReviewModal({ projectId, onClose }: Props) {
                         draggable={false}
                         className="w-10 h-10 object-cover rounded-lg shrink-0"
                       />
-                      <span className="text-sm text-gray-600 truncate">
+                      <span className="text-sm text-text-muted truncate">
                         {chosenOption.name}
                       </span>
                     </div>
                   )}
 
                   {decision.finalRationale ? (
-                    <p className="text-sm text-gray-500 leading-relaxed">
+                    <p className="text-sm text-text-muted leading-relaxed">
                       {decision.finalRationale}
                     </p>
                   ) : (
-                    <p className="text-xs text-gray-300 italic">No rationale added.</p>
+                    <p className="text-xs text-text-soft italic">No rationale added.</p>
                   )}
                 </div>
               );
@@ -83,7 +83,7 @@ export default function SessionReviewModal({ projectId, onClose }: Props) {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 shrink-0 border-t border-gray-100 flex justify-end">
+        <div className="px-6 py-4 shrink-0 border-t border-border flex justify-end">
           <Button variant="primary" onClick={onClose}>
             Done
           </Button>

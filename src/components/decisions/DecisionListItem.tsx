@@ -34,10 +34,10 @@ export default function DecisionListItem({ decision, isSelected, onSelect }: Pro
     <div
       className={`group relative rounded-lg cursor-pointer transition-all motion-reduce:transition-none ${
         isSelected
-          ? "bg-white border border-gray-900 shadow-sm"
+          ? "bg-surface border border-primary shadow-sm"
           : isFinalized
-          ? "bg-white border border-gray-200 hover:border-gray-300"
-          : "bg-white border border-gray-200 hover:border-gray-300 hover:shadow-sm"
+          ? "bg-surface border border-border hover:border-border"
+          : "bg-surface border border-border hover:border-border hover:shadow-sm"
       }`}
       onClick={onSelect}
     >
@@ -46,10 +46,10 @@ export default function DecisionListItem({ decision, isSelected, onSelect }: Pro
           <span
             className={`text-sm font-medium truncate flex-1 leading-snug ${
               isFinalized
-                ? "text-gray-400"
+                ? "text-text-soft"
                 : isSelected
-                ? "text-gray-900"
-                : "text-gray-800"
+                ? "text-text"
+                : "text-text"
             }`}
           >
             {isFinalized && (
@@ -75,7 +75,7 @@ export default function DecisionListItem({ decision, isSelected, onSelect }: Pro
               )}
               {decision.status === "active" && (
                 <button
-                  className="text-xs text-gray-400 hover:text-gray-600"
+                  className="text-xs text-text-soft hover:text-text-muted"
                   onClick={(e) => {
                     e.stopPropagation();
                     postponeDecision(decision.id);
@@ -90,7 +90,7 @@ export default function DecisionListItem({ decision, isSelected, onSelect }: Pro
 
         <span
           className={`text-xs mt-1 block truncate ${
-            isFinalized ? "text-gray-300" : isSelected ? "text-gray-500" : "text-gray-400"
+            isFinalized ? "text-text-soft" : isSelected ? "text-text-muted" : "text-text-soft"
           }`}
         >
           {subtitle()}

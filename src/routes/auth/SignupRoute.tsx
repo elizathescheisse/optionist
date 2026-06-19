@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "../../components/auth/AuthLayout";
 import RedirectIfAuthed from "../../components/auth/RedirectIfAuthed";
-import Button from "../../components/shared/Button";
+import Button from "../../components/ui/Button";
 
 export default function SignupRoute() {
   const navigate = useNavigate();

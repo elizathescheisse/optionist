@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppStore } from "../../store/useAppStore";
 import type { Project } from "../../types/domain";
-import Button from "../shared/Button";
-import Modal from "../shared/Modal";
+import Button from "../ui/Button";
+import Modal from "../ui/Modal";
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-US", {
@@ -34,19 +34,19 @@ export default function ProjectCard({ project }: Props) {
   return (
     <>
       <div
-        className="bg-white rounded-xl p-4 flex items-center justify-between gap-4 shadow-sm hover:shadow-md transition-shadow motion-reduce:transition-none cursor-pointer group"
+        className="bg-surface rounded-xl p-4 flex items-center justify-between gap-4 shadow-sm hover:shadow-md transition-shadow motion-reduce:transition-none cursor-pointer group"
         onClick={() => navigate(`/projects/${project.id}`)}
       >
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center shrink-0 text-gray-500 font-semibold text-sm">
+          <div className="w-9 h-9 rounded-lg bg-surface-muted flex items-center justify-center shrink-0 text-text-muted font-semibold text-sm">
             {project.name.charAt(0).toUpperCase()}
           </div>
           <div className="flex flex-col gap-0.5 min-w-0">
-            <span className="font-medium text-gray-900 truncate text-sm">{project.name}</span>
+            <span className="font-medium text-text truncate text-sm">{project.name}</span>
             {project.description && (
-              <span className="text-xs text-gray-400 truncate">{project.description}</span>
+              <span className="text-xs text-text-soft truncate">{project.description}</span>
             )}
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-text-soft">
               {totalDecisions === 0
                 ? "No decisions"
                 : `${totalDecisions} decision${totalDecisions !== 1 ? "s" : ""}${

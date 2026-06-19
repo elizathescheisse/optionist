@@ -6,7 +6,7 @@ import {
   type FileValidationError,
 } from "../../utils/files";
 import type { DesignOption } from "../../types/domain";
-import Button from "../shared/Button";
+import Button from "../ui/Button";
 
 type Props = {
   decisionId: string;
@@ -115,8 +115,8 @@ export default function OptionUploader({ decisionId, compact = false, panel = fa
       <div
         className={`rounded-xl border ${innerPad} flex flex-col items-center gap-2 transition-colors motion-reduce:transition-none cursor-pointer select-none ${
           isDragging
-            ? "border-gray-300 bg-gray-100"
-            : "border-gray-100 bg-gray-50 hover:border-gray-200 hover:bg-gray-100"
+            ? "border-border bg-surface-muted"
+            : "border-border bg-surface-muted hover:border-border hover:bg-surface-muted"
         }`}
         onClick={() => inputRef.current?.click()}
         onDragOver={(e) => {
@@ -126,12 +126,12 @@ export default function OptionUploader({ decisionId, compact = false, panel = fa
         onDragLeave={() => setIsDragging(false)}
         onDrop={handleDrop}
       >
-        <p className={`${bodyText} text-gray-500 text-center`}>
+        <p className={`${bodyText} text-text-muted text-center`}>
           {isLoading
             ? "Loading…"
             : "Drop screenshots here, or click to choose files"}
         </p>
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-text-soft">
           PNG, JPEG, WebP, GIF · Max 10 MB each
         </p>
         <Button

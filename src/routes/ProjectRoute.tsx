@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAppStore } from "../store/useAppStore";
 import { useReviewKeyboard } from "../hooks/useReviewKeyboard";
+import WorkspaceBar from "../components/layout/WorkspaceBar";
 import DecisionSidebar from "../components/decisions/DecisionSidebar";
 import OptionViewer from "../components/options/OptionViewer";
 import OptionActionsBar from "../components/options/OptionActionsBar";
 import OptionFilmstrip from "../components/options/OptionFilmstrip";
-import EmptyState from "../components/layout/EmptyState";
+import EmptyState from "../components/ui/EmptyState";
 import DecisionNotesPanel from "../components/decisions/DecisionNotesPanel";
 import FinalizeDecisionModal from "../components/decisions/FinalizeDecisionModal";
 
@@ -19,7 +20,7 @@ export default function ProjectRoute() {
 
   useEffect(() => {
     if (!project) {
-      navigate("/");
+      navigate("/projects");
       return;
     }
     setCurrentProject(project.id);
@@ -28,28 +29,28 @@ export default function ProjectRoute() {
   if (!project) return null;
 
   return (
-    <div className="flex flex-1 overflow-hidden bg-gray-100">
-      {/* Left sidebar — receded surface */}
-      <aside className="w-60 shrink-0 bg-gray-100 flex flex-col overflow-hidden border-r border-gray-200">
-        <DecisionSidebar projectId={project.id} />
-      </aside>
+    <div className="flex flex-col flex-1 overflow-hidden">
+      <WorkspaceBar />
+      <div className="flex flex-1 overflow-hidden bg-surface-muted">
+        <aside className="w-60 shrink-0 bg-surface-muted flex flex-col overflow-hidden border-r border-border">
+          <DecisionSidebar projectId={project.id} />
+        </aside>
 
-      {/* Center panel — elevated canvas */}
-      <main className="flex-1 flex flex-col overflow-hidden min-w-0 bg-white">
-        {!currentDecisionId ? (
-          <EmptyState
-            message="Select or create a decision."
-            detail="Use the sidebar to add your first decision."
-          />
-        ) : (
-          <CenterPanel decisionId={currentDecisionId} />
-        )}
-      </main>
+        <main className="flex-1 flex flex-col overflow-hidden min-w-0 bg-surface">
+          {!currentDecisionId ? (
+            <EmptyState
+              message="Select or create a decision."
+              detail="Use the sidebar to add your first decision."
+            />
+          ) : (
+            <CenterPanel decisionId={currentDecisionId} />
+          )}
+        </main>
 
-      {/* Right panel — receded surface */}
-      <aside className="w-64 shrink-0 bg-gray-100 flex flex-col overflow-hidden border-l border-gray-200">
-        <RightPanel decisionId={currentDecisionId} />
-      </aside>
+        <aside className="w-64 shrink-0 bg-surface-muted flex flex-col overflow-hidden border-l border-border">
+          <RightPanel decisionId={currentDecisionId} />
+        </aside>
+      </div>
     </div>
   );
 }
@@ -69,7 +70,6 @@ function CenterPanel({ decisionId }: { decisionId: string }) {
   const [finalizeOptionId, setFinalizeOptionId] = useState<string | null>(null);
 
   const hasOptions = (decision?.optionIds.length ?? 0) > 0;
-  // Returns a number (not an array) so the selector is stable
   const navigableCount = useAppStore((s) => {
     const d = s.decisions[decisionId];
     if (!d) return 0;
@@ -143,7 +143,7 @@ function CenterPanel({ decisionId }: { decisionId: string }) {
 function RightPanel({ decisionId }: { decisionId: string | null }) {
   if (!decisionId) {
     return (
-      <div className="p-4 text-xs text-gray-400">
+      <div className="p-4 text-xs text-text-soft">
         Select a decision to see notes.
       </div>
     );

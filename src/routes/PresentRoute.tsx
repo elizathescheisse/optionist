@@ -3,11 +3,11 @@ import { useEffect } from "react";
 import { useAppStore } from "../store/useAppStore";
 import OptionViewer from "../components/options/OptionViewer";
 import OptionFilmstrip from "../components/options/OptionFilmstrip";
-import Button from "../components/shared/Button";
+import Button from "../components/ui/Button";
 import Badge from "../components/ui/Badge";
 
 // Full-screen presentation mode for a single decision — no app chrome. Renders
-// directly under the router (not inside AppShell or AppLayout).
+// Full-screen presentation mode — no AppLayout chrome.
 export default function PresentRoute() {
   const { decisionId } = useParams<{ decisionId: string }>();
   const navigate = useNavigate();

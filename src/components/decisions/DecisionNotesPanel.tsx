@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useAppStore } from "../../store/useAppStore";
-import TextInput from "../shared/TextInput";
-import Textarea from "../shared/Textarea";
-import Button from "../shared/Button";
+import TextInput from "../ui/TextInput";
+import Textarea from "../ui/Textarea";
+import Button from "../ui/Button";
 import DecisionStatusBadge from "./DecisionStatusBadge";
 import OptionUploader from "../options/OptionUploader";
-import Modal from "../shared/Modal";
+import Modal from "../ui/Modal";
 
 type Props = { decisionId: string };
 
@@ -51,7 +51,7 @@ export default function DecisionNotesPanel({ decisionId }: Props) {
     <>
       <div className="flex flex-col gap-4 p-4 overflow-y-auto">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+          <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">
             Decision
           </span>
           <DecisionStatusBadge status={decision.status} />
@@ -80,7 +80,7 @@ export default function DecisionNotesPanel({ decisionId }: Props) {
 
         {/* Screenshots uploader */}
         <div className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-gray-500">Screenshots</span>
+          <span className="text-xs font-medium text-text-muted">Screenshots</span>
           <div className="-mx-4">
             <OptionUploader decisionId={decisionId} panel />
           </div>
@@ -102,7 +102,7 @@ export default function DecisionNotesPanel({ decisionId }: Props) {
         {/* Chosen option (when finalized) */}
         {selectedOption && (
           <div className="flex flex-col gap-1">
-            <span className="text-xs font-medium text-gray-500">Chosen option</span>
+            <span className="text-xs font-medium text-text-muted">Chosen option</span>
             <div className="flex items-center gap-2 border border-green-200 bg-green-50 rounded-lg px-2 py-1.5">
               <img
                 src={selectedOption.imageDataUrl}
@@ -110,7 +110,7 @@ export default function DecisionNotesPanel({ decisionId }: Props) {
                 className="w-8 h-8 object-cover rounded"
                 draggable={false}
               />
-              <span className="text-sm text-gray-800 truncate">
+              <span className="text-sm text-text truncate">
                 {selectedOption.name}
               </span>
             </div>
@@ -118,7 +118,7 @@ export default function DecisionNotesPanel({ decisionId }: Props) {
         )}
 
         {/* Action buttons — secondary only, no primary */}
-        <div className="flex flex-col gap-2 pt-1 border-t border-gray-100">
+        <div className="flex flex-col gap-2 pt-1 border-t border-border">
           {canReactivate && (
             <Button variant="secondary" onClick={() => reactivateDecision(decisionId)}>
               Reactivate

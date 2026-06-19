@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAppStore } from "../../store/useAppStore";
-import Button from "../shared/Button";
-import Textarea from "../shared/Textarea";
+import Button from "../ui/Button";
+import Textarea from "../ui/Textarea";
 
 type Props = {
   decisionId: string;
@@ -40,7 +40,7 @@ export default function FinalizeDecisionModal({ decisionId, optionId, onClose }:
           <h2 className="font-semibold text-text text-base">Finalize decision</h2>
           <button
             onClick={onClose}
-            className="text-muted hover:text-gray-600 transition-colors text-lg leading-none"
+            className="text-text-muted hover:text-text-muted transition-colors text-lg leading-none"
             aria-label="Close"
           >
             ×
@@ -57,16 +57,16 @@ export default function FinalizeDecisionModal({ decisionId, optionId, onClose }:
               className="w-12 h-12 object-cover rounded-lg shrink-0"
             />
             <div className="flex flex-col min-w-0">
-              <span className="text-xs text-muted font-medium uppercase tracking-wider">Chosen option</span>
+              <span className="text-xs text-text-muted font-medium uppercase tracking-wider">Chosen option</span>
               <span className="text-sm font-medium text-text truncate">{option.name}</span>
             </div>
           </div>
 
           {/* Rationale */}
           <label className="flex flex-col gap-1.5">
-            <span className="text-sm font-medium text-gray-700">
+            <span className="text-sm font-medium text-text">
               Why did you choose this?
-              <span className="text-muted font-normal ml-1">(optional)</span>
+              <span className="text-text-muted font-normal ml-1">(optional)</span>
             </span>
             <Textarea
               rows={4}
@@ -87,7 +87,7 @@ export default function FinalizeDecisionModal({ decisionId, optionId, onClose }:
           <div className="flex items-center justify-between pt-1">
             <button
               onClick={handleSkip}
-              className="text-sm text-muted hover:text-gray-600 transition-colors"
+              className="text-sm text-text-muted hover:text-text-muted transition-colors"
             >
               Skip for now →
             </button>

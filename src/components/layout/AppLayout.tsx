@@ -6,16 +6,14 @@ import { cn } from "../../utils/cn";
 type NavItem = {
   to: string;
   label: string;
-  match: string;
+  matchPaths: string[];
 };
 
-// The sidebar shell for the new top-level routes (dashboard, settings, design
-// system). The existing project/decision/review views keep their own
-// header-based AppShell — this does not replace it.
 const NAV_ITEMS: NavItem[] = [
-  { to: "/dashboard", label: "Dashboard", match: "/dashboard" },
-  { to: "/", label: "Projects", match: "/projects" },
-  { to: "/settings", label: "Settings", match: "/settings" },
+  { to: "/dashboard", label: "Dashboard", matchPaths: ["/dashboard"] },
+  { to: "/projects", label: "Projects", matchPaths: ["/projects"] },
+  { to: "/history", label: "History", matchPaths: ["/history"] },
+  { to: "/settings", label: "Settings", matchPaths: ["/settings"] },
 ];
 
 export default function AppLayout({ children }: { children: ReactNode }) {
@@ -24,8 +22,12 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const logout = useAuthStore((s) => s.logout);
   const onboarding = useAuthStore((s) => s.onboarding);
 
-  function isActive(match: string) {
-    return location.pathname === match || location.pathname.startsWith(match + "/");
+  function isActive(matchPaths: string[]) {
+    return matchPaths.some(
+      (match) =>
+        location.pathname === match ||
+        location.pathname.startsWith(match + "/"),
+    );
   }
 
   function handleLogout() {
@@ -35,7 +37,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="h-full flex bg-bg">
-      {/* Sidebar */}
       <aside className="shrink-0 w-[var(--spacing-sidebar)] flex flex-col border-r border-border bg-surface">
         <div className="h-[var(--spacing-topbar)] flex items-center px-4 border-b border-border shrink-0">
           <Link to="/dashboard" className="flex items-center gap-2.5 min-w-0">
@@ -56,7 +57,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
               className={cn(
                 "flex items-center gap-2.5 px-3 py-2 rounded-md text-sm font-medium transition-colors",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
-                isActive(item.match)
+                isActive(item.matchPaths)
                   ? "bg-primary-soft text-primary"
                   : "text-text-muted hover:bg-surface-muted hover:text-text",
               )}
@@ -76,7 +77,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         )}
       </aside>
 
-      {/* Main area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <main className="flex-1 flex flex-col overflow-hidden">{children}</main>
 
