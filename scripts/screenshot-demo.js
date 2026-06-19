@@ -35,16 +35,16 @@ const browser = await chromium.launch();
 const page = await browser.newPage();
 await page.setViewportSize({ width: 1280, height: 800 });
 
-// Clear localStorage and load the app — seed.json will auto-load
-await page.goto("http://localhost:5176");
+// Log in via the email form so we can reach authenticated routes.
+await page.goto("http://localhost:5176/login", { waitUntil: "networkidle" });
+await page.click("text=Sign in with email");
+await page.fill('input[type="email"]', "fake@gmail.com");
+await page.fill('input[type="password"]', "fakeuser");
+await page.click('button[type="submit"]');
+await page.waitForURL("**/dashboard", { timeout: 15000 });
+
+// Set sidebar expanded and reload so seed.json is picked up.
 await page.evaluate(() => {
-  localStorage.clear();
-  // Seed a demo auth session so the screenshot reaches the workspace.
-  localStorage.setItem(
-    "optionist.auth",
-    JSON.stringify({ email: "test@test.com", name: "Demo User" }),
-  );
-  // Keep sidebar expanded for the screenshot.
   localStorage.setItem("sidebar-collapsed", "false");
 });
 await page.reload({ waitUntil: "networkidle" });
