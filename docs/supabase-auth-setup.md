@@ -72,9 +72,16 @@ Supabase links identities with the same email to one user when enabled (Authenti
 
 1. Copy `.env.example` → `.env.local` and add keys
 2. `npm run dev`
-3. Sign in with email/password or a configured OAuth provider
-4. Refresh the page — session should persist
-5. Sign out — protected routes should redirect to `/login`
+3. Sign up with email or OAuth — profile, default org, and settings rows are created automatically (database trigger)
+4. Complete profile setup → onboarding → dashboard
+5. Refresh — session and workspace persist
+6. Sign out — protected routes redirect to `/login`
+
+## Database schema
+
+Migrations live in `supabase/migrations/`. Applied tables: `profiles`, `organizations`, `organization_members`, `user_settings`, plus Phase 2-ready `organization_invitations` and `audit_events`. RLS is enabled on all public tables.
+
+Apply locally linked project: `supabase db push`
 
 ## Related GitHub issues
 

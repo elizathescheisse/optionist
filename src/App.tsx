@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import AppLayout from "./components/layout/AppLayout";
 import RequireAuth from "./components/auth/RequireAuth";
+import AuthenticatedBootstrap from "./components/auth/AuthenticatedBootstrap";
 import HomeRedirect from "./routes/HomeRedirect";
 import ProjectsRoute from "./routes/ProjectsRoute";
 import ProjectRoute from "./routes/ProjectRoute";
@@ -10,6 +11,7 @@ import NotFoundRoute from "./routes/NotFoundRoute";
 import LoginRoute from "./routes/auth/LoginRoute";
 import SignupRoute from "./routes/auth/SignupRoute";
 import OnboardingRoute from "./routes/auth/OnboardingRoute";
+import ProfileSetupRoute from "./routes/auth/ProfileSetupRoute";
 import ForgotPasswordRoute from "./routes/auth/ForgotPasswordRoute";
 import AuthCallbackRoute from "./routes/auth/AuthCallbackRoute";
 import AppDashboardRoute from "./routes/AppDashboardRoute";
@@ -37,7 +39,6 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<LoginRoute />} />
           <Route path="/signup" element={<SignupRoute />} />
-          <Route path="/onboarding" element={<OnboardingRoute />} />
           <Route path="/forgot-password" element={<ForgotPasswordRoute />} />
           <Route path="/auth/callback" element={<AuthCallbackRoute />} />
 
@@ -53,22 +54,27 @@ export default function App() {
           <Route
             element={
               <RequireAuth>
-                <SidebarLayout />
+                <AuthenticatedBootstrap />
               </RequireAuth>
             }
           >
-            <Route path="/" element={<HomeRedirect />} />
-            <Route path="/dashboard" element={<AppDashboardRoute />} />
-            <Route path="/projects" element={<ProjectsRoute />} />
-            <Route path="/projects/:projectId" element={<ProjectRoute />} />
-            <Route
-              path="/projects/:projectId/review/:decisionId"
-              element={<ReviewRoute />}
-            />
-            <Route path="/history" element={<HistoryRoute />} />
-            <Route path="/settings" element={<SettingsRoute />} />
-            <Route path="/design-system" element={<DesignSystemRoute />} />
-            <Route path="*" element={<NotFoundRoute />} />
+            <Route path="/profile/setup" element={<ProfileSetupRoute />} />
+            <Route path="/onboarding" element={<OnboardingRoute />} />
+
+            <Route element={<SidebarLayout />}>
+              <Route path="/" element={<HomeRedirect />} />
+              <Route path="/dashboard" element={<AppDashboardRoute />} />
+              <Route path="/projects" element={<ProjectsRoute />} />
+              <Route path="/projects/:projectId" element={<ProjectRoute />} />
+              <Route
+                path="/projects/:projectId/review/:decisionId"
+                element={<ReviewRoute />}
+              />
+              <Route path="/history" element={<HistoryRoute />} />
+              <Route path="/settings" element={<SettingsRoute />} />
+              <Route path="/design-system" element={<DesignSystemRoute />} />
+              <Route path="*" element={<NotFoundRoute />} />
+            </Route>
           </Route>
         </Routes>
       </BrowserRouter>

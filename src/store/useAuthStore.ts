@@ -3,6 +3,7 @@ import type { Provider, Session } from "@supabase/supabase-js";
 import { getItem, setItem, removeItem, STORAGE_KEYS } from "../services/storage";
 import { mapSupabaseUser } from "../lib/authUser";
 import { authRedirectUrl, getSupabase, isSupabaseConfigured } from "../lib/supabase";
+import { useWorkspaceStore } from "./useWorkspaceStore";
 
 export type AuthUser = {
   id?: string;
@@ -213,6 +214,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       await getSupabase().auth.signOut();
     }
     removeItem(STORAGE_KEYS.auth);
+    useWorkspaceStore.getState().reset();
     set({ user: null, session: null, status: "unauthenticated", authError: null });
   },
 

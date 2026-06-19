@@ -1,12 +1,17 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import type { ReactNode } from "react";
 import { useAuthStore } from "../../store/useAuthStore";
+import { useWorkspaceStore, currentOrganization } from "../../store/useWorkspaceStore";
+import { isSupabaseConfigured } from "../../lib/supabase";
+import { canSeeOrgSettings } from "../../lib/permissions";
+import OrganizationSwitcher from "./OrganizationSwitcher";
 import { cn } from "../../utils/cn";
 
 type NavItem = {
   to: string;
   label: string;
   matchPaths: string[];
+  requiresOrgAdmin?: boolean;
 };
 
 const NAV_ITEMS: NavItem[] = [
@@ -21,6 +26,9 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const logout = useAuthStore((s) => s.logout);
   const onboarding = useAuthStore((s) => s.onboarding);
+  const role = useWorkspaceStore((s) => s.currentRole);
+  const org = useWorkspaceStore(currentOrganization);
+  const user = useAuthStore((s) => s.user);
 
   function isActive(matchPaths: string[]) {
     return matchPaths.some(
@@ -34,6 +42,13 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     logout();
     navigate("/login");
   }
+
+  const visibleNav = NAV_ITEMS.filter(
+    (item) => !item.requiresOrgAdmin || canSeeOrgSettings(role),
+  );
+
+  const workspaceLabel =
+    org?.name ?? onboarding?.workspaceName ?? user?.name ?? "Optionist";
 
   return (
     <div className="h-full flex bg-bg">
@@ -50,7 +65,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         </div>
 
         <nav className="flex-1 p-3 flex flex-col gap-1">
-          {NAV_ITEMS.map((item) => (
+          {visibleNav.map((item) => (
             <Link
               key={item.to}
               to={item.to}
@@ -67,13 +82,15 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           ))}
         </nav>
 
-        {onboarding?.workspaceName && (
-          <div className="px-4 py-3 border-t border-border">
-            <p className="text-xs text-text-soft">Workspace</p>
-            <p className="text-sm text-text font-medium truncate">
-              {onboarding.workspaceName}
-            </p>
-          </div>
+        {isSupabaseConfigured ? (
+          <OrganizationSwitcher />
+        ) : (
+          onboarding?.workspaceName && (
+            <div className="px-4 py-3 border-t border-border">
+              <p className="text-xs text-text-soft">Workspace</p>
+              <p className="text-sm text-text font-medium truncate">{workspaceLabel}</p>
+            </div>
+          )
         )}
       </aside>
 
