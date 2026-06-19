@@ -4,13 +4,20 @@ import AuthLayout from "../../components/auth/AuthLayout";
 import RedirectIfAuthed from "../../components/auth/RedirectIfAuthed";
 import Button from "../../components/ui/Button";
 import TextInput from "../../components/ui/TextInput";
+import { useAuthStore } from "../../store/useAuthStore";
 
 export default function ForgotPasswordRoute() {
+  const resetPasswordForEmail = useAuthStore((s) => s.resetPasswordForEmail);
+  const authError = useAuthStore((s) => s.authError);
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setSubmitting(true);
+    await resetPasswordForEmail(email);
+    setSubmitting(false);
     setSubmitted(true);
   }
 
@@ -30,7 +37,7 @@ export default function ForgotPasswordRoute() {
               If this email exists, we&apos;ll send reset instructions.
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <form onSubmit={(e) => void handleSubmit(e)} className="flex flex-col gap-4">
               <TextInput
                 label="Email"
                 type="email"
@@ -39,8 +46,13 @@ export default function ForgotPasswordRoute() {
                 placeholder="you@company.com"
                 required
               />
-              <Button type="submit" variant="primary" className="w-full">
-                Send reset link
+              {authError && (
+                <p className="text-sm text-error" role="alert">
+                  {authError}
+                </p>
+              )}
+              <Button type="submit" variant="primary" className="w-full" disabled={submitting}>
+                {submitting ? "Sending…" : "Send reset link"}
               </Button>
             </form>
           )}

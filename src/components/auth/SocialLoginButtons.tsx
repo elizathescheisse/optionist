@@ -1,5 +1,7 @@
+import { useState } from "react";
+import type { Provider } from "@supabase/supabase-js";
 import Button from "../ui/Button";
-import { useToast } from "../../context/ToastContext";
+import { useAuthStore } from "../../store/useAuthStore";
 
 type Props = {
   onEmailClick: () => void;
@@ -77,39 +79,36 @@ function EmailIcon() {
   );
 }
 
-export default function SocialLoginButtons({ onEmailClick }: Props) {
-  const { showToast } = useToast();
+const PROVIDERS: { label: string; provider: Provider; icon: React.ReactNode }[] = [
+  { label: "Continue with Google", provider: "google", icon: <GoogleIcon /> },
+  { label: "Continue with Apple", provider: "apple", icon: <AppleIcon /> },
+  { label: "Continue with Facebook", provider: "facebook", icon: <FacebookIcon /> },
+];
 
-  function handleSocial(provider: string) {
-    showToast(`Social login is not connected yet. (${provider})`);
+export default function SocialLoginButtons({ onEmailClick }: Props) {
+  const signInWithOAuth = useAuthStore((s) => s.signInWithOAuth);
+  const [loadingProvider, setLoadingProvider] = useState<Provider | null>(null);
+
+  async function handleSocial(provider: Provider) {
+    setLoadingProvider(provider);
+    await signInWithOAuth(provider);
+    setLoadingProvider(null);
   }
 
   return (
     <div className="flex flex-col gap-2.5">
-      <Button
-        variant="secondary"
-        className={ROW}
-        onClick={() => handleSocial("Google")}
-      >
-        <GoogleIcon />
-        Continue with Google
-      </Button>
-      <Button
-        variant="secondary"
-        className={ROW}
-        onClick={() => handleSocial("Facebook")}
-      >
-        <FacebookIcon />
-        Continue with Facebook
-      </Button>
-      <Button
-        variant="secondary"
-        className={ROW}
-        onClick={() => handleSocial("Apple")}
-      >
-        <AppleIcon />
-        Continue with Apple
-      </Button>
+      {PROVIDERS.map(({ label, provider, icon }) => (
+        <Button
+          key={provider}
+          variant="secondary"
+          className={ROW}
+          disabled={loadingProvider !== null}
+          onClick={() => void handleSocial(provider)}
+        >
+          {icon}
+          {loadingProvider === provider ? "Redirecting…" : label}
+        </Button>
+      ))}
       <Button variant="ghost" className={ROW} onClick={onEmailClick}>
         <EmailIcon />
         Sign in with email

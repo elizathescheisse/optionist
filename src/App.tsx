@@ -11,6 +11,7 @@ import LoginRoute from "./routes/auth/LoginRoute";
 import SignupRoute from "./routes/auth/SignupRoute";
 import OnboardingRoute from "./routes/auth/OnboardingRoute";
 import ForgotPasswordRoute from "./routes/auth/ForgotPasswordRoute";
+import AuthCallbackRoute from "./routes/auth/AuthCallbackRoute";
 import AppDashboardRoute from "./routes/AppDashboardRoute";
 import SettingsRoute from "./routes/SettingsRoute";
 import DesignSystemRoute from "./routes/DesignSystemRoute";
@@ -38,6 +39,7 @@ export default function App() {
           <Route path="/signup" element={<SignupRoute />} />
           <Route path="/onboarding" element={<OnboardingRoute />} />
           <Route path="/forgot-password" element={<ForgotPasswordRoute />} />
+          <Route path="/auth/callback" element={<AuthCallbackRoute />} />
 
           <Route
             path="/present/:decisionId"
