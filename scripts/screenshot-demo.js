@@ -39,24 +39,23 @@ await page.setViewportSize({ width: 1280, height: 800 });
 await page.goto("http://localhost:5176");
 await page.evaluate(() => {
   localStorage.clear();
-  // The app now gates on auth; seed a demo session so the screenshot reaches
-  // the workspace instead of the login screen. Auth lives in its own key, so
-  // this does not affect the seed-data load (which keys off the store key).
+  // Seed a demo auth session so the screenshot reaches the workspace.
   localStorage.setItem(
     "optionist.auth",
     JSON.stringify({ email: "test@test.com", name: "Demo User" }),
   );
+  // Keep sidebar expanded for the screenshot.
+  localStorage.setItem("sidebar-collapsed", "false");
 });
 await page.reload({ waitUntil: "networkidle" });
 
-// Wait for the demo project card to appear
+// Navigate to the projects list and open the demo project.
+await page.goto("http://localhost:5176/projects", { waitUntil: "networkidle" });
 await page.waitForSelector("text=demo", { timeout: 10000 });
-
-// Click the project card to open the workspace
 await page.click("text=demo");
 await page.waitForTimeout(300);
 
-// Click the first decision to select it and show the options
+// Click the first decision to select it and show the options.
 const decisionItem = page.locator('[class*="rounded-lg cursor-pointer"]').first();
 await decisionItem.click();
 await page.waitForTimeout(500);
