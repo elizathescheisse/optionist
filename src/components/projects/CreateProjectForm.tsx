@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import { Plus } from "lucide-react";
 import { useAppStore } from "../../store/useAppStore";
 import TextInput from "../ui/TextInput";
 import Button from "../ui/Button";
@@ -37,8 +38,9 @@ export default function CreateProjectForm() {
           aria-label="Project name"
           error={error}
         />
-        <Button type="submit" variant="primary">
-          Create project
+        <Button type="submit" variant="primary" className="flex items-center gap-1.5 shrink-0">
+          <Plus size={14} />
+          Project
         </Button>
       </div>
     </form>
