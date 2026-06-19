@@ -107,32 +107,27 @@ export default function App() {
                 element={<ReviewRoute />}
               />
               <Route path="/history" element={<HistoryRoute />} />
-              <Route
-                path="/settings"
-                element={
-                  <RequireAuthenticated>
-                    <SettingsLayout />
-                  </RequireAuthenticated>
-                }
-              >
-                <Route index element={<Navigate to="profile" replace />} />
-                <Route path="profile" element={<ProfileSettingsRoute />} />
-                <Route path="account" element={<AccountSettingsRoute />} />
-                <Route path="preferences" element={<PreferencesSettingsRoute />} />
-                <Route path="notifications" element={<NotificationsSettingsRoute />} />
-                <Route path="workspace" element={<WorkspaceSettingsRoute />} />
-                <Route path="members" element={<MembersSettingsRoute />} />
-                <Route path="roles" element={<RolesSettingsRoute />} />
-                <Route path="projects" element={<ProjectsSettingsRoute />} />
-                <Route path="theme" element={<ThemeSettingsRoute />} />
-                <Route path="design-defaults" element={<DesignDefaultsSettingsRoute />} />
-                <Route path="export" element={<ExportSettingsRoute />} />
-                <Route path="integrations" element={<IntegrationsSettingsRoute />} />
-                <Route path="organization" element={<OrganizationSettingsRoute />} />
-                <Route path="billing" element={<BillingSettingsRoute />} />
-                <Route path="security" element={<SecuritySettingsRoute />} />
-                <Route path="data-privacy" element={<DataPrivacySettingsRoute />} />
-                <Route path="danger-zone" element={<DangerZoneSettingsRoute />} />
+              <Route element={<RequireAuthenticated />}>
+                <Route path="/settings" element={<SettingsLayout />}>
+                  <Route index element={<Navigate to="profile" replace />} />
+                  <Route path="profile" element={<ProfileSettingsRoute />} />
+                  <Route path="account" element={<AccountSettingsRoute />} />
+                  <Route path="preferences" element={<PreferencesSettingsRoute />} />
+                  <Route path="notifications" element={<NotificationsSettingsRoute />} />
+                  <Route path="workspace" element={<WorkspaceSettingsRoute />} />
+                  <Route path="members" element={<MembersSettingsRoute />} />
+                  <Route path="roles" element={<RolesSettingsRoute />} />
+                  <Route path="projects" element={<ProjectsSettingsRoute />} />
+                  <Route path="theme" element={<ThemeSettingsRoute />} />
+                  <Route path="design-defaults" element={<DesignDefaultsSettingsRoute />} />
+                  <Route path="export" element={<ExportSettingsRoute />} />
+                  <Route path="integrations" element={<IntegrationsSettingsRoute />} />
+                  <Route path="organization" element={<OrganizationSettingsRoute />} />
+                  <Route path="billing" element={<BillingSettingsRoute />} />
+                  <Route path="security" element={<SecuritySettingsRoute />} />
+                  <Route path="data-privacy" element={<DataPrivacySettingsRoute />} />
+                  <Route path="danger-zone" element={<DangerZoneSettingsRoute />} />
+                </Route>
               </Route>
               <Route path="/design-system" element={<DesignSystemRoute />} />
               <Route path="*" element={<NotFoundRoute />} />
