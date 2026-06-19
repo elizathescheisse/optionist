@@ -4,7 +4,6 @@ import { MemoryRouter, Routes, Route, Navigate, Outlet } from "react-router-dom"
 import { ToastProvider } from "../context/ToastContext";
 import SettingsLayout from "../components/settings/SettingsLayout";
 import ProfileSettingsRoute from "../routes/settings/ProfileSettingsRoute";
-import RequireAuthenticated from "../components/auth/RequireAuthenticated";
 import AppLayout from "../components/layout/AppLayout";
 import { useAuthStore } from "../store/useAuthStore";
 import { useWorkspaceStore } from "../store/useWorkspaceStore";
@@ -21,11 +20,9 @@ function SettingsRoutes() {
   return (
     <Routes>
       <Route element={<SidebarLayout />}>
-        <Route element={<RequireAuthenticated />}>
-          <Route path="/settings" element={<SettingsLayout />}>
-            <Route index element={<Navigate to="profile" replace />} />
-            <Route path="profile" element={<ProfileSettingsRoute />} />
-          </Route>
+        <Route path="/settings" element={<SettingsLayout />}>
+          <Route index element={<Navigate to="profile" replace />} />
+          <Route path="profile" element={<ProfileSettingsRoute />} />
         </Route>
       </Route>
     </Routes>
