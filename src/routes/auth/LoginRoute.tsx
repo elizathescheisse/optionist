@@ -5,6 +5,7 @@ import RedirectIfAuthed from "../../components/auth/RedirectIfAuthed";
 import SocialLoginButtons from "../../components/auth/SocialLoginButtons";
 import Button from "../../components/ui/Button";
 import TextInput from "../../components/ui/TextInput";
+import PasswordInput from "../../components/ui/PasswordInput";
 import Divider from "../../components/ui/Divider";
 import { useAuthStore } from "../../store/useAuthStore";
 import { isSupabaseConfigured } from "../../lib/supabase";
@@ -18,7 +19,6 @@ export default function LoginRoute() {
   const [showEmail, setShowEmail] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [localError, setLocalError] = useState("");
 
@@ -80,23 +80,13 @@ export default function LoginRoute() {
                   autoComplete="email"
                   required
                 />
-                <div className="flex flex-col gap-1.5">
-                  <TextInput
-                    label="Password"
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    autoComplete="current-password"
-                    required
-                  />
-                  <button
-                    type="button"
-                    className="self-start text-xs text-text-soft hover:text-text-muted"
-                    onClick={() => setShowPassword((v) => !v)}
-                  >
-                    {showPassword ? "Hide password" : "Show password"}
-                  </button>
-                </div>
+                <PasswordInput
+                  label="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="current-password"
+                  required
+                />
               </div>
 
               {errorMessage && (

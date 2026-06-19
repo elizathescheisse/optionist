@@ -5,6 +5,7 @@ import { useAuthStore } from "../../store/useAuthStore";
 
 type Props = {
   onEmailClick: () => void;
+  emailButtonLabel?: string;
 };
 
 const ROW = "w-full inline-flex items-center justify-center gap-2";
@@ -85,7 +86,10 @@ const PROVIDERS: { label: string; provider: Provider; icon: React.ReactNode }[] 
   { label: "Continue with Facebook", provider: "facebook", icon: <FacebookIcon /> },
 ];
 
-export default function SocialLoginButtons({ onEmailClick }: Props) {
+export default function SocialLoginButtons({
+  onEmailClick,
+  emailButtonLabel = "Sign in with email",
+}: Props) {
   const signInWithOAuth = useAuthStore((s) => s.signInWithOAuth);
   const [loadingProvider, setLoadingProvider] = useState<Provider | null>(null);
 
@@ -111,7 +115,7 @@ export default function SocialLoginButtons({ onEmailClick }: Props) {
       ))}
       <Button variant="ghost" className={ROW} onClick={onEmailClick}>
         <EmailIcon />
-        Sign in with email
+        {emailButtonLabel}
       </Button>
     </div>
   );

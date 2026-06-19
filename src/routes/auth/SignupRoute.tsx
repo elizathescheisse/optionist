@@ -5,6 +5,7 @@ import RedirectIfAuthed from "../../components/auth/RedirectIfAuthed";
 import SocialLoginButtons from "../../components/auth/SocialLoginButtons";
 import Button from "../../components/ui/Button";
 import TextInput from "../../components/ui/TextInput";
+import PasswordInput from "../../components/ui/PasswordInput";
 import Divider from "../../components/ui/Divider";
 import { useAuthStore } from "../../store/useAuthStore";
 import { isSupabaseConfigured } from "../../lib/supabase";
@@ -67,6 +68,7 @@ export default function SignupRoute() {
           ) : !showEmail ? (
             <>
               <SocialLoginButtons
+                emailButtonLabel="Sign up with email"
                 onEmailClick={() => {
                   clearAuthError();
                   setShowEmail(true);
@@ -95,17 +97,15 @@ export default function SignupRoute() {
                   autoComplete="email"
                   required
                 />
-                <TextInput
+                <PasswordInput
                   label="Password"
-                  type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete="new-password"
                   required
                 />
-                <TextInput
+                <PasswordInput
                   label="Confirm password"
-                  type="password"
                   value={confirm}
                   onChange={(e) => setConfirm(e.target.value)}
                   autoComplete="new-password"
