@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/useAuthStore";
+import { downloadGuestExportJson, hasGuestAppData } from "../../services/guestStorage";
+import { trackGuestEvent } from "../../services/guestAnalytics";
 import Modal from "../ui/Modal";
 
 export default function GuestMenuPanel() {
@@ -12,6 +14,15 @@ export default function GuestMenuPanel() {
   const [confirmClear, setConfirmClear] = useState(false);
 
   if (!isGuest()) return null;
+
+  function handleSaveWorkClick() {
+    trackGuestEvent("save_work_clicked");
+  }
+
+  function handleExport() {
+    trackGuestEvent("migration_export_clicked");
+    downloadGuestExportJson();
+  }
 
   function handleClearConfirm() {
     clearGuestWorkspace();
@@ -27,10 +38,20 @@ export default function GuestMenuPanel() {
         <p className="text-sm text-text-muted">Work on this device only</p>
         <Link
           to="/signup"
+          onClick={handleSaveWorkClick}
           className="text-sm text-primary font-medium hover:underline"
         >
           Save my work
         </Link>
+        {hasGuestAppData() && (
+          <button
+            type="button"
+            onClick={handleExport}
+            className="text-sm text-text-soft hover:text-text text-left"
+          >
+            Export guest data (JSON)
+          </button>
+        )}
         <button
           type="button"
           onClick={showGuestNoticeAgain}

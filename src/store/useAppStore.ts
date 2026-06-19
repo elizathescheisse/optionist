@@ -12,6 +12,7 @@ import { loadState, saveState, EMPTY_STATE, getStorageMode } from "./persistence
 import { createId } from "../utils/ids";
 import { now } from "../utils/dates";
 import { GUEST_LIMITS } from "../config/guestLimits";
+import { trackGuestEvent } from "../services/guestAnalytics";
 
 export const GUEST_LIMIT_EVENT = "optionist:guest-limit";
 
@@ -110,6 +111,9 @@ export const useAppStore = create<AppStore>((set, get) => ({
     set((s) => {
       const next = { ...s, projects: { ...s.projects, [id]: project } };
       saveState(next);
+      if (getStorageMode() === "guest") {
+        trackGuestEvent("guest_project_created");
+      }
       return next;
     });
     return id;
@@ -198,6 +202,9 @@ export const useAppStore = create<AppStore>((set, get) => ({
         projects: { ...s.projects, [projectId]: updatedProject },
       };
       saveState(next);
+      if (getStorageMode() === "guest") {
+        trackGuestEvent("guest_decision_created", { projectId });
+      }
       return next;
     });
     return id;
@@ -325,6 +332,9 @@ export const useAppStore = create<AppStore>((set, get) => ({
         currentOptionId: isFirst && !s.currentOptionId ? id : s.currentOptionId,
       };
       saveState(next);
+      if (getStorageMode() === "guest") {
+        trackGuestEvent("guest_upload_added", { decisionId });
+      }
       return next;
     });
     return id;

@@ -14,4 +14,10 @@ export {
   hasGuestAppData,
   GUEST_APP_STORAGE_KEY,
 } from "./appState";
+export {
+  buildGuestExportData,
+  downloadGuestExportJson,
+  summarizeGuestWork,
+} from "./export";
+export type { GuestWorkSummary } from "./export";
 export { getGuestStorageError, recoverGuestStorage } from "./migrations";

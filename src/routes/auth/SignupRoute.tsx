@@ -10,6 +10,7 @@ import Divider from "../../components/ui/Divider";
 import ContinueAsGuestButton from "../../components/auth/ContinueAsGuestButton";
 import { useAuthStore } from "../../store/useAuthStore";
 import { isSupabaseConfigured } from "../../lib/supabase";
+import { trackGuestEvent } from "../../services/guestAnalytics";
 import { cn } from "../../utils/cn";
 
 export default function SignupRoute() {
@@ -38,6 +39,7 @@ export default function SignupRoute() {
       return;
     }
     setSubmitting(true);
+    trackGuestEvent("signup_started");
     const ok = await signUpWithPassword(email.trim(), password);
     setSubmitting(false);
     if (ok) {

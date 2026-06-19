@@ -15,6 +15,7 @@ import {
   touchGuestSession,
   updateGuestSession,
 } from "../services/guestStorage";
+import { trackGuestEvent } from "../services/guestAnalytics";
 
 export type AuthUser = {
   id?: string;
@@ -247,8 +248,10 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   },
 
   enterGuestMode: () => {
-    const session = loadGuestSession() ?? createGuestSession();
+    const existing = loadGuestSession();
+    const session = existing ?? createGuestSession();
     touchGuestSession();
+    trackGuestEvent("guest_started", { resumed: Boolean(existing) });
     activateGuestMode(set, session.guestSessionId);
   },
 
@@ -259,6 +262,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   },
 
   clearGuestWorkspace: () => {
+    trackGuestEvent("guest_clear_data");
     clearGuestAppState();
     clearGuestSession();
     if (get().isGuest()) {
@@ -283,6 +287,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
   checkGuestDataAfterAuth: () => {
     if (hasGuestAppData()) {
+      trackGuestEvent("signup_completed");
       setPendingGuestMigration(true);
       set({ pendingGuestMigration: true });
     }

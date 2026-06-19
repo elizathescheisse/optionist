@@ -10,6 +10,7 @@ export const STORAGE_KEYS = {
   settings: `${PREFIX}.settings`,
   guestSession: `${PREFIX}.guest-session`,
   pendingGuestMigration: `${PREFIX}.pending-guest-migration`,
+  guestAnalytics: `${PREFIX}.guest-analytics`,
 } as const;
 
 export function getItem<T>(key: string): T | null {

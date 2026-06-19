@@ -22,7 +22,7 @@ import PresentRoute from "./routes/PresentRoute";
 import { ToastProvider } from "./context/ToastContext";
 import StorageQuotaWatcher from "./components/shared/StorageQuotaWatcher";
 import GuestLimitWatcher from "./components/guest/GuestLimitWatcher";
-import GuestMigrationPrompt from "./components/guest/GuestMigrationPrompt";
+import GuestMigrationModal from "./components/guest/GuestMigrationModal";
 import DesignSystemModal from "./components/shared/DesignSystemModal";
 
 function SidebarLayout() {
@@ -38,7 +38,7 @@ export default function App() {
     <ToastProvider>
       <StorageQuotaWatcher />
       <GuestLimitWatcher />
-      <GuestMigrationPrompt />
+      <GuestMigrationModal />
       <DesignSystemModal />
       <BrowserRouter>
         <Routes>
