@@ -108,10 +108,15 @@ export async function completeOnboarding(
   if (workspaceName?.trim()) {
     await updateOrganization(orgId, { name: workspaceName.trim() });
   }
-  await updateUserSettings(userId, {
+  const existing = await fetchUserSettings(userId);
+  const settingsPatch: Parameters<typeof updateUserSettings>[1] = {
     onboarding_data: answers,
     dismissed_onboarding: false,
-  });
+  };
+  if (existing?.theme === "system") {
+    settingsPatch.theme = "light";
+  }
+  await updateUserSettings(userId, settingsPatch);
   await updateProfile(userId, { onboarding_status: "complete" });
 }
 

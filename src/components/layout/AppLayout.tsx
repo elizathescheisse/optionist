@@ -9,6 +9,7 @@ import OrganizationSwitcher from "./OrganizationSwitcher";
 import GuestMenuPanel from "../guest/GuestMenuPanel";
 import { useToast } from "../../context/ToastContext";
 import { cn } from "../../utils/cn";
+import { resolveThemePreference, useSystemThemeListener } from "../../lib/theme";
 
 type NavItem = {
   to: string;
@@ -37,6 +38,10 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const role = useWorkspaceStore((s) => s.currentRole);
   const org = useWorkspaceStore(currentOrganization);
   const user = useAuthStore((s) => s.user);
+  const localTheme = useAuthStore((s) => s.settings.theme);
+  const wsTheme = useWorkspaceStore((s) => s.settings?.theme);
+  const appThemePreference = resolveThemePreference(wsTheme ?? localTheme);
+  useSystemThemeListener(appThemePreference);
 
   useEffect(() => {
     const state = location.state as { guestAccountOnly?: boolean } | null;
