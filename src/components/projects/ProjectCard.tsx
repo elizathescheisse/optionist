@@ -38,7 +38,7 @@ export default function ProjectCard({ project }: Props) {
         onClick={() => navigate(`/projects/${project.id}`)}
       >
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-9 h-9 rounded-lg bg-surface-muted flex items-center justify-center shrink-0 text-text-muted font-semibold text-sm">
+          <div className="w-9 h-9 rounded-lg bg-border flex items-center justify-center shrink-0 text-text-soft font-semibold text-sm">
             {project.name.charAt(0).toUpperCase()}
           </div>
           <div className="flex flex-col gap-0.5 min-w-0">
