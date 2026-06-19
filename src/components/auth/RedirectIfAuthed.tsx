@@ -5,9 +5,18 @@ import { useAuthStore } from "../../store/useAuthStore";
 // visitor is already signed in, there's no reason to show them a login form, so
 // send them to the dashboard. The mirror of RequireAuth, which guards the app.
 export default function RedirectIfAuthed({ children }: { children: React.ReactNode }) {
-  const user = useAuthStore((s) => s.user);
+  const status = useAuthStore((s) => s.status);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
-  if (user) {
+  if (status === "loading") {
+    return (
+      <div className="flex h-full min-h-[50vh] items-center justify-center text-sm text-text-muted">
+        Loading…
+      </div>
+    );
+  }
+
+  if (isAuthenticated()) {
     return <Navigate to="/dashboard" replace />;
   }
 

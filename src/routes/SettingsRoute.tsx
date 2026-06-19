@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../store/useAuthStore";
+import { useAuthStore, type OnboardingAnswers } from "../store/useAuthStore";
+import { useWorkspaceStore } from "../store/useWorkspaceStore";
 import { useAppStore } from "../store/useAppStore";
+import { isSupabaseConfigured } from "../lib/supabase";
 import Button from "../components/ui/Button";
 import TextInput from "../components/ui/TextInput";
 import PageHeader from "../components/ui/PageHeader";
 import Card from "../components/ui/Card";
 import { useToast } from "../context/ToastContext";
+import type { OnboardingData } from "../types/workspace";
 
 export default function SettingsRoute() {
   const navigate = useNavigate();
@@ -16,14 +19,43 @@ export default function SettingsRoute() {
   const settings = useAuthStore((s) => s.settings);
   const updateSettings = useAuthStore((s) => s.updateSettings);
   const logout = useAuthStore((s) => s.logout);
+  const profile = useWorkspaceStore((s) => s.profile);
+  const wsSettings = useWorkspaceStore((s) => s.settings);
+  const saveProfile = useWorkspaceStore((s) => s.saveProfile);
+  const saveWsSettings = useWorkspaceStore((s) => s.saveSettings);
+  const org = useWorkspaceStore((s) =>
+    s.organizations.find((o) => o.id === s.currentOrganizationId),
+  );
   const resetAllData = useAppStore((s) => s.resetAllData);
 
-  const [name, setName] = useState(settings.name ?? user?.name ?? "");
+  const onboardingData = (wsSettings?.onboarding_data ?? onboarding) as
+    | OnboardingAnswers
+    | OnboardingData
+    | null;
 
-  function handleSaveName() {
-    updateSettings({ name: name.trim() });
+  const [name, setName] = useState(
+    profile?.full_name ?? settings.name ?? user?.name ?? "",
+  );
+
+  async function handleSaveName() {
+    const trimmed = name.trim();
+    if (isSupabaseConfigured && user?.id) {
+      await saveProfile(user.id, { full_name: trimmed });
+    } else {
+      updateSettings({ name: trimmed });
+    }
     showToast("Settings saved.", "success");
   }
+
+  async function handleTheme(theme: "light" | "dark" | "system") {
+    if (isSupabaseConfigured && user?.id) {
+      await saveWsSettings(user.id, { theme });
+    } else {
+      updateSettings({ theme: theme === "system" ? "light" : theme });
+    }
+  }
+
+  const activeTheme = wsSettings?.theme ?? settings.theme ?? "light";
 
   function handleResetDemo() {
     resetAllData();
@@ -45,39 +77,40 @@ export default function SettingsRoute() {
             label="Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            onBlur={handleSaveName}
+            onBlur={() => void handleSaveName()}
           />
           <div>
+            <p className="text-xs font-medium text-text-muted mb-1">Email</p>
+            <p className="text-sm text-text">{profile?.email ?? user?.email ?? "—"}</p>
+          </div>
+          <div>
             <p className="text-xs font-medium text-text-muted mb-1">Role</p>
-            <p className="text-sm text-text">{onboarding?.role ?? "—"}</p>
+            <p className="text-sm text-text">
+              {profile?.job_title ?? onboardingData?.role ?? "—"}
+            </p>
           </div>
           <div>
             <p className="text-xs font-medium text-text-muted mb-1">Workspace</p>
-            <p className="text-sm text-text">{onboarding?.workspaceName ?? "—"}</p>
+            <p className="text-sm text-text">
+              {org?.name ?? onboardingData?.workspaceName ?? "—"}
+            </p>
           </div>
         </Card>
 
         <Card padding="md" className="flex flex-col gap-3">
           <p className="text-sm font-medium text-text">Theme</p>
-          <div className="flex gap-2">
-            <Button
-              variant={settings.theme === "light" ? "primary" : "secondary"}
-              size="sm"
-              onClick={() => updateSettings({ theme: "light" })}
-            >
-              Light
-            </Button>
-            <Button
-              variant={settings.theme === "dark" ? "primary" : "secondary"}
-              size="sm"
-              onClick={() => updateSettings({ theme: "dark" })}
-            >
-              Dark
-            </Button>
+          <div className="flex flex-wrap gap-2">
+            {(["light", "dark", "system"] as const).map((theme) => (
+              <Button
+                key={theme}
+                variant={activeTheme === theme ? "primary" : "secondary"}
+                size="sm"
+                onClick={() => void handleTheme(theme)}
+              >
+                {theme.charAt(0).toUpperCase() + theme.slice(1)}
+              </Button>
+            ))}
           </div>
-          <p className="text-xs text-text-soft">
-            Dark mode uses design tokens; some older screens may still be light-only.
-          </p>
         </Card>
 
         <Card padding="md" className="flex flex-col gap-3">

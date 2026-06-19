@@ -5,27 +5,38 @@ import RedirectIfAuthed from "../../components/auth/RedirectIfAuthed";
 import SocialLoginButtons from "../../components/auth/SocialLoginButtons";
 import Button from "../../components/ui/Button";
 import TextInput from "../../components/ui/TextInput";
+import PasswordInput from "../../components/ui/PasswordInput";
 import Divider from "../../components/ui/Divider";
 import { useAuthStore } from "../../store/useAuthStore";
+import { isSupabaseConfigured } from "../../lib/supabase";
 import { cn } from "../../utils/cn";
 
 export default function LoginRoute() {
   const navigate = useNavigate();
-  const login = useAuthStore((s) => s.login);
+  const signInWithPassword = useAuthStore((s) => s.signInWithPassword);
+  const authError = useAuthStore((s) => s.authError);
+  const clearAuthError = useAuthStore((s) => s.clearAuthError);
   const [showEmail, setShowEmail] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [localError, setLocalError] = useState("");
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError("");
-    if (login(email.trim(), password)) {
+    setLocalError("");
+    clearAuthError();
+    setSubmitting(true);
+    const ok = await signInWithPassword(email.trim(), password);
+    setSubmitting(false);
+    if (ok) {
       navigate("/dashboard");
-    } else {
-      setError("Invalid credentials. Try test@test.com / test.");
+    } else if (!useAuthStore.getState().authError && !isSupabaseConfigured) {
+      setLocalError("Invalid credentials. Try test@test.com / test.");
     }
   }
+
+  const errorMessage = authError ?? localError;
 
   return (
     <RedirectIfAuthed>
@@ -39,9 +50,21 @@ export default function LoginRoute() {
           </div>
 
           {!showEmail ? (
-            <SocialLoginButtons onEmailClick={() => setShowEmail(true)} />
+            <>
+              <SocialLoginButtons
+                onEmailClick={() => {
+                  clearAuthError();
+                  setShowEmail(true);
+                }}
+              />
+              {errorMessage && (
+                <p className="text-sm text-error" role="alert">
+                  {errorMessage}
+                </p>
+              )}
+            </>
           ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <form onSubmit={(e) => void handleSubmit(e)} className="flex flex-col gap-4">
               <div
                 className={cn(
                   "flex flex-col gap-4",
@@ -51,55 +74,56 @@ export default function LoginRoute() {
                 <TextInput
                   label="Email"
                   type="email"
-                  autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="test@test.com"
-                  helperText="Demo: test@test.com / test"
+                  placeholder="you@company.com"
+                  autoComplete="email"
+                  required
                 />
-                <TextInput
+                <PasswordInput
                   label="Password"
-                  type="password"
-                  autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="test"
-                  helperText={error ? undefined : "Password: test"}
-                  error={error || undefined}
+                  autoComplete="current-password"
+                  required
                 />
               </div>
-              <Button type="submit" variant="primary" className="w-full">
-                Sign in
+
+              {errorMessage && (
+                <p className="text-sm text-error" role="alert">
+                  {errorMessage}
+                </p>
+              )}
+
+              <Button type="submit" variant="primary" className="w-full" disabled={submitting}>
+                {submitting ? "Signing in…" : "Sign in"}
               </Button>
+
               <button
                 type="button"
+                className="text-sm text-text-soft hover:text-text-muted text-center"
                 onClick={() => {
+                  clearAuthError();
+                  setLocalError("");
                   setShowEmail(false);
-                  setError("");
                 }}
-                className="text-sm text-text-muted hover:text-primary transition-colors"
               >
-                Use another sign-in method
+                Back to other sign-in options
               </button>
             </form>
           )}
 
           <Divider />
 
-          <div className="flex flex-col items-center gap-2 text-sm">
-            <Link
-              to="/forgot-password"
-              className="text-text-muted hover:text-primary transition-colors"
-            >
+          <p className="text-sm text-text-soft text-center">
+            <Link to="/forgot-password" className="text-primary font-medium hover:underline">
               Forgot password?
             </Link>
-            <p className="text-text-soft">
-              Don&apos;t have an account?{" "}
-              <Link to="/signup" className="text-primary font-medium hover:underline">
-                Sign up
-              </Link>
-            </p>
-          </div>
+            {" · "}
+            <Link to="/signup" className="text-primary font-medium hover:underline">
+              Create account
+            </Link>
+          </p>
         </div>
       </AuthLayout>
     </RedirectIfAuthed>
