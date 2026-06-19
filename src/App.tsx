@@ -17,6 +17,7 @@ import DesignSystemRoute from "./routes/DesignSystemRoute";
 import PresentRoute from "./routes/PresentRoute";
 import { ToastProvider } from "./context/ToastContext";
 import StorageQuotaWatcher from "./components/shared/StorageQuotaWatcher";
+import DesignSystemModal from "./components/shared/DesignSystemModal";
 
 function SidebarLayout() {
   return (
@@ -30,6 +31,7 @@ export default function App() {
   return (
     <ToastProvider>
       <StorageQuotaWatcher />
+      <DesignSystemModal />
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginRoute />} />
