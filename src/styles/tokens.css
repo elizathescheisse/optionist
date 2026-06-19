@@ -1,74 +1,86 @@
 /*
- * Optionist design tokens — simplified semantic palette.
+ * Optionist design tokens — minimal palette.
  *
- * Layers:
- *   1. :root / [data-theme] — raw values (with dark overrides)
- *   2. @theme inline — Tailwind utility bridge
+ * Core colors (the swatch row):
+ *   surface, border, text, success, error, warning, warning-soft
+ *
+ * Layout aliases below keep existing utilities working without adding
+ * new brand colors.
  */
 
 :root,
 [data-theme="light"] {
   color-scheme: light;
 
-  --token-bg: #f5f7fb;
+  /* ── core palette ── */
   --token-surface: #ffffff;
-  --token-surface-muted: #f8fafd;
   --token-border: #e3e8f2;
   --token-text: #151827;
-  --token-text-muted: #677085;
-  --token-text-soft: #98a1b3;
-  --token-primary: #4d61a3;
-  --token-primary-soft: #eef1ff;
-  --token-auth-panel: #1e1848;
   --token-success: #059669;
-  --token-success-soft: #ecfdf5;
   --token-error: #dc2626;
-  --token-error-soft: #fef2f2;
   --token-warning: #a16207;
   --token-warning-soft: #fefce8;
-  --token-info: #2563eb;
-  --token-info-soft: #eff6ff;
+
+  /* ── layout / derived (not in swatch row) ── */
+  --token-bg: #f9fafb;
   --token-overlay: rgba(0, 0, 0, 0.3);
+  --token-surface-muted: #f9fafb;
+  --token-text-muted: #677085;
+  --token-text-soft: #98a1b3;
+  --token-success-soft: #ecfdf5;
+  --token-error-soft: #fef2f2;
+  --token-primary: #151827;
+  --token-primary-soft: #fefce8;
+  --token-auth-panel: #151827;
+  --token-info: #151827;
+  --token-info-soft: #fefce8;
 }
 
 [data-theme="dark"] {
   color-scheme: dark;
 
-  --token-bg: #0f1424;
   --token-surface: #171d31;
-  --token-surface-muted: #202740;
   --token-border: #2d3654;
   --token-text: #f6f7fb;
+  --token-success: #059669;
+  --token-error: #dc2626;
+  --token-warning: #a16207;
+  --token-warning-soft: #451a03;
+
+  --token-bg: #0f1424;
+  --token-surface-muted: #202740;
   --token-text-muted: #b8c0d4;
   --token-text-soft: #7f8aa8;
-  --token-primary: #8ea0ff;
-  --token-primary-soft: #232b54;
   --token-success-soft: #064e3b;
-  --token-warning-soft: #451a03;
   --token-error-soft: #450a0a;
-  --token-info-soft: #1e3a5f;
+  --token-primary: #f6f7fb;
+  --token-primary-soft: #451a03;
+  --token-auth-panel: #0f1424;
+  --token-info: #f6f7fb;
+  --token-info-soft: #451a03;
 }
 
 @theme inline {
-  --color-bg: var(--token-bg);
   --color-surface: var(--token-surface);
-  --color-surface-muted: var(--token-surface-muted);
   --color-border: var(--token-border);
   --color-text: var(--token-text);
+  --color-success: var(--token-success);
+  --color-error: var(--token-error);
+  --color-warning: var(--token-warning);
+  --color-warning-soft: var(--token-warning-soft);
+
+  --color-bg: var(--token-bg);
+  --color-overlay: var(--token-overlay);
+  --color-surface-muted: var(--token-surface-muted);
   --color-text-muted: var(--token-text-muted);
   --color-text-soft: var(--token-text-soft);
+  --color-success-soft: var(--token-success-soft);
+  --color-error-soft: var(--token-error-soft);
   --color-primary: var(--token-primary);
   --color-primary-soft: var(--token-primary-soft);
   --color-auth-panel: var(--token-auth-panel);
-  --color-success: var(--token-success);
-  --color-success-soft: var(--token-success-soft);
-  --color-error: var(--token-error);
-  --color-error-soft: var(--token-error-soft);
-  --color-warning: var(--token-warning);
-  --color-warning-soft: var(--token-warning-soft);
   --color-info: var(--token-info);
   --color-info-soft: var(--token-info-soft);
-  --color-overlay: var(--token-overlay);
 
   --text-md: 16px;
 

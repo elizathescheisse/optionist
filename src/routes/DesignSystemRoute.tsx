@@ -13,19 +13,13 @@ import SectionHeader from "../components/ui/SectionHeader";
 import Modal from "../components/ui/Modal";
 
 const COLORS = [
-  { name: "Primary", hex: "#4D61A3", token: "primary", usage: "Primary actions, selected states, active navigation." },
-  { name: "Background", hex: "#F5F7FB", token: "bg", usage: "App canvas background." },
-  { name: "Surface", hex: "#FFFFFF", token: "surface", usage: "Cards, panels, inputs." },
-  { name: "Surface muted", hex: "#F8FAFD", token: "surface-muted", usage: "Receded panels, sidebars." },
-  { name: "Border", hex: "#E3E8F2", token: "border", usage: "Dividers, input borders, card outlines." },
-  { name: "Text", hex: "#151827", token: "text", usage: "Primary body and heading text." },
-  { name: "Text muted", hex: "#677085", token: "text-muted", usage: "Secondary text, descriptions." },
-  { name: "Text soft", hex: "#98A1B3", token: "text-soft", usage: "Helper text, metadata." },
-  { name: "Success", hex: "#059669", token: "success", usage: "Confirmed states, positive feedback." },
-  { name: "Warning", hex: "#A16207", token: "warning", usage: "Caution states, missing rationale." },
-  { name: "Error", hex: "#DC2626", token: "error", usage: "Errors, destructive actions." },
-  { name: "Info", hex: "#2563EB", token: "info", usage: "Informational badges and hints." },
-  { name: "Auth panel", hex: "#1E1848", token: "auth-panel", usage: "Login screen brand panel only." },
+  { name: "surface", hex: "#ffffff", token: "surface", usage: "Cards, panels, inputs, elevated surfaces." },
+  { name: "border", hex: "#e3e8f2", token: "border", usage: "Dividers, input borders, card outlines." },
+  { name: "text", hex: "#151827", token: "text", usage: "Primary body and heading text." },
+  { name: "success", hex: "#059669", token: "success", usage: "Confirmed states, positive feedback." },
+  { name: "error", hex: "#dc2626", token: "error", usage: "Errors, destructive actions." },
+  { name: "warning", hex: "#a16207", token: "warning", usage: "Caution states, missing rationale." },
+  { name: "warning-soft", hex: "#fefce8", token: "warning-soft", usage: "Soft warning backgrounds, active nav highlight." },
 ];
 
 const TYPE_SAMPLES = [
@@ -66,16 +60,23 @@ export default function DesignSystemRoute() {
 
         {tab === "colors" && (
           <section className="flex flex-col gap-4">
-            <SectionHeader title="Semantic palette" description="All UI surfaces use these tokens — no raw Tailwind grays." />
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <SectionHeader title="Core palette" description="Seven semantic tokens — everything else is derived from these." />
+            <div className="flex flex-wrap gap-6">
               {COLORS.map((c) => (
-                <Card key={c.name} padding="sm">
+                <div key={c.token} className="flex flex-col items-center gap-2">
                   <div
-                    className="w-full h-12 rounded-md mb-2 border border-border"
+                    className="w-16 h-16 rounded-xl border border-border shadow-sm"
                     style={{ backgroundColor: c.hex }}
                   />
-                  <p className="text-sm font-medium text-text">{c.name}</p>
-                  <p className="text-xs font-mono text-text-muted">{c.token}</p>
+                  <p className="text-xs font-mono text-text-muted">{c.name}</p>
+                </div>
+              ))}
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {COLORS.map((c) => (
+                <Card key={`${c.token}-detail`} padding="sm">
+                  <p className="text-sm font-medium text-text font-mono">{c.name}</p>
+                  <p className="text-xs font-mono text-text-muted">{c.hex}</p>
                   <p className="text-xs text-text-soft mt-1">{c.usage}</p>
                 </Card>
               ))}

@@ -15,18 +15,13 @@ import SectionHeader from "../ui/SectionHeader";
 import Tabs from "../ui/Tabs";
 
 const COLORS = [
-  { name: "Primary", hex: "#4D61A3", token: "primary" },
-  { name: "Background", hex: "#F5F7FB", token: "bg" },
-  { name: "Surface", hex: "#FFFFFF", token: "surface" },
-  { name: "Surface muted", hex: "#F8FAFD", token: "surface-muted" },
-  { name: "Border", hex: "#E3E8F2", token: "border" },
-  { name: "Text", hex: "#151827", token: "text" },
-  { name: "Text muted", hex: "#677085", token: "text-muted" },
-  { name: "Text soft", hex: "#98A1B3", token: "text-soft" },
-  { name: "Success", hex: "#059669", token: "success" },
-  { name: "Warning", hex: "#A16207", token: "warning" },
-  { name: "Error", hex: "#DC2626", token: "error" },
-  { name: "Info", hex: "#2563EB", token: "info" },
+  { name: "surface", hex: "#ffffff", token: "surface" },
+  { name: "border", hex: "#e3e8f2", token: "border" },
+  { name: "text", hex: "#151827", token: "text" },
+  { name: "success", hex: "#059669", token: "success" },
+  { name: "error", hex: "#dc2626", token: "error" },
+  { name: "warning", hex: "#a16207", token: "warning" },
+  { name: "warning-soft", hex: "#fefce8", token: "warning-soft" },
 ];
 
 function UiRow({
@@ -97,18 +92,17 @@ export default function DesignSystemModal() {
           <section>
             <SectionHeader
               title="Color tokens"
-              description="src/styles/tokens.css — semantic palette for the app."
+              description="src/styles/tokens.css — the core palette."
             />
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
+            <div className="flex flex-wrap gap-6 mt-4">
               {COLORS.map((c) => (
-                <Card key={c.token} padding="sm">
+                <div key={c.token} className="flex flex-col items-center gap-2">
                   <div
-                    className="w-full h-10 rounded-md mb-2 border border-border"
+                    className="w-16 h-16 rounded-xl border border-border shadow-sm"
                     style={{ backgroundColor: c.hex }}
                   />
-                  <p className="text-xs font-medium text-text">{c.name}</p>
-                  <p className="text-[10px] font-mono text-text-muted">{c.token}</p>
-                </Card>
+                  <p className="text-xs font-mono text-text-muted">{c.name}</p>
+                </div>
               ))}
             </div>
           </section>
