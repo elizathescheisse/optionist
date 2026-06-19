@@ -49,6 +49,7 @@ type AuthStore = {
   settings: AppSettings;
   authError: string | null;
   guestSessionId: string | null;
+  hasSeenGuestNotice: boolean;
   pendingGuestMigration: boolean;
   guestLimitMessage: string | null;
   guestStorageError: string | null;
@@ -136,11 +137,13 @@ function activateGuestMode(
 ): void {
   setStorageMode("guest");
   useAppStore.getState().reloadFromStorage();
+  const session = loadGuestSession();
   set({
     status: "guest",
     user: null,
     session: null,
     guestSessionId: sessionId,
+    hasSeenGuestNotice: session?.hasSeenGuestNotice ?? false,
     authError: null,
   });
 }
@@ -157,6 +160,7 @@ function activateAuthenticatedMode(
     user,
     session,
     guestSessionId: null,
+    hasSeenGuestNotice: false,
   });
 }
 
@@ -178,6 +182,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   settings: { theme: "light" },
   authError: null,
   guestSessionId: null,
+  hasSeenGuestNotice: false,
   pendingGuestMigration: false,
   guestLimitMessage: null,
   guestStorageError: null,
@@ -260,7 +265,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     clearGuestSession();
     setStorageMode("authenticated");
     useAppStore.getState().reloadFromStorage();
-    set({ status: "unauthenticated", guestSessionId: null });
+    set({ status: "unauthenticated", guestSessionId: null, hasSeenGuestNotice: false });
   },
 
   clearGuestWorkspace: () => {
@@ -270,16 +275,22 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     if (get().isGuest()) {
       useAppStore.getState().resetToEmpty();
       const session = createGuestSession();
-      set({ guestSessionId: session.guestSessionId, guestStorageError: null });
+      set({
+        guestSessionId: session.guestSessionId,
+        hasSeenGuestNotice: false,
+        guestStorageError: null,
+      });
     }
   },
 
   dismissGuestNotice: () => {
     updateGuestSession({ hasSeenGuestNotice: true });
+    set({ hasSeenGuestNotice: true });
   },
 
   showGuestNoticeAgain: () => {
     updateGuestSession({ hasSeenGuestNotice: false });
+    set({ hasSeenGuestNotice: false });
   },
 
   dismissGuestMigration: () => {
