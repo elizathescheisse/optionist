@@ -38,9 +38,9 @@ export default function App() {
     <ToastProvider>
       <StorageQuotaWatcher />
       <GuestLimitWatcher />
-      <GuestMigrationModal />
       <DesignSystemModal />
       <BrowserRouter>
+        <GuestMigrationModal />
         <Routes>
           <Route path="/login" element={<LoginRoute />} />
           <Route path="/signup" element={<SignupRoute />} />
