@@ -56,7 +56,7 @@ function DesktopNav() {
   const showAdminBadges = canSeeOrgSettings(role);
 
   return (
-    <nav className="hidden lg:flex flex-col gap-6" aria-label="Settings sections">
+    <nav className="flex flex-col gap-6" aria-label="Settings sections">
       {SETTINGS_NAV.map((group) => {
         const items = filterNavForAccess(group.items, ctx);
         if (items.length === 0) return null;
@@ -96,7 +96,7 @@ function MobileNav() {
 
   return (
     <nav
-      className="lg:hidden flex gap-1 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-none"
+      className="flex gap-1 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none"
       aria-label="Settings sections"
     >
       {flatItems.map((item) => {
@@ -123,11 +123,10 @@ function MobileNav() {
   );
 }
 
-export default function SettingsNav() {
-  return (
-    <>
-      <MobileNav />
-      <DesktopNav />
-    </>
-  );
+type Props = {
+  variant: "desktop" | "mobile";
+};
+
+export default function SettingsNav({ variant }: Props) {
+  return variant === "desktop" ? <DesktopNav /> : <MobileNav />;
 }

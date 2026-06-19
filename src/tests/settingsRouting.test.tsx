@@ -58,9 +58,9 @@ describe("settings routing", () => {
       </ToastProvider>,
     );
 
-    expect(screen.getByRole("heading", { name: "Settings" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Profile" })).toBeInTheDocument();
     expect(screen.getByLabelText("Name")).toBeInTheDocument();
+    expect(screen.getByText("Personal")).toBeInTheDocument();
   });
 
   it("redirects /settings to profile content", () => {
