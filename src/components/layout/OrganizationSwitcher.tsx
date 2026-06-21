@@ -11,7 +11,7 @@ export default function OrganizationSwitcher() {
 
   if (organizations.length === 1) {
     return (
-      <div className="px-4 py-3 border-t border-border">
+      <div className="px-4 py-3">
         <p className="text-xs text-text-soft">Workspace</p>
         <p className="text-sm text-text font-medium truncate">{org?.name ?? organizations[0].name}</p>
       </div>
@@ -19,7 +19,7 @@ export default function OrganizationSwitcher() {
   }
 
   return (
-    <div className="px-3 py-3 border-t border-border">
+    <div className="px-3 py-3 w-full">
       <label htmlFor="org-switcher" className="text-xs text-text-soft px-1">
         Workspace
       </label>

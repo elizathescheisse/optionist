@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
-import { LayoutDashboard, FolderOpen, Clock, Settings, type LucideIcon } from "lucide-react";
+import { LayoutDashboard, FolderOpen, Clock, Settings, LogOut, type LucideIcon } from "lucide-react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useWorkspaceStore, currentOrganization } from "../../store/useWorkspaceStore";
 import { isSupabaseConfigured } from "../../lib/supabase";
@@ -33,7 +33,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const logout = useAuthStore((s) => s.logout);
-  const exitGuestMode = useAuthStore((s) => s.exitGuestMode);
   const isGuest = useAuthStore((s) => s.isGuest);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const onboarding = useAuthStore((s) => s.onboarding);
@@ -76,11 +75,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     navigate("/login");
   }
 
-  function handleGuestLogout() {
-    exitGuestMode();
-    navigate("/login");
-  }
-
   const visibleNav = NAV_ITEMS.filter((item) => {
     if (item.requiresAuth && isGuest()) return false;
     if (item.requiresOrgAdmin && !canSeeOrgSettings(role)) return false;
@@ -115,6 +109,32 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
         {/* Nav */}
         <nav className="flex-1 p-2 flex flex-col gap-1">
+          {/* Collapse toggle — above the nav items */}
+          <button
+            type="button"
+            onClick={toggleCollapsed}
+            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            className={cn(
+              "flex items-center px-2 py-2 rounded-md text-text-soft hover:text-text hover:bg-surface-muted transition-colors",
+              collapsed ? "justify-center" : "justify-end",
+            )}
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 14 14"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className={cn("transition-transform duration-200", collapsed ? "rotate-180" : "")}
+            >
+              <path d="M9 2L4 7l5 5" />
+            </svg>
+          </button>
+
           {visibleNav.map((item) => (
             <Link
               key={item.to}
@@ -135,81 +155,55 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           ))}
         </nav>
 
-        {/* Workspace / org switcher */}
-        {!collapsed && (
-          isGuest() ? (
+        {/* Workspace + log out, on one line (guests use their own panel) */}
+        {!collapsed &&
+          (isGuest() ? (
             <GuestMenuPanel />
-          ) : isSupabaseConfigured ? (
-            <OrganizationSwitcher />
           ) : (
-            onboarding?.workspaceName && (
-              <div className="px-4 py-3 border-t border-border">
-                <p className="text-xs text-text-soft">Workspace</p>
-                <p className="text-sm text-text font-medium truncate">{workspaceLabel}</p>
+            <div className="border-t border-border flex items-stretch">
+              <div className="flex-1 min-w-0">
+                {isSupabaseConfigured ? (
+                  <OrganizationSwitcher />
+                ) : (
+                  onboarding?.workspaceName && (
+                    <div className="px-4 py-3 min-w-0">
+                      <p className="text-xs text-text-soft">Workspace</p>
+                      <p className="text-sm text-text font-medium truncate">{workspaceLabel}</p>
+                    </div>
+                  )
+                )}
               </div>
-            )
-          )
+              {isAuthenticated() && (
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  title="Log out"
+                  aria-label="Log out"
+                  className="shrink-0 px-4 flex items-center text-text-soft hover:text-text hover:bg-surface-muted transition-colors"
+                >
+                  <LogOut size={16} />
+                </button>
+              )}
+            </div>
+          ))}
+
+        {/* Log out — icon only when collapsed (no workspace label to sit beside) */}
+        {collapsed && isAuthenticated() && (
+          <button
+            type="button"
+            onClick={handleLogout}
+            title="Log out"
+            aria-label="Log out"
+            className="shrink-0 flex items-center justify-center h-9 border-t border-border text-text-soft hover:text-text hover:bg-surface-muted transition-colors"
+          >
+            <LogOut size={16} className="shrink-0" />
+          </button>
         )}
 
-        {/* Collapse toggle */}
-        <button
-          type="button"
-          onClick={toggleCollapsed}
-          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className="shrink-0 flex items-center justify-center h-9 border-t border-border text-text-soft hover:text-text hover:bg-surface-muted transition-colors"
-        >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 14 14"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={cn("transition-transform duration-200", collapsed ? "rotate-180" : "")}
-          >
-            <path d="M9 2L4 7l5 5" />
-          </svg>
-        </button>
       </aside>
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <main className="flex-1 flex flex-col overflow-hidden">{children}</main>
-
-        <footer className="shrink-0 border-t border-border bg-surface px-5 py-2 flex items-center justify-between">
-          <Link
-            to="/design-system"
-            className="text-xs text-text-soft hover:text-primary transition-colors"
-          >
-            Design System
-          </Link>
-          {isGuest() ? (
-            <div className="flex items-center gap-3">
-              <Link
-                to="/signup"
-                className="text-xs text-primary font-medium hover:underline"
-              >
-                Save my work
-              </Link>
-              <button
-                type="button"
-                onClick={handleGuestLogout}
-                className="text-xs text-text-soft hover:text-text transition-colors"
-              >
-                Log out
-              </button>
-            </div>
-          ) : isAuthenticated() ? (
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="text-xs text-text-soft hover:text-text transition-colors"
-            >
-              Log out
-            </button>
-          ) : null}
-        </footer>
       </div>
     </div>
   );
