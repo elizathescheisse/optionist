@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen, fireEvent, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ToastProvider } from "../context/ToastContext";
@@ -67,5 +67,13 @@ describe("AppLayout sidebar", () => {
     expect(within(nav).getByText("Dashboard")).toBeInTheDocument();
     // And the choice is remembered for next visit.
     expect(localStorage.getItem("sidebar-collapsed")).toBe("false");
+  });
+
+  it("logs out when the sidebar log out button is clicked", () => {
+    const logoutSpy = vi.fn();
+    useAuthStore.setState({ logout: logoutSpy });
+    renderLayout();
+    fireEvent.click(screen.getByRole("button", { name: /log out/i }));
+    expect(logoutSpy).toHaveBeenCalled();
   });
 });
