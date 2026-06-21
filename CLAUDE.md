@@ -54,14 +54,13 @@ At the start of each session, read `HUMAN.md`. If a reminder in it is directly r
 
 ## Loose threads
 
-Never leave a discussed idea, problem, or decision unresolved without capturing it. Specifically:
-- If a discussion reaches a natural "do you want me to file a GitHub issue?" moment and the conversation moves on before confirming, **file the issue anyway** — don't wait for confirmation. An extra issue is easier to close than a lost idea is to recover.
-- If multiple topics are in flight and one gets dropped when the user pivots, flag the unresolved thread at the bottom of the next response before it gets lost.
-- At the end of a session, if anything was discussed but not captured in a GitHub issue or committed code, call it out explicitly.
+Never let a discussed idea, problem, or decision get silently dropped — but **surfacing is not acting.** Track and flag unresolved threads; never take an action on Eliza's behalf that she hasn't explicitly answered or approved.
 
-**When filing a proactive (unconfirmed) issue:**
-1. Prefix the title with `[loose thread]`
-2. In the issue body, include what was said and why it wasn't explicitly confirmed
+- **Don't act on the unanswered.** If a question was asked — "want me to file an issue?", "should I build X?", "want me to draft the plan?" — and Eliza hasn't answered it, do not do it. Don't file the issue, make the change, or run the command. Wait for an explicit yes. Her silence or a pivot to another topic is not consent.
+- If multiple topics are in flight and one gets dropped when Eliza pivots, flag the unresolved thread at the bottom of the next response so it isn't lost — but leave it as a flag, not an action.
+- At the end of a session, if anything was discussed but not resolved, list it explicitly so Eliza can decide what to do with it.
+
+Asking once and waiting is correct. Re-surfacing an open thread later is fine. Doing the thing because she didn't say no is not.
 
 ---
 
