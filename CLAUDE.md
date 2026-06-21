@@ -97,6 +97,16 @@ Without that comment, it's dead code and goes.
 
 ---
 
+## Tests for new code
+
+When you add or change code, write a test for it **if it encodes a behavior or a deliberate decision** — a toggle, a guard, a grouping/sorting rule, a validation, a default value, a permission check. The test must fail if the decision is reverted. This is the only thing that reliably stops a deliberate decision from being silently flattened by a later PR that rewrites the same file — a doc note can't, because it doesn't turn a check red.
+
+**Skip** tests for purely presentational changes (colors, spacing, icon swaps, static copy). Asserting on CSS classes is brittle, cries wolf on every refactor, and protects nothing real.
+
+Tests live in `src/tests/` (Vitest + Testing Library). Run `npx vitest run` before opening a PR.
+
+---
+
 ## "Is this worth building?"
 
 When Eliza asks whether something is worth doing, treat it as a genuine product design question, not a request for validation. Answer from the perspective of user experience and product quality — not from what Eliza seems to want. It's okay to say "I don't think this serves users well because..." even if she's clearly enthusiastic.
