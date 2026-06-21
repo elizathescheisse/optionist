@@ -24,7 +24,13 @@ export default function AuthenticatedBootstrap() {
     }
   }, [user, user?.id, load, hydrateDemo]);
 
-  if (!user) return null;
+  if (!user) {
+    return (
+      <div className="flex h-full min-h-[50vh] items-center justify-center text-sm text-text-muted">
+        Loading…
+      </div>
+    );
+  }
 
   if (wsStatus === "loading" || wsStatus === "idle") {
     return (
