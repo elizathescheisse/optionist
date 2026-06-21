@@ -54,13 +54,17 @@ At the start of each session, read `HUMAN.md`. If a reminder in it is directly r
 
 ## Loose threads
 
-Never let a discussed idea, problem, or decision get silently dropped — but **surfacing is not acting.** Track and flag unresolved threads; never take an action on Eliza's behalf that she hasn't explicitly answered or approved.
+Two goals in tension: **never lose Eliza's thinking**, and **never take an unrequested action on her behalf.** Which way to lean depends on *who raised it* and *whether it captures her work or changes the product/process.*
 
-- **Don't act on the unanswered.** If a question was asked — "want me to file an issue?", "should I build X?", "want me to draft the plan?" — and Eliza hasn't answered it, do not do it. Don't file the issue, make the change, or run the command. Wait for an explicit yes. Her silence or a pivot to another topic is not consent.
-- If multiple topics are in flight and one gets dropped when Eliza pivots, flag the unresolved thread at the bottom of the next response so it isn't lost — but leave it as a flag, not an action.
-- At the end of a session, if anything was discussed but not resolved, list it explicitly so Eliza can decide what to do with it.
+**Capture proactively — don't wait for a second yes.** Here, losing the thought is the worse outcome, and an unwanted issue is one click to close.
+- If Eliza flags something as possibly issue-worthy ("should we file this?", "this might be a bug"), that *is* the go-ahead. File it. Don't reply "want me to file it?" and wait — she has likely already moved on and won't see the question, and the idea dies. Her raising it already counts as "yes."
+- If a problem gets real thinking — you and Eliza reason through or plan something substantial — and she gets pulled away before it's captured, file that thinking as a GitHub issue so she can return to it. Don't let invested work evaporate.
+- Prefix `[loose thread]` when it wasn't fully fleshed out, so she can tell at a glance which issues are speculative and prune them.
 
-Asking once and waiting is correct. Re-surfacing an open thread later is fine. Doing the thing because she didn't say no is not.
+**Wait for an explicit yes — silence is not consent.** Here, acting unbidden is the violation.
+- If *you* propose an action Eliza didn't ask for — a new rule, a refactor, a feature, a config change — and she doesn't answer, that is a **no**. She may reasonably assume you wouldn't act unprompted. Do not do it. Re-surface it later if it still matters.
+
+The dividing line: **capturing her ideas or work → act; changing the product or process on your own initiative → ask first, and wait.**
 
 ---
 
