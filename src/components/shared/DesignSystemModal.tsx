@@ -99,7 +99,7 @@ export default function DesignSystemModal() {
         className="bg-surface rounded-xl shadow-2xl w-full max-w-5xl border border-border"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-8 py-5 border-b border-border sticky top-0 bg-surface rounded-t-xl z-10">
+        <div className="flex items-center justify-between px-8 py-5 border-b border-border rounded-t-xl">
           <div>
             <h1 className="text-base font-semibold text-text">Design System</h1>
             <p className="text-xs text-text-soft mt-0.5">
@@ -117,7 +117,7 @@ export default function DesignSystemModal() {
         </div>
 
         {/* Tab nav */}
-        <div className="px-8 pt-5 sticky top-[73px] bg-surface z-10">
+        <div className="px-8 pt-5">
           <Tabs
             tabs={[
               { id: "colors", label: "Colors" },
