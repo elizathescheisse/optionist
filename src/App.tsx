@@ -34,7 +34,6 @@ import BillingSettingsRoute from "./routes/settings/BillingSettingsRoute";
 import SecuritySettingsRoute from "./routes/settings/SecuritySettingsRoute";
 import DataPrivacySettingsRoute from "./routes/settings/DataPrivacySettingsRoute";
 import DangerZoneSettingsRoute from "./routes/settings/DangerZoneSettingsRoute";
-import DesignSystemRoute from "./routes/DesignSystemRoute";
 import PresentRoute from "./routes/PresentRoute";
 import { ToastProvider } from "./context/ToastContext";
 import StorageQuotaWatcher from "./components/shared/StorageQuotaWatcher";
@@ -149,7 +148,6 @@ export default function App() {
                 <Route path="data-privacy" element={<DataPrivacySettingsRoute />} />
                 <Route path="danger-zone" element={<DangerZoneSettingsRoute />} />
               </Route>
-              <Route path="/design-system" element={<DesignSystemRoute />} />
               <Route path="*" element={<NotFoundRoute />} />
             </Route>
           </Route>
