@@ -109,6 +109,32 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
         {/* Nav */}
         <nav className="flex-1 p-2 flex flex-col gap-1">
+          {/* Collapse toggle — above the nav items */}
+          <button
+            type="button"
+            onClick={toggleCollapsed}
+            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            className={cn(
+              "flex items-center px-2 py-2 rounded-md text-text-soft hover:text-text hover:bg-surface-muted transition-colors",
+              collapsed ? "justify-center" : "justify-end",
+            )}
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 14 14"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className={cn("transition-transform duration-200", collapsed ? "rotate-180" : "")}
+            >
+              <path d="M9 2L4 7l5 5" />
+            </svg>
+          </button>
+
           {visibleNav.map((item) => (
             <Link
               key={item.to}
@@ -174,27 +200,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           </button>
         )}
 
-        {/* Collapse toggle */}
-        <button
-          type="button"
-          onClick={toggleCollapsed}
-          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className="shrink-0 flex items-center justify-center h-9 border-t border-border text-text-soft hover:text-text hover:bg-surface-muted transition-colors"
-        >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 14 14"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={cn("transition-transform duration-200", collapsed ? "rotate-180" : "")}
-          >
-            <path d="M9 2L4 7l5 5" />
-          </svg>
-        </button>
       </aside>
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
