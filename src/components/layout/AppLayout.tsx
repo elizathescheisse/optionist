@@ -129,28 +129,45 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           ))}
         </nav>
 
-        {/* Workspace / org switcher */}
-        {!collapsed && (
-          isGuest() ? (
+        {/* Workspace + log out, on one line (guests use their own panel) */}
+        {!collapsed &&
+          (isGuest() ? (
             <GuestMenuPanel />
-          ) : isSupabaseConfigured ? (
-            <OrganizationSwitcher />
           ) : (
-            onboarding?.workspaceName && (
-              <div className="px-4 py-3 border-t border-border">
-                <p className="text-xs text-text-soft">Workspace</p>
-                <p className="text-sm text-text font-medium truncate">{workspaceLabel}</p>
+            <div className="border-t border-border flex items-stretch">
+              <div className="flex-1 min-w-0">
+                {isSupabaseConfigured ? (
+                  <OrganizationSwitcher />
+                ) : (
+                  onboarding?.workspaceName && (
+                    <div className="px-4 py-3 min-w-0">
+                      <p className="text-xs text-text-soft">Workspace</p>
+                      <p className="text-sm text-text font-medium truncate">{workspaceLabel}</p>
+                    </div>
+                  )
+                )}
               </div>
-            )
-          )
-        )}
+              {isAuthenticated() && (
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  title="Log out"
+                  aria-label="Log out"
+                  className="shrink-0 px-4 flex items-center text-text-soft hover:text-text hover:bg-surface-muted transition-colors"
+                >
+                  <LogOut size={16} />
+                </button>
+              )}
+            </div>
+          ))}
 
-        {/* Log out — guests have their own log out in GuestMenuPanel above */}
-        {isAuthenticated() && (
+        {/* Log out — icon only when collapsed (no workspace label to sit beside) */}
+        {collapsed && isAuthenticated() && (
           <button
             type="button"
             onClick={handleLogout}
             title="Log out"
+            aria-label="Log out"
             className="shrink-0 flex items-center justify-center h-9 border-t border-border text-text-soft hover:text-text hover:bg-surface-muted transition-colors"
           >
             <LogOut size={16} className="shrink-0" />
