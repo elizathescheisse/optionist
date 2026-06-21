@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { isTypingTarget } from "../../utils/keyboard";
 import Button from "../ui/Button";
+import Modal from "../ui/Modal";
 import TextInput from "../ui/TextInput";
 import Textarea from "../ui/Textarea";
 import Badge from "../ui/Badge";
@@ -61,10 +62,20 @@ export default function DesignSystemModal() {
   const [tab, setTab] = useState("colors");
   const [demoTab, setDemoTab] = useState("overview");
   const [darkPreview, setDarkPreview] = useState(false);
+  const [showDemoModal, setShowDemoModal] = useState(false);
+
+  // While the demo modal is open, let it own the keyboard — don't let D or Esc
+  // toggle/close the design system modal underneath it. A ref keeps the
+  // keydown listener (registered once) in sync without re-binding.
+  const demoOpenRef = useRef(false);
+  useEffect(() => {
+    demoOpenRef.current = showDemoModal;
+  }, [showDemoModal]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (isTypingTarget(e.target as Element)) return;
+      if (demoOpenRef.current) return;
       if (e.key === "d" || e.key === "D") setOpen((v) => !v);
       if (e.key === "Escape") setOpen(false);
     }
@@ -264,10 +275,9 @@ export default function DesignSystemModal() {
                   </UiRow>
 
                   <UiRow name="Modal" path="ui/Modal.tsx">
-                    <p className="text-xs text-text-soft">
-                      Centered dialog that traps focus and closes on Escape. Not shown live here to
-                      avoid nesting a dialog inside this overlay.
-                    </p>
+                    <Button variant="secondary" size="sm" onClick={() => setShowDemoModal(true)}>
+                      Open modal
+                    </Button>
                   </UiRow>
                 </div>
               </div>
@@ -314,6 +324,19 @@ export default function DesignSystemModal() {
           )}
         </div>
       </div>
+
+      {/* Live demo: a real Modal stacked on top of this overlay. Escape closes
+          only this one (the design system modal ignores keys while it's open). */}
+      {showDemoModal && (
+        <Modal
+          title="Example modal"
+          onConfirm={() => setShowDemoModal(false)}
+          onCancel={() => setShowDemoModal(false)}
+        >
+          Modals trap focus and close on Escape. This one is stacked on top of the
+          design system modal so you can see the interaction.
+        </Modal>
+      )}
     </div>
   );
 }

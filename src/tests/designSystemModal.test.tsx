@@ -34,4 +34,19 @@ describe("DesignSystemModal", () => {
     fireEvent.click(within(dialog).getByText("Typography"));
     expect(within(dialog).getByText("Type scale")).toBeInTheDocument();
   });
+
+  it("opens a nested modal on top, and Escape closes only the nested one", () => {
+    render(<DesignSystemModal />);
+    fireEvent.keyDown(window, { key: "d" });
+    const dialog = screen.getByRole("dialog", { name: "Design system" });
+
+    fireEvent.click(within(dialog).getByText("Components"));
+    fireEvent.click(within(dialog).getByText("Open modal"));
+    expect(screen.getByText("Example modal")).toBeInTheDocument();
+
+    // Escape closes the nested demo, but the design system modal stays open.
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(screen.queryByText("Example modal")).not.toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "Design system" })).toBeInTheDocument();
+  });
 });
