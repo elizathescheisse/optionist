@@ -41,10 +41,11 @@ export default function OptionUploader({ decisionId, compact = false, panel = fa
       }
       try {
         const dataUrl = await fileToDataUrl(file);
-        addOption(decisionId, {
+        await addOption(decisionId, {
           name: file.name.replace(/\.[^.]+$/, ""),
           imageDataUrl: dataUrl,
           imageMimeType: file.type as DesignOption["imageMimeType"],
+          file,
         });
       } catch {
         newErrors.push(`${file.name}: Failed to read file.`);

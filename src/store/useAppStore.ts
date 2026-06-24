@@ -20,8 +20,30 @@ import {
 } from "../services/work";
 import { signOptionImagePaths } from "../services/optionImages";
 import { buildWorkState } from "../types/work";
+import {
+  dbCreateProject,
+  dbUpdateProject,
+  dbDeleteProject,
+  dbCreateDecision,
+  dbUpdateDecision,
+  dbDeleteDecision,
+  dbUploadOptionImage,
+  dbSignOptionImageUrl,
+  dbCreateOption,
+  dbUpdateOption,
+  dbDeleteOption,
+  dbRejectOption,
+  dbRestoreOption,
+  dbMarkOptionFinal,
+} from "../services/workWrites";
+import { useWorkspaceStore } from "./useWorkspaceStore";
+import { isSupabaseConfigured } from "../lib/supabase";
 
 export const GUEST_LIMIT_EVENT = "optionist:guest-limit";
+
+function fireAndForget(promise: Promise<void>, label: string): void {
+  promise.catch((err) => console.error(`[workWrites] ${label}:`, err));
+}
 
 function emitGuestLimit(message: string): void {
   window.dispatchEvent(new CustomEvent(GUEST_LIMIT_EVENT, { detail: message }));
@@ -74,7 +96,7 @@ type AppStore = AppState & {
   reactivateDecision: (decisionId: ID) => void;
   setCurrentDecision: (decisionId: ID | null) => void;
 
-  addOption: (decisionId: ID, input: { name: string; imageDataUrl: string; imageMimeType: DesignOption["imageMimeType"] }) => ID;
+  addOption: (decisionId: ID, input: { name: string; imageDataUrl: string; imageMimeType: DesignOption["imageMimeType"]; file?: File }) => Promise<ID>;
   updateOption: (optionId: ID, patch: Partial<Pick<DesignOption, "name" | "notes">>) => void;
   deleteOption: (optionId: ID) => void;
   rejectOption: (optionId: ID) => void;
@@ -125,6 +147,10 @@ export const useAppStore = create<AppStore>((set, get) => ({
       }
       return next;
     });
+    if (isSupabaseConfigured && getStorageMode() === "supabase") {
+      const orgId = useWorkspaceStore.getState().currentOrganizationId ?? "";
+      fireAndForget(dbCreateProject(id, orgId, name.trim(), (description ?? "").trim()), "createProject");
+    }
     return id;
   },
 
@@ -137,6 +163,9 @@ export const useAppStore = create<AppStore>((set, get) => ({
       saveState(next);
       return next;
     });
+    if (isSupabaseConfigured && getStorageMode() === "supabase") {
+      fireAndForget(dbUpdateProject(projectId, patch), "updateProject");
+    }
   },
 
   deleteProject: (projectId) => {
@@ -170,6 +199,9 @@ export const useAppStore = create<AppStore>((set, get) => ({
       saveState(next);
       return next;
     });
+    if (isSupabaseConfigured && getStorageMode() === "supabase") {
+      fireAndForget(dbDeleteProject(projectId), "deleteProject");
+    }
   },
 
   setCurrentProject: (projectId) => {
@@ -216,6 +248,9 @@ export const useAppStore = create<AppStore>((set, get) => ({
       }
       return next;
     });
+    if (isSupabaseConfigured && getStorageMode() === "supabase") {
+      fireAndForget(dbCreateDecision(id, projectId, title.trim(), (description ?? "").trim()), "createDecision");
+    }
     return id;
   },
 
@@ -228,6 +263,14 @@ export const useAppStore = create<AppStore>((set, get) => ({
       saveState(next);
       return next;
     });
+    if (isSupabaseConfigured && getStorageMode() === "supabase") {
+      const dbPatch: Record<string, string | null> = {};
+      if (patch.title !== undefined) dbPatch.title = patch.title;
+      if (patch.description !== undefined) dbPatch.description = patch.description;
+      if (patch.notes !== undefined) dbPatch.working_notes = patch.notes;
+      if (patch.finalRationale !== undefined) dbPatch.final_rationale = patch.finalRationale;
+      fireAndForget(dbUpdateDecision(decisionId, dbPatch), "updateDecision");
+    }
   },
 
   deleteDecision: (decisionId) => {
@@ -263,6 +306,9 @@ export const useAppStore = create<AppStore>((set, get) => ({
       saveState(next);
       return next;
     });
+    if (isSupabaseConfigured && getStorageMode() === "supabase") {
+      fireAndForget(dbDeleteDecision(decisionId), "deleteDecision");
+    }
   },
 
   archiveDecision: (decisionId) => {
@@ -285,6 +331,9 @@ export const useAppStore = create<AppStore>((set, get) => ({
       saveState(next);
       return next;
     });
+    if (isSupabaseConfigured && getStorageMode() === "supabase") {
+      fireAndForget(dbUpdateDecision(decisionId, { status: "postponed" }), "postponeDecision");
+    }
   },
 
   reactivateDecision: (decisionId) => {
@@ -296,6 +345,9 @@ export const useAppStore = create<AppStore>((set, get) => ({
       saveState(next);
       return next;
     });
+    if (isSupabaseConfigured && getStorageMode() === "supabase") {
+      fireAndForget(dbUpdateDecision(decisionId, { status: "active" }), "reactivateDecision");
+    }
   },
 
   setCurrentDecision: (decisionId) => {
@@ -309,11 +361,57 @@ export const useAppStore = create<AppStore>((set, get) => ({
   },
 
   // --- Options ---
-  addOption: (decisionId, { name, imageDataUrl, imageMimeType }) => {
+  addOption: async (decisionId, { name, imageDataUrl, imageMimeType, file }) => {
     const current = get();
     if (!checkGuestOptionLimit(current)) return "";
     const id = createId();
     const ts = now();
+
+    if (isSupabaseConfigured && getStorageMode() === "supabase" && file) {
+      // Upload to Storage first, then insert the DB row and update local state
+      // with a signed URL so the image displays immediately.
+      const decision = current.decisions[decisionId];
+      if (!decision) return "";
+      const project = current.projects[decision.projectId];
+      if (!project) return "";
+      const orgId = useWorkspaceStore.getState().currentOrganizationId ?? "";
+      const sortOrder = decision.optionIds.length;
+
+      try {
+        const storagePath = await dbUploadOptionImage(file, orgId, project.id, decisionId, id);
+        const signedUrl = await dbSignOptionImageUrl(storagePath);
+        await dbCreateOption(id, decisionId, name.trim(), storagePath, imageMimeType ?? file.type, file.size, sortOrder);
+
+        set((s) => {
+          const dec = s.decisions[decisionId];
+          if (!dec) return s;
+          const option: DesignOption = {
+            id,
+            decisionId,
+            name: name.trim(),
+            imageDataUrl: signedUrl,
+            imageMimeType,
+            status: "active",
+            notes: "",
+            createdAt: ts,
+            updatedAt: ts,
+          };
+          const updatedDecision = { ...dec, optionIds: [...dec.optionIds, id], updatedAt: now() };
+          const isFirst = dec.optionIds.length === 0;
+          return {
+            ...s,
+            options: { ...s.options, [id]: option },
+            decisions: { ...s.decisions, [decisionId]: updatedDecision },
+            currentOptionId: isFirst && !s.currentOptionId ? id : s.currentOptionId,
+          };
+        });
+      } catch (err) {
+        console.error("[workWrites] addOption:", err);
+      }
+      return id;
+    }
+
+    // Local / guest path: use the base64 dataUrl directly.
     const option: DesignOption = {
       id,
       decisionId,
@@ -358,6 +456,11 @@ export const useAppStore = create<AppStore>((set, get) => ({
       saveState(next);
       return next;
     });
+    if (isSupabaseConfigured && getStorageMode() === "supabase") {
+      const dbPatch: Record<string, string> = {};
+      if (patch.name !== undefined) dbPatch.label = patch.name;
+      fireAndForget(dbUpdateOption(optionId, dbPatch), "updateOption");
+    }
   },
 
   deleteOption: (optionId) => {
@@ -388,6 +491,9 @@ export const useAppStore = create<AppStore>((set, get) => ({
       saveState(next);
       return next;
     });
+    if (isSupabaseConfigured && getStorageMode() === "supabase") {
+      fireAndForget(dbDeleteOption(optionId), "deleteOption");
+    }
   },
 
   rejectOption: (optionId) => {
@@ -399,6 +505,9 @@ export const useAppStore = create<AppStore>((set, get) => ({
       saveState(next);
       return next;
     });
+    if (isSupabaseConfigured && getStorageMode() === "supabase") {
+      fireAndForget(dbRejectOption(optionId), "rejectOption");
+    }
   },
 
   restoreOption: (optionId) => {
@@ -410,14 +519,19 @@ export const useAppStore = create<AppStore>((set, get) => ({
       saveState(next);
       return next;
     });
+    if (isSupabaseConfigured && getStorageMode() === "supabase") {
+      fireAndForget(dbRestoreOption(optionId), "restoreOption");
+    }
   },
 
   markOptionFinal: (optionId) => {
+    let decisionId = "";
     set((s) => {
       const option = s.options[optionId];
       if (!option) return s;
       const decision = s.decisions[option.decisionId];
       if (!decision) return s;
+      decisionId = decision.id;
 
       const updatedOptions = { ...s.options };
       for (const oId of decision.optionIds) {
@@ -446,6 +560,10 @@ export const useAppStore = create<AppStore>((set, get) => ({
       saveState(next);
       return next;
     });
+    if (isSupabaseConfigured && getStorageMode() === "supabase" && decisionId) {
+      const userId = useWorkspaceStore.getState().profile?.id ?? "";
+      fireAndForget(dbMarkOptionFinal(optionId, decisionId, userId), "markOptionFinal");
+    }
   },
 
   setCurrentOption: (optionId) => {

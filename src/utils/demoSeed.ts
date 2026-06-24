@@ -55,12 +55,16 @@ export function seedDemoDecisions(projectId: ID): void {
     });
 
     for (const opt of demo.options) {
-      const optionId = store.addOption(decisionId, {
+      // addOption is async but demo mode resolves immediately — we don't await
+      // because seedDemoDecisions is called from a sync context and demo mode
+      // never reaches the Storage upload branch.
+      void store.addOption(decisionId, {
         name: opt.name,
         imageDataUrl: PLACEHOLDER_IMAGE,
         imageMimeType: "image/png",
+      }).then((optionId) => {
+        if (optionId) store.updateOption(optionId, { notes: opt.notes });
       });
-      store.updateOption(optionId, { notes: opt.notes });
     }
   }
 }

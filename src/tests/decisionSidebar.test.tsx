@@ -29,7 +29,7 @@ describe("DecisionSidebar grouping", () => {
     projectId = store().createProject({ name: "P" });
   });
 
-  it("places each decision under the section that matches its status", () => {
+  it("places each decision under the section that matches its status", async () => {
     // Active — left as-is after creation.
     store().createDecision(projectId, { title: "Active one" });
 
@@ -43,7 +43,7 @@ describe("DecisionSidebar grouping", () => {
 
     // Finalized — create, add an option, mark it final.
     const finalized = store().createDecision(projectId, { title: "Finalized one" });
-    const optionId = store().addOption(finalized, {
+    const optionId = await store().addOption(finalized, {
       name: "Opt A",
       imageDataUrl: "data:image/png;base64,AAAA",
       imageMimeType: "image/png",
