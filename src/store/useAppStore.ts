@@ -13,6 +13,13 @@ import { createId } from "../utils/ids";
 import { now } from "../utils/dates";
 import { GUEST_LIMITS } from "../config/guestLimits";
 import { trackGuestEvent } from "../services/guestAnalytics";
+import {
+  fetchProjectsForOrg,
+  fetchDecisionsForProjects,
+  fetchOptionsForDecisions,
+} from "../services/work";
+import { signOptionImagePaths } from "../services/optionImages";
+import { buildWorkState } from "../types/work";
 
 export const GUEST_LIMIT_EVENT = "optionist:guest-limit";
 
@@ -84,6 +91,8 @@ type AppStore = AppState & {
   resetAllData: () => void;
   reloadFromStorage: () => void;
   resetToEmpty: () => void;
+
+  loadFromDb: (organizationId: ID) => Promise<void>;
 };
 
 function persist<T>(state: AppState, extra: T): AppState & T {
@@ -520,5 +529,38 @@ export const useAppStore = create<AppStore>((set, get) => ({
       saveState(EMPTY_STATE);
       return { ...EMPTY_STATE };
     });
+  },
+
+  // Read path for logged-in users with Supabase configured: pull the org's
+  // projects/decisions/options from the database (three batched queries), sign
+  // the option images, and replace the store. localStorage is untouched (the
+  // store is in "supabase" mode, so saveState is a no-op).
+  loadFromDb: async (organizationId) => {
+    const projectRows = await fetchProjectsForOrg(organizationId);
+    const decisionRows = await fetchDecisionsForProjects(projectRows.map((p) => p.id));
+    const optionRows = await fetchOptionsForDecisions(decisionRows.map((d) => d.id));
+
+    const urlByPath = await signOptionImagePaths(optionRows.map((o) => o.storage_path));
+    const imageUrlById: Record<ID, string> = {};
+    for (const o of optionRows) {
+      const url = urlByPath[o.storage_path];
+      if (url) imageUrlById[o.id] = url;
+    }
+
+    const { projects, decisions, options } = buildWorkState(
+      projectRows,
+      decisionRows,
+      optionRows,
+      imageUrlById,
+    );
+    set((s) => ({
+      ...s,
+      projects,
+      decisions,
+      options,
+      currentProjectId: null,
+      currentDecisionId: null,
+      currentOptionId: null,
+    }));
   },
 }));

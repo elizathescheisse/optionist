@@ -13,7 +13,10 @@ export const EMPTY_STATE: AppState = {
   dataVersion: 1,
 };
 
-export type StorageMode = "authenticated" | "guest";
+// "supabase" = the database is the source of truth (logged-in users with
+// Supabase configured). In that mode we never read or write localStorage; the
+// store is filled by loadFromDb instead.
+export type StorageMode = "authenticated" | "guest" | "supabase";
 
 let activeStorageMode: StorageMode = "authenticated";
 
@@ -30,6 +33,7 @@ function storageKeyForMode(mode: StorageMode): string {
 }
 
 export function loadState(mode: StorageMode = activeStorageMode): AppState {
+  if (mode === "supabase") return { ...EMPTY_STATE };
   try {
     const raw = localStorage.getItem(storageKeyForMode(mode));
     if (!raw) return { ...EMPTY_STATE };
@@ -54,6 +58,8 @@ function isQuotaError(err: unknown): boolean {
 }
 
 export function saveState(state: AppState, mode: StorageMode = activeStorageMode): void {
+  // Database-backed mode: the DB is authoritative, so don't mirror to localStorage.
+  if (mode === "supabase") return;
   try {
     localStorage.setItem(storageKeyForMode(mode), JSON.stringify(state));
   } catch (err) {

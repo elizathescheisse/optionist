@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useWorkspaceStore } from "../../store/useWorkspaceStore";
+import { useAppStore } from "../../store/useAppStore";
 import { isSupabaseConfigured } from "../../lib/supabase";
 
 const SETUP_PATHS = ["/profile/setup", "/onboarding"];
@@ -13,6 +14,8 @@ export default function AuthenticatedBootstrap() {
   const wsError = useWorkspaceStore((s) => s.error);
   const load = useWorkspaceStore((s) => s.load);
   const hydrateDemo = useWorkspaceStore((s) => s.hydrateDemo);
+  const currentOrganizationId = useWorkspaceStore((s) => s.currentOrganizationId);
+  const loadFromDb = useAppStore((s) => s.loadFromDb);
   const location = useLocation();
 
   useEffect(() => {
@@ -23,6 +26,16 @@ export default function AuthenticatedBootstrap() {
       hydrateDemo();
     }
   }, [user, user?.id, load, hydrateDemo]);
+
+  // Once the workspace is ready and we know the current organization, pull that
+  // org's work data from the database. Re-runs when the user switches orgs.
+  useEffect(() => {
+    if (!isSupabaseConfigured) return;
+    if (wsStatus !== "ready" || !currentOrganizationId) return;
+    void loadFromDb(currentOrganizationId).catch((err) => {
+      console.error("Failed to load work data from the database", err);
+    });
+  }, [wsStatus, currentOrganizationId, loadFromDb]);
 
   if (!user) {
     return (

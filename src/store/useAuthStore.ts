@@ -144,8 +144,17 @@ function activateAuthenticatedMode(
   user: AuthUser | null,
   session: Session | null,
 ): void {
-  setStorageMode("authenticated");
-  useAppStore.getState().reloadFromStorage();
+  if (user && isSupabaseConfigured) {
+    // Database-backed: the DB is the source of truth. Start empty; the work data
+    // is loaded by loadFromDb once the current organization is known
+    // (AuthenticatedBootstrap), not from localStorage.
+    setStorageMode("supabase");
+    useAppStore.getState().resetToEmpty();
+  } else {
+    // Demo mode (no Supabase) or signed-out: keep the localStorage behavior.
+    setStorageMode("authenticated");
+    useAppStore.getState().reloadFromStorage();
+  }
   set({
     status: user ? "authenticated" : "unauthenticated",
     user,
