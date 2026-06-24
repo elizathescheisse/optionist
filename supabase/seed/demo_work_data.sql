@@ -20,15 +20,17 @@ declare
   v_opt_1 uuid;
   v_opt_2 uuid;
 begin
-  select id into v_org from public.organizations order by created_at limit 1;
-  if v_org is null then
-    raise exception 'No organization found — sign in once before seeding.';
-  end if;
-
-  select user_id into v_user
-  from public.organization_members
-  where organization_id = v_org and role = 'owner' and status = 'active'
+  -- Pick the org via membership, not a raw org-table scan, so we get the same
+  -- org the workspace store resolves (the one the user was actually onboarded into).
+  select om.organization_id, om.user_id into v_org, v_user
+  from public.organization_members om
+  where om.role = 'owner' and om.status = 'active'
+  order by om.created_at
   limit 1;
+
+  if v_org is null then
+    raise exception 'No organization owner found — sign in once before seeding.';
+  end if;
 
   -- Project (org-visible so it's easy to see; creator is also a project owner).
   insert into public.projects (organization_id, name, description, visibility, created_by)

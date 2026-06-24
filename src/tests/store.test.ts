@@ -51,10 +51,10 @@ describe("store — projects", () => {
     expect(store().decisions[decisionId]).toBeUndefined();
   });
 
-  it("deleteProject cascades to grandchild options", () => {
+  it("deleteProject cascades to grandchild options", async () => {
     const projectId = store().createProject({ name: "P" });
     const decisionId = store().createDecision(projectId, { title: "D" });
-    const optionId = store().addOption(decisionId, {
+    const optionId = await store().addOption(decisionId, {
       name: "O",
       imageDataUrl: "data:image/png;base64,abc",
       imageMimeType: "image/png",
@@ -141,9 +141,9 @@ describe("store — decisions", () => {
     expect(store().projects[projectId].decisionIds).not.toContain(id);
   });
 
-  it("deleteDecision cascades to child options", () => {
+  it("deleteDecision cascades to child options", async () => {
     const id = store().createDecision(projectId, { title: "D" });
-    const optionId = store().addOption(id, {
+    const optionId = await store().addOption(id, {
       name: "O",
       imageDataUrl: "data:image/png;base64,abc",
       imageMimeType: "image/png",
@@ -186,11 +186,11 @@ describe("store — decisions", () => {
     expect(store().currentDecisionId).toBe(id);
   });
 
-  it("setCurrentDecision resets currentOptionId to first option of new decision", () => {
+  it("setCurrentDecision resets currentOptionId to first option of new decision", async () => {
     const d1 = store().createDecision(projectId, { title: "D1" });
     const d2 = store().createDecision(projectId, { title: "D2" });
-    const o1 = store().addOption(d1, { name: "O1", imageDataUrl: "data:image/png;base64,a", imageMimeType: "image/png" });
-    const o2 = store().addOption(d2, { name: "O2", imageDataUrl: "data:image/png;base64,b", imageMimeType: "image/png" });
+    const o1 = await store().addOption(d1, { name: "O1", imageDataUrl: "data:image/png;base64,a", imageMimeType: "image/png" });
+    const o2 = await store().addOption(d2, { name: "O2", imageDataUrl: "data:image/png;base64,b", imageMimeType: "image/png" });
     store().setCurrentDecision(d1);
     expect(store().currentOptionId).toBe(o1);
     store().setCurrentDecision(d2);
@@ -222,8 +222,8 @@ describe("store — options", () => {
     decisionId = store().createDecision(projectId, { title: "D" });
   });
 
-  it("addOption adds an option with correct fields", () => {
-    const id = store().addOption(decisionId, {
+  it("addOption adds an option with correct fields", async () => {
+    const id = await store().addOption(decisionId, {
       name: "Option A",
       imageDataUrl: "data:image/png;base64,abc",
       imageMimeType: "image/png",
@@ -237,8 +237,8 @@ describe("store — options", () => {
     expect(option.imageMimeType).toBe("image/png");
   });
 
-  it("addOption appends id to decision.optionIds", () => {
-    const id = store().addOption(decisionId, {
+  it("addOption appends id to decision.optionIds", async () => {
+    const id = await store().addOption(decisionId, {
       name: "O",
       imageDataUrl: "data:image/png;base64,abc",
       imageMimeType: "image/png",
@@ -246,9 +246,9 @@ describe("store — options", () => {
     expect(store().decisions[decisionId].optionIds).toContain(id);
   });
 
-  it("first uploaded option sets currentOptionId", () => {
+  it("first uploaded option sets currentOptionId", async () => {
     expect(store().currentOptionId).toBeNull();
-    const id = store().addOption(decisionId, {
+    const id = await store().addOption(decisionId, {
       name: "O",
       imageDataUrl: "data:image/png;base64,abc",
       imageMimeType: "image/png",
@@ -256,13 +256,13 @@ describe("store — options", () => {
     expect(store().currentOptionId).toBe(id);
   });
 
-  it("second option does not override currentOptionId", () => {
-    const id1 = store().addOption(decisionId, {
+  it("second option does not override currentOptionId", async () => {
+    const id1 = await store().addOption(decisionId, {
       name: "O1",
       imageDataUrl: "data:image/png;base64,abc",
       imageMimeType: "image/png",
     });
-    store().addOption(decisionId, {
+    await store().addOption(decisionId, {
       name: "O2",
       imageDataUrl: "data:image/png;base64,def",
       imageMimeType: "image/png",
@@ -270,8 +270,8 @@ describe("store — options", () => {
     expect(store().currentOptionId).toBe(id1);
   });
 
-  it("updateOption patches name and notes", () => {
-    const id = store().addOption(decisionId, {
+  it("updateOption patches name and notes", async () => {
+    const id = await store().addOption(decisionId, {
       name: "O",
       imageDataUrl: "data:image/png;base64,abc",
       imageMimeType: "image/png",
@@ -281,8 +281,8 @@ describe("store — options", () => {
     expect(store().options[id].notes).toBe("Some notes");
   });
 
-  it("deleteOption removes from state and decision.optionIds", () => {
-    const id = store().addOption(decisionId, {
+  it("deleteOption removes from state and decision.optionIds", async () => {
+    const id = await store().addOption(decisionId, {
       name: "O",
       imageDataUrl: "data:image/png;base64,abc",
       imageMimeType: "image/png",
@@ -292,8 +292,8 @@ describe("store — options", () => {
     expect(store().decisions[decisionId].optionIds).not.toContain(id);
   });
 
-  it("deleteOption clears selectedOptionId on decision if it matched", () => {
-    const id = store().addOption(decisionId, {
+  it("deleteOption clears selectedOptionId on decision if it matched", async () => {
+    const id = await store().addOption(decisionId, {
       name: "O",
       imageDataUrl: "data:image/png;base64,abc",
       imageMimeType: "image/png",
@@ -311,14 +311,14 @@ describe("store — reject and final", () => {
   let o2: string;
   let o3: string;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     localStorage.clear();
     store().resetAllData();
     projectId = store().createProject({ name: "P" });
     decisionId = store().createDecision(projectId, { title: "D" });
-    o1 = store().addOption(decisionId, { name: "O1", imageDataUrl: "data:image/png;base64,a", imageMimeType: "image/png" });
-    o2 = store().addOption(decisionId, { name: "O2", imageDataUrl: "data:image/png;base64,b", imageMimeType: "image/png" });
-    o3 = store().addOption(decisionId, { name: "O3", imageDataUrl: "data:image/png;base64,c", imageMimeType: "image/png" });
+    o1 = await store().addOption(decisionId, { name: "O1", imageDataUrl: "data:image/png;base64,a", imageMimeType: "image/png" });
+    o2 = await store().addOption(decisionId, { name: "O2", imageDataUrl: "data:image/png;base64,b", imageMimeType: "image/png" });
+    o3 = await store().addOption(decisionId, { name: "O3", imageDataUrl: "data:image/png;base64,c", imageMimeType: "image/png" });
   });
 
   it("rejectOption sets an active option to rejected", () => {
@@ -397,15 +397,15 @@ describe("store — current option navigation", () => {
   let o2: string;
   let o3: string;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     localStorage.clear();
     store().resetAllData();
     projectId = store().createProject({ name: "P" });
     decisionId = store().createDecision(projectId, { title: "D" });
     store().setCurrentDecision(decisionId);
-    o1 = store().addOption(decisionId, { name: "O1", imageDataUrl: "data:image/png;base64,a", imageMimeType: "image/png" });
-    o2 = store().addOption(decisionId, { name: "O2", imageDataUrl: "data:image/png;base64,b", imageMimeType: "image/png" });
-    o3 = store().addOption(decisionId, { name: "O3", imageDataUrl: "data:image/png;base64,c", imageMimeType: "image/png" });
+    o1 = await store().addOption(decisionId, { name: "O1", imageDataUrl: "data:image/png;base64,a", imageMimeType: "image/png" });
+    o2 = await store().addOption(decisionId, { name: "O2", imageDataUrl: "data:image/png;base64,b", imageMimeType: "image/png" });
+    o3 = await store().addOption(decisionId, { name: "O3", imageDataUrl: "data:image/png;base64,c", imageMimeType: "image/png" });
   });
 
   it("setCurrentOption selects the clicked option", () => {
@@ -484,13 +484,13 @@ describe("store — status transitions", () => {
   let decisionId: string;
   let optionId: string;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     localStorage.clear();
     store().resetAllData();
     projectId = store().createProject({ name: "P" });
     decisionId = store().createDecision(projectId, { title: "D" });
     store().updateDecision(decisionId, { notes: "keep me", finalRationale: "important" });
-    optionId = store().addOption(decisionId, {
+    optionId = await store().addOption(decisionId, {
       name: "O",
       imageDataUrl: "data:image/png;base64,a",
       imageMimeType: "image/png",

@@ -7,12 +7,12 @@ function store() {
   return useAppStore.getState();
 }
 
-function setup() {
+async function setup() {
   localStorage.clear();
   store().resetAllData();
   const projectId = store().createProject({ name: "P" });
   const decisionId = store().createDecision(projectId, { title: "D" });
-  const optionId = store().addOption(decisionId, {
+  const optionId = await store().addOption(decisionId, {
     name: "O",
     imageDataUrl: "data:image/png;base64,a",
     imageMimeType: "image/png",
@@ -24,8 +24,8 @@ describe("FinalizeDecisionModal — missing rationale warning", () => {
   let decisionId: string;
   let optionId: string;
 
-  beforeEach(() => {
-    ({ decisionId, optionId } = setup());
+  beforeEach(async () => {
+    ({ decisionId, optionId } = await setup());
   });
 
   it("shows a warning when the rationale field is empty", () => {

@@ -48,9 +48,9 @@ describe("DecisionNotesPanel — persistence", () => {
 });
 
 describe("DecisionNotesPanel — safe text rendering", () => {
-  it("renders a script-like option name as text, not HTML", () => {
+  it("renders a script-like option name as text, not HTML", async () => {
     const { decisionId } = setup();
-    const optionId = store().addOption(decisionId, {
+    const optionId = await store().addOption(decisionId, {
       name: "<script>alert('x')</script>",
       imageDataUrl: "data:image/png;base64,a",
       imageMimeType: "image/png",

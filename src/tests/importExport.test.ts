@@ -183,10 +183,10 @@ describe("exportData / importDataReplace round trip", () => {
     store().resetAllData();
   });
 
-  it("exported data validates successfully", () => {
+  it("exported data validates successfully", async () => {
     const pId = store().createProject({ name: "P", description: "desc" });
     const dId = store().createDecision(pId, { title: "D" });
-    store().addOption(dId, {
+    await store().addOption(dId, {
       name: "O",
       imageDataUrl: "data:image/png;base64,abc",
       imageMimeType: "image/png",
@@ -203,10 +203,10 @@ describe("exportData / importDataReplace round trip", () => {
     expect(store().options.o1.name).toBe("Option");
   });
 
-  it("import clears currentDecisionId and currentOptionId", () => {
+  it("import clears currentDecisionId and currentOptionId", async () => {
     const pId = store().createProject({ name: "P" });
     const dId = store().createDecision(pId, { title: "D" });
-    const oId = store().addOption(dId, {
+    const oId = await store().addOption(dId, {
       name: "O",
       imageDataUrl: "data:image/png;base64,a",
       imageMimeType: "image/png",
@@ -219,11 +219,11 @@ describe("exportData / importDataReplace round trip", () => {
     expect(store().currentOptionId).toBeNull();
   });
 
-  it("full round trip preserves all project fields", () => {
+  it("full round trip preserves all project fields", async () => {
     const pId = store().createProject({ name: "Round Trip", description: "A project" });
     const dId = store().createDecision(pId, { title: "My Decision" });
     store().updateDecision(dId, { notes: "Some notes", finalRationale: "Good rationale" });
-    const oId = store().addOption(dId, {
+    const oId = await store().addOption(dId, {
       name: "Option A",
       imageDataUrl: "data:image/png;base64,xyz",
       imageMimeType: "image/png",
@@ -247,11 +247,11 @@ describe("exportData / importDataReplace round trip", () => {
     expect(exported.exportedAt.length).toBeGreaterThan(0);
   });
 
-  it("round trip preserves image data URLs, rationale, and timestamps", () => {
+  it("round trip preserves image data URLs, rationale, and timestamps", async () => {
     const pId = store().createProject({ name: "P" });
     const dId = store().createDecision(pId, { title: "D" });
     store().updateDecision(dId, { finalRationale: "Chosen for clarity" });
-    const oId = store().addOption(dId, {
+    const oId = await store().addOption(dId, {
       name: "O",
       imageDataUrl: "data:image/png;base64,iVBORw0KGgo=",
       imageMimeType: "image/png",

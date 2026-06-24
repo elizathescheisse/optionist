@@ -3,6 +3,7 @@
   "configurations": [
     {
       "name": "optionist",
+      "cwd": "/Users/elizagilpin/workspace/optionist",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "port": 5176,
