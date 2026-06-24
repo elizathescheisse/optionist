@@ -41,6 +41,10 @@ import { isSupabaseConfigured } from "../lib/supabase";
 
 export const GUEST_LIMIT_EVENT = "optionist:guest-limit";
 
+// Tracks in-flight project creation RPCs so dependent writes (decisions, options)
+// can wait for project_members to exist before hitting the DB.
+const pendingProjectCreates = new Map<string, Promise<void>>();
+
 function fireAndForget(promise: Promise<void>, label: string): void {
   promise.catch((err) => console.error(`[workWrites] ${label}:`, err));
 }
@@ -149,7 +153,10 @@ export const useAppStore = create<AppStore>((set, get) => ({
     });
     if (isSupabaseConfigured && getStorageMode() === "supabase") {
       const orgId = useWorkspaceStore.getState().currentOrganizationId ?? "";
-      fireAndForget(dbCreateProject(id, orgId, name.trim(), (description ?? "").trim()), "createProject");
+      const p = dbCreateProject(id, orgId, name.trim(), (description ?? "").trim())
+        .catch((err) => console.error("[workWrites] createProject:", err));
+      pendingProjectCreates.set(id, p);
+      p.finally(() => pendingProjectCreates.delete(id));
     }
     return id;
   },
@@ -249,7 +256,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
       return next;
     });
     if (isSupabaseConfigured && getStorageMode() === "supabase") {
-      fireAndForget(dbCreateDecision(id, projectId, title.trim(), (description ?? "").trim()), "createDecision");
+      const after = pendingProjectCreates.get(projectId) ?? Promise.resolve();
+      fireAndForget(after.then(() => dbCreateDecision(id, projectId, title.trim(), (description ?? "").trim())), "createDecision");
     }
     return id;
   },
