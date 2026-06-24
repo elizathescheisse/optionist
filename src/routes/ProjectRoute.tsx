@@ -16,7 +16,11 @@ export default function ProjectRoute() {
   const navigate = useNavigate();
   const project = useAppStore((s) => (projectId ? s.projects[projectId] : undefined));
   const setCurrentProject = useAppStore((s) => s.setCurrentProject);
+  const setCurrentDecision = useAppStore((s) => s.setCurrentDecision);
   const currentDecisionId = useAppStore((s) => s.currentDecisionId);
+  const firstDecisionId = useAppStore((s) =>
+    projectId ? s.projects[projectId]?.decisionIds[0] ?? null : null
+  );
 
   useEffect(() => {
     if (!project) {
@@ -24,7 +28,8 @@ export default function ProjectRoute() {
       return;
     }
     setCurrentProject(project.id);
-  }, [project, projectId, setCurrentProject, navigate]);
+    if (firstDecisionId) setCurrentDecision(firstDecisionId);
+  }, [project, projectId, firstDecisionId, setCurrentProject, setCurrentDecision, navigate]);
 
   if (!project) return null;
 
