@@ -2,7 +2,7 @@
 
 **[optionist.vercel.app](https://optionist.vercel.app)**
 
-A local-first desktop web app for comparing design options, making decisions, and preserving decision rationale.
+A web app for comparing design options, making decisions, and preserving decision rationale — built for product designers and UX teams.
 
 ---
 
@@ -17,21 +17,21 @@ Optionist gives designers a fast, structured workflow for design review:
 5. Reject weak options, mark one final
 6. Record rationale so the decision is preserved
 
-All data lives in your browser's `localStorage`. Nothing is uploaded anywhere.
+Data is stored in Supabase and tied to your account. Guest mode (no account) uses `localStorage` only.
 
 ---
 
 ## Features
 
-- **Local-first** — no backend, no accounts, no network calls
+- **Accounts + cloud storage** — sign up to persist projects across devices; data lives in Supabase
+- **Guest mode** — try the app without an account; data stays local until you sign up
 - **Project + decision + option hierarchy** — organize work into projects with multiple decisions per project
-- **Image upload** — PNG, JPEG, WebP, GIF up to 10 MB each; stored as base64 data URLs
+- **Image upload** — PNG, JPEG, WebP, GIF up to 10 MB each; stored in Supabase Storage for authenticated users
 - **Keyboard-driven review** — Space/→ next, ← previous, R reject/restore, F mark final, Esc back, ? shortcuts help
 - **Focused review mode** — full-screen `/review` route with fit-width / full-size toggle
-- **Decision status** — active → finalized / postponed / archived
+- **Decision status** — active → finalized / postponed
 - **Notes + rationale** — per-decision notes and final rationale fields
 - **JSON export/import** — download all data as a single JSON file and reimport it later; validated before replacing state
-- **Seed data** — drop a `seed.json` export in `public/` to share a project with someone; they run `npm run dev` and your data is already loaded
 - **Confirmation modals** — deleting a project, decision, or import requires explicit confirmation
 
 ---
@@ -44,8 +44,10 @@ All data lives in your browser's `localStorage`. Nothing is uploaded anywhere.
 | Styling | Tailwind CSS v4 |
 | State | Zustand |
 | Routing | React Router v7 |
-| Persistence | `localStorage` (key: `design-decision-tool:v1`) |
-| Tests | Vitest + React Testing Library (142 tests) |
+| Database | Supabase (Postgres + Storage) |
+| Auth | Supabase Auth |
+| Persistence | Supabase for authenticated users; `localStorage` for guests |
+| Tests | Vitest + React Testing Library (189 tests) |
 
 ---
 
@@ -92,12 +94,13 @@ The app opens with your data already loaded. From that point on it's theirs — 
 
 ## Deploying
 
-This is a pure static site. To deploy to Vercel:
+To deploy to Vercel:
 
-1. Push to GitHub (already done)
+1. Push to GitHub
 2. Go to [vercel.com](https://vercel.com) → Add New Project → import this repo
 3. Build command: `npm run build` · Output directory: `dist`
-4. Deploy — every push to `main` redeploys automatically
+4. Add environment variables: `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` (from your Supabase project settings)
+5. Deploy — every push to `main` redeploys automatically
 
 ---
 
