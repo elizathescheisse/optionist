@@ -212,7 +212,12 @@ export const useAppStore = create<AppStore>((set, get) => ({
   },
 
   setCurrentProject: (projectId) => {
-    set((s) => persist({ ...s, currentProjectId: projectId }, {}));
+    set((s) => persist({
+      ...s,
+      currentProjectId: projectId,
+      currentDecisionId: null,
+      currentOptionId: null,
+    }, {}));
   },
 
   // --- Decisions ---
