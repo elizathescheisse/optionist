@@ -70,7 +70,7 @@ export default function OnboardingRoute() {
   const loginFromOnboarding = useAuthStore((s) => s.loginFromOnboarding);
   const setOnboarding = useAuthStore((s) => s.setOnboarding);
   const currentOrganizationId = useWorkspaceStore((s) => s.currentOrganizationId);
-  const load = useWorkspaceStore((s) => s.load);
+  const refreshProfile = useWorkspaceStore((s) => s.refreshProfile);
   const createProject = useAppStore((s) => s.createProject);
 
   const [step, setStep] = useState(0);
@@ -111,7 +111,7 @@ export default function OnboardingRoute() {
     try {
       if (isSupabaseConfigured && user?.id && currentOrganizationId) {
         await completeOnboarding(user.id, currentOrganizationId, onboardingAnswers, workspaceName.trim());
-        await load(user.id);
+        await refreshProfile(user.id);
       } else {
         setOnboarding(onboardingAnswers);
         loginFromOnboarding(onboardingAnswers);
