@@ -121,7 +121,9 @@ export default function OnboardingRoute() {
         name: workspaceName.trim() || "My first project",
         description: comparingFirst.trim() || "My first workspace",
       });
-      seedDemoDecisions(projectId);
+      if (!isSupabaseConfigured) {
+        seedDemoDecisions(projectId);
+      }
       navigate("/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Setup failed. Please try again.");
