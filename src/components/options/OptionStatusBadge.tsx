@@ -1,7 +1,7 @@
 import type { OptionStatus } from "../../types/domain";
 
 const STYLES: Record<OptionStatus, string> = {
-  active: "bg-blue-50 text-blue-500",
+  active: "bg-[#D0F1FB] text-[#3494FB]",
   rejected: "bg-red-50 text-red-500",
   final: "bg-emerald-50 text-emerald-600",
 };
