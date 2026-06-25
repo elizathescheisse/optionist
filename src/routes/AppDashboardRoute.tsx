@@ -9,7 +9,7 @@ import Modal from "../components/ui/Modal";
 import Card from "../components/ui/Card";
 import EmptyState from "../components/ui/EmptyState";
 import PageHeader from "../components/ui/PageHeader";
-import Badge from "../components/ui/Badge";
+import DecisionStatusBadge from "../components/decisions/DecisionStatusBadge";
 import type { Decision, ID } from "../types/domain";
 
 function getRecentDecisions(
@@ -50,7 +50,7 @@ export default function AppDashboardRoute() {
   const projectCount = Object.keys(projects).length;
   const recent = getRecentDecisions(decisions, projects);
 
-  const welcomeName = settingsName || onboarding?.role || user?.name || "there";
+  const welcomeName = settingsName || user?.name || "there";
 
   function openDecision(projectId: ID, decisionId: ID) {
     setCurrentProject(projectId);
@@ -150,17 +150,7 @@ export default function AppDashboardRoute() {
                           {d.projectName}
                         </p>
                       </div>
-                      <Badge
-                        variant={
-                          d.status === "finalized"
-                            ? "success"
-                            : d.status === "active"
-                              ? "primary"
-                              : "default"
-                        }
-                      >
-                        {d.status}
-                      </Badge>
+                      <DecisionStatusBadge status={d.status} />
                     </div>
                   </Card>
                 </Link>

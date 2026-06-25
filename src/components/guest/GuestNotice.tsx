@@ -9,10 +9,11 @@ export default function GuestNotice() {
 
   return (
     <div
-      className="shrink-0 border-b border-border bg-primary-soft px-5 py-3 flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between"
+      className="shrink-0 border-b border-border px-5 py-3 flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between"
+      style={{ backgroundColor: "#D0F1FB" }}
       role="status"
     >
-      <p className="text-sm text-text">
+      <p className="text-sm font-semibold" style={{ color: "#3494FB" }}>
         You are using Optionist as a guest. Your work is saved only on this device. Create an
         account to save, sync, and collaborate.
       </p>
