@@ -37,6 +37,7 @@ import DangerZoneSettingsRoute from "./routes/settings/DangerZoneSettingsRoute";
 import PresentRoute from "./routes/PresentRoute";
 import { ToastProvider } from "./context/ToastContext";
 import StorageQuotaWatcher from "./components/shared/StorageQuotaWatcher";
+import SaveErrorWatcher from "./components/shared/SaveErrorWatcher";
 import GuestLimitWatcher from "./components/guest/GuestLimitWatcher";
 import GuestMigrationModal from "./components/guest/GuestMigrationModal";
 import DesignSystemModal from "./components/shared/DesignSystemModal";
@@ -62,6 +63,7 @@ export default function App() {
   return (
     <ToastProvider>
       <StorageQuotaWatcher />
+      <SaveErrorWatcher />
       <GuestLimitWatcher />
       <DesignSystemModal />
       <BrowserRouter>

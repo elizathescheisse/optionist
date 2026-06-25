@@ -40,13 +40,24 @@ import { useWorkspaceStore } from "./useWorkspaceStore";
 import { isSupabaseConfigured } from "../lib/supabase";
 
 export const GUEST_LIMIT_EVENT = "optionist:guest-limit";
+export const SAVE_ERROR_EVENT = "optionist:save-error";
 
 // Tracks in-flight project creation RPCs so dependent writes (decisions, options)
 // can wait for project_members to exist before hitting the DB.
 const pendingProjectCreates = new Map<string, Promise<void>>();
 
+// A DB write failed after we already updated the screen optimistically. Tell the
+// user so they can reload (which re-syncs from the DB) rather than trusting a
+// change that never persisted.
+function emitSaveError(): void {
+  window.dispatchEvent(new CustomEvent(SAVE_ERROR_EVENT));
+}
+
 function fireAndForget(promise: Promise<void>, label: string): void {
-  promise.catch((err) => console.error(`[workWrites] ${label}:`, err));
+  promise.catch((err) => {
+    console.error(`[workWrites] ${label}:`, err);
+    emitSaveError();
+  });
 }
 
 function emitGuestLimit(message: string): void {
@@ -420,6 +431,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
         });
       } catch (err) {
         console.error("[workWrites] addOption:", err);
+        emitSaveError();
       }
       return id;
     }
