@@ -11,7 +11,6 @@ type Props = { projectId: string };
 
 const SECONDARY_GROUPS: { status: DecisionStatus; label: string }[] = [
   { status: "postponed", label: "Postponed" },
-  { status: "archived", label: "Archived" },
 ];
 
 export default function DecisionSidebar({ projectId }: Props) {

@@ -159,25 +159,17 @@ describe("store — decisions", () => {
     expect(store().currentDecisionId).toBeNull();
   });
 
-  it("archiveDecision sets status to archived", () => {
-    const id = store().createDecision(projectId, { title: "D" });
-    store().archiveDecision(id);
-    expect(store().decisions[id].status).toBe("archived");
-    expect(store().decisions[id].archivedAt).not.toBeNull();
-  });
-
   it("postponeDecision sets status to postponed", () => {
     const id = store().createDecision(projectId, { title: "D" });
     store().postponeDecision(id);
     expect(store().decisions[id].status).toBe("postponed");
   });
 
-  it("reactivateDecision sets status to active and clears archivedAt", () => {
+  it("reactivateDecision sets status to active", () => {
     const id = store().createDecision(projectId, { title: "D" });
-    store().archiveDecision(id);
+    store().postponeDecision(id);
     store().reactivateDecision(id);
     expect(store().decisions[id].status).toBe("active");
-    expect(store().decisions[id].archivedAt).toBeNull();
   });
 
   it("setCurrentDecision updates currentDecisionId", () => {
@@ -497,27 +489,6 @@ describe("store — status transitions", () => {
     });
   });
 
-  // --- archiveDecision ---
-
-  it("archiveDecision from active sets status to archived and sets archivedAt", () => {
-    store().archiveDecision(decisionId);
-    const d = store().decisions[decisionId];
-    expect(d.status).toBe("archived");
-    expect(d.archivedAt).not.toBeNull();
-  });
-
-  it("archiveDecision from finalized sets status to archived", () => {
-    store().markOptionFinal(optionId);
-    store().archiveDecision(decisionId);
-    expect(store().decisions[decisionId].status).toBe("archived");
-  });
-
-  it("archiveDecision from postponed sets status to archived", () => {
-    store().postponeDecision(decisionId);
-    store().archiveDecision(decisionId);
-    expect(store().decisions[decisionId].status).toBe("archived");
-  });
-
   // --- postponeDecision ---
 
   it("postponeDecision from active sets status to postponed", () => {
@@ -525,20 +496,7 @@ describe("store — status transitions", () => {
     expect(store().decisions[decisionId].status).toBe("postponed");
   });
 
-  it("postponeDecision does not set archivedAt", () => {
-    store().postponeDecision(decisionId);
-    expect(store().decisions[decisionId].archivedAt).toBeNull();
-  });
-
   // --- reactivateDecision ---
-
-  it("reactivateDecision from archived sets status to active and clears archivedAt", () => {
-    store().archiveDecision(decisionId);
-    store().reactivateDecision(decisionId);
-    const d = store().decisions[decisionId];
-    expect(d.status).toBe("active");
-    expect(d.archivedAt).toBeNull();
-  });
 
   it("reactivateDecision from postponed sets status to active", () => {
     store().postponeDecision(decisionId);
@@ -548,17 +506,11 @@ describe("store — status transitions", () => {
 
   // --- data preservation ---
 
-  it("archiving preserves notes and finalRationale", () => {
-    store().archiveDecision(decisionId);
+  it("postponing preserves notes and finalRationale", () => {
+    store().postponeDecision(decisionId);
     const d = store().decisions[decisionId];
     expect(d.notes).toBe("keep me");
     expect(d.finalRationale).toBe("important");
-  });
-
-  it("archiving preserves options", () => {
-    store().archiveDecision(decisionId);
-    expect(store().decisions[decisionId].optionIds).toContain(optionId);
-    expect(store().options[optionId]).toBeDefined();
   });
 
   it("postponing preserves options", () => {
@@ -568,7 +520,7 @@ describe("store — status transitions", () => {
   });
 
   it("reactivating preserves options and notes", () => {
-    store().archiveDecision(decisionId);
+    store().postponeDecision(decisionId);
     store().reactivateDecision(decisionId);
     expect(store().decisions[decisionId].optionIds).toContain(optionId);
     expect(store().decisions[decisionId].notes).toBe("keep me");
@@ -577,7 +529,7 @@ describe("store — status transitions", () => {
   it("reactivating a finalized decision preserves selectedOptionId and decidedAt", () => {
     store().markOptionFinal(optionId);
     const before = store().decisions[decisionId];
-    store().archiveDecision(decisionId);
+    store().postponeDecision(decisionId);
     store().reactivateDecision(decisionId);
     const after = store().decisions[decisionId];
     expect(after.selectedOptionId).toBe(before.selectedOptionId);
@@ -586,10 +538,8 @@ describe("store — status transitions", () => {
 
   // --- round trips ---
 
-  it("round trip active → postponed → active → archived → active preserves title", () => {
+  it("round trip active → postponed → active preserves title", () => {
     store().postponeDecision(decisionId);
-    store().reactivateDecision(decisionId);
-    store().archiveDecision(decisionId);
     store().reactivateDecision(decisionId);
     expect(store().decisions[decisionId].title).toBe("D");
     expect(store().decisions[decisionId].status).toBe("active");

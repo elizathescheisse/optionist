@@ -11,7 +11,7 @@ export type Project = {
   updatedAt: ISODateString;
 };
 
-export type DecisionStatus = "active" | "finalized" | "archived" | "postponed";
+export type DecisionStatus = "active" | "finalized" | "postponed";
 
 export type Decision = {
   id: ID;
@@ -24,7 +24,6 @@ export type Decision = {
   notes: string;
   finalRationale: string;
   decidedAt: ISODateString | null;
-  archivedAt: ISODateString | null;
   createdAt: ISODateString;
   updatedAt: ISODateString;
 };
