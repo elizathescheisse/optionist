@@ -7,7 +7,6 @@ import {
   downloadGuestExportJson,
   summarizeGuestWork,
 } from "../../services/guestStorage";
-import { migrateGuestWorkToAccount } from "../../services/guestMigration";
 import { trackGuestEvent } from "../../services/guestAnalytics";
 import Button from "../ui/Button";
 import Modal from "../ui/Modal";
@@ -17,7 +16,6 @@ export default function GuestMigrationModal() {
   const pendingGuestMigration = useAuthStore((s) => s.pendingGuestMigration);
   const status = useAuthStore((s) => s.status);
   const dismissGuestMigration = useAuthStore((s) => s.dismissGuestMigration);
-  const [importMessage, setImportMessage] = useState<string | null>(null);
   const [confirmDiscard, setConfirmDiscard] = useState(false);
 
   const summary = useMemo(() => summarizeGuestWork(), [pendingGuestMigration]);
@@ -48,15 +46,6 @@ export default function GuestMigrationModal() {
     clearGuestSession();
     dismissGuestMigration();
     setConfirmDiscard(false);
-  }
-
-  async function handleImportAttempt() {
-    const result = await migrateGuestWorkToAccount();
-    if (!result.ok && result.reason === "cloud_sync_unavailable") {
-      setImportMessage(
-        "Cloud project sync is not available yet. Export your guest work as JSON to keep a backup.",
-      );
-    }
   }
 
   if (confirmDiscard) {
@@ -104,17 +93,8 @@ export default function GuestMigrationModal() {
           </ul>
         )}
 
-        {importMessage && (
-          <p className="text-sm text-text-muted" role="status">
-            {importMessage}
-          </p>
-        )}
-
         <div className="flex flex-col gap-2 pt-1">
-          <Button variant="primary" className="w-full" onClick={() => void handleImportAttempt()}>
-            Import to my account
-          </Button>
-          <Button variant="secondary" className="w-full" onClick={handleExport}>
+          <Button variant="primary" className="w-full" onClick={handleExport}>
             Export as JSON
           </Button>
           <Button variant="secondary" className="w-full" onClick={handleKeepLocal}>
