@@ -6,7 +6,7 @@ import { getSupabase, isSupabaseConfigured } from "../lib/supabase";
 // the option's existing imageDataUrl field, so nothing in the render path changes.
 
 const BUCKET = "decision-assets";
-const SIGNED_URL_TTL_SECONDS = 60 * 60; // 1 hour
+const SIGNED_URL_TTL_SECONDS = 7 * 24 * 60 * 60; // 1 week
 
 /**
  * Sign many option image paths in one round trip. Returns a map of storage_path
