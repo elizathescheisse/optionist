@@ -1,8 +1,7 @@
 // Database row shapes for the work-data tables (snake_case, as Supabase returns
 // them) plus pure mappers into the app's existing camelCase domain types. Keeping
-// the mappers pure means the model-translation decisions — dropping `archived`,
-// and deriving a "final" option from `decisions.final_option_id` — are unit
-// testable without a live database.
+// the mappers pure means the model-translation decisions are unit testable
+// without a live database.
 
 import type {
   Project,
@@ -107,14 +106,12 @@ export function mapDecision(row: DecisionRow, optionIds: ID[]): Decision {
     projectId: row.project_id,
     title: row.title,
     description: row.description ?? "",
-    // DB never emits "archived"; the union still allows it for the local model.
     status: row.status as DecisionStatus,
     optionIds,
     selectedOptionId: row.final_option_id,
     notes: row.working_notes ?? "",
     finalRationale: row.final_rationale ?? "",
     decidedAt: row.finalized_at,
-    archivedAt: null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };

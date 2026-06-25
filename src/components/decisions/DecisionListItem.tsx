@@ -17,14 +17,12 @@ export default function DecisionListItem({ decision, isSelected, onSelect }: Pro
 
   const isFinalized = decision.status === "finalized";
   const isPostponed = decision.status === "postponed";
-  const isArchived = decision.status === "archived";
 
   const optionCount = decision.optionIds.length;
 
   function subtitle() {
     if (isFinalized && chosenOptionName) return chosenOptionName;
     if (isPostponed) return "Paused";
-    if (isArchived) return "Archived";
     return optionCount === 0
       ? "No screenshots"
       : `${optionCount} screenshot${optionCount !== 1 ? "s" : ""}`;
@@ -61,7 +59,7 @@ export default function DecisionListItem({ decision, isSelected, onSelect }: Pro
           {/* Hover actions */}
           {!isSelected && !isFinalized && (
             <div className="hidden group-hover:flex items-center gap-1 shrink-0 mt-0.5">
-              {(isArchived || isPostponed) && (
+              {isPostponed && (
                 <button
                   className="text-xs text-blue-500 hover:text-blue-700"
                   onClick={(e) => {

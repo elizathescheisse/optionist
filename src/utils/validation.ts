@@ -29,7 +29,7 @@ function validateProject(v: unknown): v is Project {
 
 function validateDecision(v: unknown): v is Decision {
   if (!isRecord(v)) return false;
-  const validStatuses = ["active", "finalized", "archived", "postponed"];
+  const validStatuses = ["active", "finalized", "postponed"];
   return (
     isString(v.id) &&
     isString(v.projectId) &&
@@ -42,7 +42,6 @@ function validateDecision(v: unknown): v is Decision {
     isString(v.notes) &&
     isString(v.finalRationale) &&
     (v.decidedAt === null || isString(v.decidedAt)) &&
-    (v.archivedAt === null || isString(v.archivedAt)) &&
     isString(v.createdAt) &&
     isString(v.updatedAt)
   );

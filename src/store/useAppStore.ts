@@ -106,7 +106,6 @@ type AppStore = AppState & {
   createDecision: (projectId: ID, input: { title: string; description?: string }) => ID;
   updateDecision: (decisionId: ID, patch: Partial<Pick<Decision, "title" | "description" | "notes" | "finalRationale">>) => void;
   deleteDecision: (decisionId: ID) => void;
-  archiveDecision: (decisionId: ID) => void;
   postponeDecision: (decisionId: ID) => void;
   reactivateDecision: (decisionId: ID) => void;
   setCurrentDecision: (decisionId: ID | null) => void;
@@ -248,7 +247,6 @@ export const useAppStore = create<AppStore>((set, get) => ({
       notes: "",
       finalRationale: "",
       decidedAt: null,
-      archivedAt: null,
       createdAt: ts,
       updatedAt: ts,
     };
@@ -335,17 +333,6 @@ export const useAppStore = create<AppStore>((set, get) => ({
     }
   },
 
-  archiveDecision: (decisionId) => {
-    set((s) => {
-      const decision = s.decisions[decisionId];
-      if (!decision) return s;
-      const updated = { ...decision, status: "archived" as const, archivedAt: now(), updatedAt: now() };
-      const next = { ...s, decisions: { ...s.decisions, [decisionId]: updated } };
-      saveState(next);
-      return next;
-    });
-  },
-
   postponeDecision: (decisionId) => {
     set((s) => {
       const decision = s.decisions[decisionId];
@@ -364,7 +351,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
     set((s) => {
       const decision = s.decisions[decisionId];
       if (!decision) return s;
-      const updated = { ...decision, status: "active" as const, archivedAt: null, updatedAt: now() };
+      const updated = { ...decision, status: "active" as const, updatedAt: now() };
       const next = { ...s, decisions: { ...s.decisions, [decisionId]: updated } };
       saveState(next);
       return next;

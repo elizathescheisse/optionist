@@ -5,8 +5,8 @@ import DecisionSidebar from "../components/decisions/DecisionSidebar";
 import { useAppStore } from "../store/useAppStore";
 
 // Guards the grouping logic: decisions must sort into Active / Decided /
-// Postponed / Archived sections by status. A rewrite that drops or mislabels a
-// group would break these assertions.
+// Postponed sections by status. A rewrite that drops or mislabels a group
+// would break these assertions.
 
 function store() {
   return useAppStore.getState();
@@ -37,10 +37,6 @@ describe("DecisionSidebar grouping", () => {
     const postponed = store().createDecision(projectId, { title: "Postponed one" });
     store().postponeDecision(postponed);
 
-    // Archived.
-    const archived = store().createDecision(projectId, { title: "Archived one" });
-    store().archiveDecision(archived);
-
     // Finalized — create, add an option, mark it final.
     const finalized = store().createDecision(projectId, { title: "Finalized one" });
     const optionId = await store().addOption(finalized, {
@@ -53,28 +49,26 @@ describe("DecisionSidebar grouping", () => {
     const { container } = renderSidebar(projectId);
 
     // Section headers render. Target the header spans by their distinct class
-    // (tracking-wider) so a status badge with the same word — e.g. an archived
-    // item showing "Archived" — doesn't masquerade as the section header.
+    // (tracking-wider) so a status badge with the same word doesn't masquerade
+    // as the section header.
     const headers = Array.from(
       container.querySelectorAll("span.tracking-wider"),
     ).map((el) => el.textContent);
     expect(headers).toEqual(
-      expect.arrayContaining(["Decided", "Postponed", "Archived"]),
+      expect.arrayContaining(["Decided", "Postponed"]),
     );
 
     // Each decision shows up.
     expect(screen.getByText("Active one")).toBeInTheDocument();
     expect(screen.getByText("Finalized one")).toBeInTheDocument();
     expect(screen.getByText("Postponed one")).toBeInTheDocument();
-    expect(screen.getByText("Archived one")).toBeInTheDocument();
   });
 
   it("hides empty secondary sections", () => {
     store().createDecision(projectId, { title: "Just active" });
     renderSidebar(projectId);
 
-    // No postponed/archived decisions → those headers should not render.
+    // No postponed decisions → that header should not render.
     expect(screen.queryByText("Postponed")).not.toBeInTheDocument();
-    expect(screen.queryByText("Archived")).not.toBeInTheDocument();
   });
 });

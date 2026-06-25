@@ -45,7 +45,7 @@ export default function DecisionNotesPanel({ decisionId }: Props) {
   }
 
   const canPostpone = decision.status === "active" || decision.status === "finalized";
-  const canReactivate = decision.status === "postponed" || decision.status === "archived";
+  const canReactivate = decision.status === "postponed";
 
   return (
     <>
